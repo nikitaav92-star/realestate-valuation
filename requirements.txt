@@ -1,0 +1,8 @@
+httpx
+tenacity
+pydantic
+psycopg2-binary
+prefect
+orjson
+PyYAML
+python-dotenv
