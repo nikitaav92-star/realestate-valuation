@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: realdb
+      POSTGRES_USER: realuser
+      POSTGRES_PASSWORD: __PG_PASS__
+    volumes:
+      - "./db/data:/var/lib/postgresql/data"
+    ports:
+      - "5432:5432"
+
+  metabase:
+    image: metabase/metabase:latest
+    ports:
+      - "3000:3000"
+
+  prefect:
+    image: prefecthq/prefect:3-latest
+    command: prefect server start
+    ports:
+      - "4200:4200"
