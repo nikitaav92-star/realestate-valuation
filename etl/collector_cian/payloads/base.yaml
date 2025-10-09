@@ -1,0 +1,33 @@
+jsonQuery:
+  region:
+    type: terms
+    value: [1]        # 1 — Москва
+  engine_version:
+    type: term
+    value: 2
+  deal_type:
+    type: term
+    value: sale
+  offer_type:
+    type: term
+    value: flat
+  building_status:
+    type: term
+    value: secondary
+  price:
+    type: range
+    value:
+      gte: 1000000
+      lte: 10000000
+  area:
+    type: range
+    value:
+      gte: 10
+      lte: 200
+  room:
+    type: terms
+    value: [1, 2, 3]
+limit: 20
+sort:
+  type: term
+  value: creation_date_desc

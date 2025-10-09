@@ -6,3 +6,4 @@ prefect
 orjson
 PyYAML
 python-dotenv
+pytest

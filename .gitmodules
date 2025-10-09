@@ -1,0 +1,24 @@
+[submodule "etl/collector_cian/vendor/dankaprogg"]
+	path = etl/collector_cian/vendor/dankaprogg
+	url = https://github.com/dankaprogg/cian-parser.git
+[submodule "etl/collector_cian/vendor/lenarsaitov"]
+	path = etl/collector_cian/vendor/lenarsaitov
+	url = https://github.com/lenarsaitov/cianparser.git
+[submodule "vendor/pricemory"]
+	path = vendor/pricemory
+	url = https://github.com/mauri-medina/pricemory.git
+[submodule "vendor/flathunter"]
+	path = vendor/flathunter
+	url = https://github.com/flathunters/flathunter.git
+[submodule "vendor/houseclick"]
+	path = vendor/houseclick
+	url = https://github.com/ClickHouse/HouseClick.git
+[submodule "vendor/rema"]
+	path = vendor/rema
+	url = https://github.com/ESkripichnikov/real-estate-market-analysis.git
+[submodule "vendor/ezsmail"]
+	path = vendor/ezsmail
+	url = https://github.com/EZsmail/cian_parser.git
+[submodule "vendor/rea"]
+	path = vendor/rea
+	url = https://github.com/joshvdb/Real-Estate-Analytics.git
