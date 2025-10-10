@@ -1,16 +1,22 @@
 """Playwright-based fallback collector for CIAN."""
 from __future__ import annotations
 
+import logging
 import os
 import time
+from http.cookies import SimpleCookie
+from pathlib import Path
 from typing import Any, Dict, List
 
 import orjson
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import BrowserContext, sync_playwright
 from urllib.parse import urlencode
 
 from .fetcher import CIAN_URL, build_request_payload
 from .captcha_solver import CaptchaSolver
+
+LOGGER = logging.getLogger(__name__)
+CIAN_DOMAIN = ".cian.ru"
 
 
 def _env_bool(name: str, default: bool) -> bool:
@@ -52,6 +58,41 @@ def _build_search_url(payload: Dict[str, Any]) -> str:
     return f"https://www.cian.ru/cat.php?{params}" if params else "https://www.cian.ru/cat.php"
 
 
+def _storage_state_path() -> Path | None:
+    value = os.getenv("CIAN_STORAGE_STATE")
+    if not value:
+        return None
+    path = Path(value).expanduser()
+    if not path.exists():
+        LOGGER.warning("CIAN_STORAGE_STATE=%s does not exist; ignoring", path)
+        return None
+    return path
+
+
+def _apply_cookies_from_env(context: BrowserContext) -> None:
+    raw = os.getenv("CIAN_COOKIES")
+    if not raw:
+        return
+    cookie_jar = SimpleCookie()
+    try:
+        cookie_jar.load(raw)
+    except Exception as exc:  # pragma: no cover - defensive parsing
+        LOGGER.warning("Failed to parse CIAN_COOKIES (%s); skipping", exc)
+        return
+    cookies = [
+        {
+            "name": morsel.key,
+            "value": morsel.value,
+            "domain": CIAN_DOMAIN,
+            "path": "/",
+        }
+        for morsel in cookie_jar.values()
+    ]
+    if cookies:
+        context.add_cookies(cookies)
+        LOGGER.debug("Applied %s cookies to Playwright context", len(cookies))
+
+
 def collect_with_playwright(
     payload: Dict[str, Any],
     pages: int,
@@ -81,6 +122,7 @@ def collect_with_playwright(
     solver: CaptchaSolver | None = None
     if os.getenv("ANTICAPTCHA_KEY"):
         solver = CaptchaSolver()
+    storage_state = _storage_state_path()
     with sync_playwright() as p:
         launch_args = [
             "--disable-blink-features=AutomationControlled",
@@ -89,20 +131,26 @@ def collect_with_playwright(
             "--disable-gpu",
         ]
         browser = p.chromium.launch(headless=headless, slow_mo=slow_mo, args=launch_args)
-        context = browser.new_context(
-            user_agent=(
+        context_kwargs: dict[str, Any] = {
+            "user_agent": (
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                 "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
             ),
-        )
+        }
+        if storage_state:
+            context_kwargs["storage_state"] = str(storage_state)
+            LOGGER.debug("Using Playwright storage state from %s", storage_state)
+        context = browser.new_context(**context_kwargs)
         context.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined});")
+        if not storage_state:
+            _apply_cookies_from_env(context)
         page = context.new_page()
         search_url = _build_search_url(payload)
         page.goto(search_url, wait_until="networkidle")
         if solver:
             try:
                 site_key = page.eval_on_selector("[data-sitekey]", "el => el.getAttribute('data-sitekey')")
-            except Exception:
+            except Exception:  # pragma: no cover - best effort
                 site_key = None
             if site_key:
                 token = solver.solve(site_key, search_url)
@@ -134,7 +182,7 @@ def collect_with_playwright(
                 data=orjson.dumps(request_payload),
             )
             if not response.ok:
-                raise RuntimeError(f"Playwright request failed: {response.status} {response.text()}" )
+                raise RuntimeError(f"Playwright request failed: {response.status} {response.text()}")
             results.append(response.json())
             time.sleep(0.6)
         browser.close()

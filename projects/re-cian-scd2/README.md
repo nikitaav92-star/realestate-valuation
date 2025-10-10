@@ -335,7 +335,7 @@
 
 ### ЭТАП 3 — СБОР ДАННЫХ (CIAN), MAPPER И CLI
 
-> Прогресс 2025-10-09: реализован HTTP-клиент + fallback на Playwright; при блокировке `/site/v1/offers/search/grouped/` скрипт автоматически запускает Chromium (см. `CIAN_HEADLESS`, `CIAN_SLOW_MO`). Payload формируется через `jsonQuery` в YAML.
+> Прогресс 2025-10-09: реализован HTTP-клиент + fallback на Playwright; при блокировке `/site/v1/offers/search/grouped/` скрипт автоматически запускает Chromium (см. `CIAN_HEADLESS`, `CIAN_SLOW_MO`). Для прохода антибота поддерживаются авторизационные куки (`CIAN_COOKIES`) и файл `CIAN_STORAGE_STATE` с экспортированным Playwright storage state. Payload формируется через `jsonQuery` в YAML.
 
 **Промт 3 (в Cursor AI):**
 ```
