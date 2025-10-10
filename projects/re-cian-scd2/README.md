@@ -335,7 +335,7 @@
 
 ### ЭТАП 3 — СБОР ДАННЫХ (CIAN), MAPPER И CLI
 
-> Прогресс 2025-10-09: fetcher переведён на `https://www.cian.ru/cms/api/search/v1/search-offers/`, payload описан через `jsonQuery`. Для успешных запросов требуется валидный набор cookies (см. переменную `CIAN_COOKIES`), иначе API отвечает капчей/403 даже при корректном теле.
+> Прогресс 2025-10-09: реализован HTTP-клиент + fallback на Playwright; при блокировке `/site/v1/offers/search/grouped/` скрипт автоматически запускает Chromium (см. `CIAN_HEADLESS`, `CIAN_SLOW_MO`). Payload формируется через `jsonQuery` в YAML.
 
 **Промт 3 (в Cursor AI):**
 ```

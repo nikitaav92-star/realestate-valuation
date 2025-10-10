@@ -11,7 +11,8 @@ from typing import Iterable, Optional
 import orjson
 import yaml
 
-from etl.collector_cian.fetcher import collect, load_payload
+from etl.collector_cian.fetcher import CianBlockedError, collect, load_payload
+from etl.collector_cian.browser_fetcher import collect_with_playwright
 from etl.collector_cian.mapper import extract_offers, to_listing, to_price
 from etl.upsert import get_db_connection, upsert_listing, upsert_price_if_changed
 
@@ -25,7 +26,15 @@ def _load_payload(path: str) -> dict:
 def command_pull(payload_path: str, pages: int) -> None:
     """Fetch offers and emit raw JSON lines to stdout."""
     payload = _load_payload(payload_path)
-    responses = asyncio.run(collect(payload, pages))
+    try:
+        responses = asyncio.run(collect(payload, pages))
+    except Exception as exc:  # pragma: no cover - network dependent
+        root_exc = getattr(exc, "__cause__", None) or exc
+        if isinstance(root_exc, CianBlockedError):
+            LOGGER.warning("HTTP access blocked (%s), falling back to Playwright", root_exc)
+            responses = collect_with_playwright(payload, pages)
+        else:
+            raise
     count = 0
     for response in responses:
         for offer in extract_offers(response):
@@ -54,7 +63,15 @@ def _process_offers(offers: Iterable[dict]) -> tuple[int, int]:
 def command_to_db(payload_path: str, pages: int) -> None:
     """Fetch offers and load them directly into PostgreSQL."""
     payload = _load_payload(payload_path)
-    responses = asyncio.run(collect(payload, pages))
+    try:
+        responses = asyncio.run(collect(payload, pages))
+    except Exception as exc:  # pragma: no cover - network dependent
+        root_exc = getattr(exc, "__cause__", None) or exc
+        if isinstance(root_exc, CianBlockedError):
+            LOGGER.warning("HTTP access blocked (%s), falling back to Playwright", root_exc)
+            responses = collect_with_playwright(payload, pages)
+        else:
+            raise
     offers = (offer for resp in responses for offer in extract_offers(resp))
     listings, prices = _process_offers(offers)
     LOGGER.info("upserted_listings=%s inserted_prices=%s", listings, prices)

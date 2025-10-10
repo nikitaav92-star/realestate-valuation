@@ -9,7 +9,8 @@ from typing import Any, Dict, Iterable, List, Tuple
 from dotenv import load_dotenv
 from prefect import flow, get_run_logger, task
 
-from etl.collector_cian.fetcher import collect, load_payload
+from etl.collector_cian.browser_fetcher import collect_with_playwright
+from etl.collector_cian.fetcher import CianBlockedError, collect, load_payload
 from etl.collector_cian.mapper import extract_offers, to_listing, to_price
 from etl.upsert import get_db_connection, upsert_listing, upsert_price_if_changed
 
@@ -22,7 +23,15 @@ def collect_task(payload_path: str, pages: int) -> List[Dict[str, Any]]:
     """Download raw JSON pages using the HTTP collector."""
     logger = get_run_logger()
     payload = load_payload(payload_path)
-    responses = asyncio.run(collect(payload, pages))
+    try:
+        responses = asyncio.run(collect(payload, pages))
+    except Exception as exc:  # pragma: no cover - network dependent
+        root_exc = getattr(exc, "__cause__", None) or exc
+        if isinstance(root_exc, CianBlockedError):
+            logger.warning("HTTP blocked (%s); using Playwright fallback", root_exc)
+            responses = collect_with_playwright(payload, pages)
+        else:
+            raise
     offers: List[Dict[str, Any]] = []
     for resp in responses:
         offers.extend(extract_offers(resp))

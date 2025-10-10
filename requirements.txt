@@ -7,3 +7,5 @@ orjson
 PyYAML
 python-dotenv
 pytest
+playwright
+anticaptchaofficial

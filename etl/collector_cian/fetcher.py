@@ -19,6 +19,14 @@ DEFAULT_TIMEOUT = httpx.Timeout(20.0)
 LOGGER = logging.getLogger(__name__)
 
 
+class CianBlockedError(Exception):
+    """Raised when the public API denies access due to anti-bot measures."""
+
+
+class CianFetchError(Exception):
+    """Generic fetch error."""
+
+
 def load_payload(path: str | Path) -> Dict[str, Any]:
     """Read YAML payload that defines jsonQuery filters."""
     data = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
@@ -46,7 +54,15 @@ async def fetch_page(
     """Fetch a single page of offers, retrying on transient errors."""
     payload = build_request_payload(base_payload, page)
     response = await session.post(CIAN_URL, json=payload)
-    response.raise_for_status()
+    if response.status_code in (403, 404, 429):
+        text = await response.aread()
+        raise CianBlockedError(
+            f"CIAN blocked HTTP call (status={response.status_code}, body={text[:200]!r})"
+        )
+    try:
+        response.raise_for_status()
+    except httpx.HTTPStatusError as exc:  # pragma: no cover - propagate
+        raise CianFetchError(str(exc)) from exc
     LOGGER.debug("Fetched page %s (status=%s)", page, response.status_code)
     return response.json()
 
