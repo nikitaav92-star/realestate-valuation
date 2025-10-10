@@ -1,9 +1,11 @@
 
-## Публикация на домене
-Смотри подробности в `infra/README.md`.
+## Сбор данных CIAN
+1. Установите зависимости: `pip install -r requirements.txt`.
+2. Подготовьте браузер Playwright: `playwright install chromium`.
+3. Команда сбора: `python -m etl.collector_cian.cli pull --pages 1`.
+   - При блокировке HTTP-клиента скрипт автоматически переключится на Playwright.
+   - Для ручного прохождения капчи можно запустить `CIAN_HEADLESS=false python -m etl.collector_cian.cli pull ...` (см. код).
 
-Кратко:
-1) DNS A: realestate.ourdocs.org → <IP VPS>
-2) Nginx + Certbot, применить `infra/nginx/conf.d/realestate.conf`
-3) Metabase: https://realestate.ourdocs.org/
-4) Prefect:  https://realestate.ourdocs.org/prefect/
+## Публикация на домене
+См. `infra/README.md`.
+Кратко: DNS A → IP VPS; Nginx+Certbot; Metabase: https://realestate.ourdocs.org/ ; Prefect: https://realestate.ourdocs.org/prefect/
