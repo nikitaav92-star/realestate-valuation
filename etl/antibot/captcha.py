@@ -77,6 +77,7 @@ class CaptchaSolver:
         page_url: str,
         *,
         task_type: str = "YandexSmartCaptchaTaskProxyless",
+        proxy: Optional[str] = None,
     ) -> tuple[str, CaptchaTelemetry]:
         """Solve captcha and return token with telemetry.
         
@@ -105,13 +106,32 @@ class CaptchaSolver:
             telemetry.attempts = 1
             
             # Create task
+            task_data = {
+                "type": task_type,
+                "websiteURL": page_url,
+                "sitekey": site_key,
+            }
+            
+            # Add proxy if provided and not using proxyless task
+            if proxy and "Proxyless" not in task_type:
+                # Parse proxy format: http://user:pass@host:port
+                if "@" in proxy:
+                    auth, host_port = proxy.split("@")
+                    protocol, creds = auth.split("://")
+                    user, password = creds.split(":")
+                    host, port = host_port.split(":")
+                    
+                    task_data.update({
+                        "proxyType": protocol,
+                        "proxyAddress": host,
+                        "proxyPort": int(port),
+                        "proxyLogin": user,
+                        "proxyPassword": password,
+                    })
+            
             create_payload = {
                 "clientKey": self.api_key,
-                "task": {
-                    "type": task_type,
-                    "websiteURL": page_url,
-                    "sitekey": site_key,
-                },
+                "task": task_data,
             }
             resp = requests.post(f"{API_URL}/createTask", json=create_payload, timeout=30)
             resp.raise_for_status()

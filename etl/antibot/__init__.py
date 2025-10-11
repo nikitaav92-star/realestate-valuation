@@ -9,6 +9,7 @@ This module provides reusable components for bypassing anti-bot measures:
 - Request pacing and rate limiting
 """
 
+from .behavior import HumanBehavior, BehaviorConfig, BehaviorPresets
 from .captcha import CaptchaSolver, CaptchaTelemetry
 from .fingerprint import DeviceFingerprint, FingerprintPainter, create_stealth_context
 from .proxy import ProxyRotator, ProxyConfig
@@ -17,6 +18,9 @@ from .storage import StorageStateManager
 from .user_agent import UserAgentPool
 
 __all__ = [
+    "HumanBehavior",
+    "BehaviorConfig",
+    "BehaviorPresets",
     "CaptchaSolver",
     "CaptchaTelemetry",
     "DeviceFingerprint",
