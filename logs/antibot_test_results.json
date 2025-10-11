@@ -1,0 +1,41 @@
+{
+  "timestamp": 1760172638.7424538,
+  "results": [
+    {
+      "name": "HTTP Direct (no proxy)",
+      "success": false,
+      "blocked": true,
+      "captcha_detected": false,
+      "status_code": 404,
+      "duration": 0.4216799736022949,
+      "error": "Blocked with status 404"
+    },
+    {
+      "name": "HTTP with Residential Proxy (NodeMaven)",
+      "success": false,
+      "blocked": false,
+      "captcha_detected": false,
+      "status_code": null,
+      "duration": 0.005495548248291016,
+      "error": "Client.__init__() got an unexpected keyword argument 'proxies'"
+    },
+    {
+      "name": "Playwright with Stealth Fingerprint",
+      "success": true,
+      "blocked": true,
+      "captcha_detected": false,
+      "status_code": 200,
+      "duration": 15.119423866271973,
+      "error": "Blocking detected: 'blocked' found in page"
+    },
+    {
+      "name": "Playwright with Storage State",
+      "success": false,
+      "blocked": false,
+      "captcha_detected": false,
+      "status_code": null,
+      "duration": 0.0,
+      "error": "No storage state configured (set CIAN_STORAGE_STATE)"
+    }
+  ]
+}

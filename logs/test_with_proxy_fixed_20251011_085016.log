@@ -1,0 +1,90 @@
+2025-10-11 08:50:17,190 [INFO] __main__: 🚀 Starting CIAN Anti-bot Bypass Tests
+2025-10-11 08:50:17,190 [INFO] __main__: ================================================================================
+2025-10-11 08:50:17,193 [INFO] __main__: Testing HTTP direct request...
+2025-10-11 08:50:17,193 [DEBUG] __main__: Headers: {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36', 'Accept': 'application/json', 'Content-Type': 'application/json', 'Referer': 'https://www.cian.ru/', 'Origin': 'https://www.cian.ru'}
+2025-10-11 08:50:17,302 [DEBUG] httpcore.connection: connect_tcp.started host='www.cian.ru' port=443 local_address=None timeout=30.0 socket_options=None
+2025-10-11 08:50:17,386 [DEBUG] httpcore.connection: connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x79f5701b2060>
+2025-10-11 08:50:17,386 [DEBUG] httpcore.connection: start_tls.started ssl_context=<ssl.SSLContext object at 0x79f56f4426d0> server_hostname='www.cian.ru' timeout=30.0
+2025-10-11 08:50:17,442 [DEBUG] httpcore.connection: start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x79f56f46bcb0>
+2025-10-11 08:50:17,442 [DEBUG] httpcore.http11: send_request_headers.started request=<Request [b'POST']>
+2025-10-11 08:50:17,442 [DEBUG] httpcore.http11: send_request_headers.complete
+2025-10-11 08:50:17,442 [DEBUG] httpcore.http11: send_request_body.started request=<Request [b'POST']>
+2025-10-11 08:50:17,443 [DEBUG] httpcore.http11: send_request_body.complete
+2025-10-11 08:50:17,443 [DEBUG] httpcore.http11: receive_response_headers.started request=<Request [b'POST']>
+2025-10-11 08:50:17,603 [DEBUG] httpcore.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 404, b'Not Found', [(b'server', b'ycalb'), (b'date', b'Sat, 11 Oct 2025 08:50:17 GMT'), (b'content-type', b'text/html'), (b'vary', b'Accept-Encoding'), (b'set-cookie', b'_CIAN_GK=7d2feea4-bb62-4192-80f2-aed58ed5a16e; Expires=Thu, 11 Oct 2035 11:50:17 GMT; Max-Age=315543600; Domain=cian.ru; Path=/; Secure; SameSite=None'), (b'set-cookie', b'_CIAN_GK=0d6ab963-4e91-471d-8a1e-a0c8f051a42c; Expires=Thu, 11 Oct 2035 11:50:17 GMT; Max-Age=315543600; Domain=cian.ru; Path=/; Secure; SameSite=None'), (b'etag', b'W/"68e6501e-4f9f"'), (b'content-encoding', b'gzip'), (b'set-cookie', b'_yasc=+ciF5wPYQyrlW77qGZI+3NBNy0lGnZxT5581z8dQYpDu9GJA63SEgsyteLBBjA==; domain=.cian.ru; path=/; expires=Tue, 09 Oct 2035 08:50:17 GMT; secure'), (b'transfer-encoding', b'chunked')])
+2025-10-11 08:50:17,605 [INFO] httpx: HTTP Request: POST https://www.cian.ru/site/v1/offers/search/grouped/ "HTTP/1.1 404 Not Found"
+2025-10-11 08:50:17,606 [DEBUG] httpcore.http11: receive_response_body.started request=<Request [b'POST']>
+2025-10-11 08:50:17,608 [DEBUG] httpcore.http11: receive_response_body.complete
+2025-10-11 08:50:17,609 [DEBUG] httpcore.http11: response_closed.started
+2025-10-11 08:50:17,609 [DEBUG] httpcore.http11: response_closed.complete
+2025-10-11 08:50:17,611 [DEBUG] httpcore.connection: close.started
+2025-10-11 08:50:17,611 [DEBUG] httpcore.connection: close.complete
+2025-10-11 08:50:17,612 [INFO] __main__: ================================================================================
+2025-10-11 08:50:17,612 [INFO] __main__: ❌ FAILED: HTTP Direct (no proxy)
+2025-10-11 08:50:17,612 [INFO] __main__: Duration: 0.42s
+2025-10-11 08:50:17,612 [INFO] __main__: Status Code: 404
+2025-10-11 08:50:17,612 [INFO] __main__: Response Size: 20383 bytes
+2025-10-11 08:50:17,612 [WARNING] __main__: 🚫 BLOCKED by anti-bot
+2025-10-11 08:50:17,612 [ERROR] __main__: Error: Blocked with status 404
+2025-10-11 08:50:17,612 [DEBUG] __main__: Response Headers:
+2025-10-11 08:50:17,612 [DEBUG] __main__:   server: ycalb
+2025-10-11 08:50:17,612 [DEBUG] __main__:   date: Sat, 11 Oct 2025 08:50:17 GMT
+2025-10-11 08:50:17,612 [DEBUG] __main__:   content-type: text/html
+2025-10-11 08:50:17,612 [DEBUG] __main__:   vary: Accept-Encoding
+2025-10-11 08:50:17,612 [DEBUG] __main__:   set-cookie: _CIAN_GK=7d2feea4-bb62-4192-80f2-aed58ed5a16e; Expires=Thu, 11 Oct 2035 11:50:17 GMT; Max-Age=315543600; Domain=cian.ru; Path=/; Secure; SameSite=None, _CIAN_GK=0d6ab963-4e91-471d-8a1e-a0c8f051a42c; Expires=Thu, 11 Oct 2035 11:50:17 GMT; Max-Age=315543600; Domain=cian.ru; Path=/; Secure; SameSite=None, _yasc=+ciF5wPYQyrlW77qGZI+3NBNy0lGnZxT5581z8dQYpDu9GJA63SEgsyteLBBjA==; domain=.cian.ru; path=/; expires=Tue, 09 Oct 2035 08:50:17 GMT; secure
+2025-10-11 08:50:17,612 [DEBUG] __main__:   etag: W/"68e6501e-4f9f"
+2025-10-11 08:50:17,612 [DEBUG] __main__:   content-encoding: gzip
+2025-10-11 08:50:17,612 [DEBUG] __main__:   transfer-encoding: chunked
+2025-10-11 08:50:17,612 [DEBUG] __main__: Response Preview (first 500 chars):
+<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="stylesheet" href="//cdn.cian.site/frontend/common-css/l/common.min.css" /><title>&#x41E;&#x448;&#x438;&#x431;&#x43A;&#x430; 404 - &#x426;&#x438;&#x430;&#x43D;</title><style>.button,.title{font-weight:700}body{height:100vh}.logo-image{width:386px;margin-bottom:52px}.container{height:auto;padding:80px;-ms-flex-positive:1;flex-grow:1;-ms-flex-negative:0;fle
+2025-10-11 08:50:17,612 [INFO] __main__: ================================================================================
+2025-10-11 08:50:19,612 [INFO] __main__: Using proxy: http://gate.nodemaven.com:8080
+2025-10-11 08:50:19,616 [INFO] __main__: Testing HTTP with proxy...
+2025-10-11 08:50:19,617 [DEBUG] __main__: Proxy: http://gate.nodemaven.com:8080
+2025-10-11 08:50:19,617 [ERROR] __main__: HTTP with proxy test failed
+Traceback (most recent call last):
+  File "/opt/realestate/scripts/test_antibot_cian.py", line 192, in test_http_with_proxy
+    with httpx.Client(
+         ^^^^^^^^^^^^^
+TypeError: Client.__init__() got an unexpected keyword argument 'proxies'
+2025-10-11 08:50:19,618 [INFO] __main__: ================================================================================
+2025-10-11 08:50:19,618 [INFO] __main__: ❌ FAILED: HTTP with Residential Proxy (NodeMaven)
+2025-10-11 08:50:19,618 [INFO] __main__: Duration: 0.01s
+2025-10-11 08:50:19,618 [ERROR] __main__: Error: Client.__init__() got an unexpected keyword argument 'proxies'
+2025-10-11 08:50:19,618 [INFO] __main__: ================================================================================
+2025-10-11 08:50:21,618 [INFO] __main__: Testing Playwright with fingerprint painting...
+2025-10-11 08:50:21,619 [DEBUG] asyncio: Using selector: EpollSelector
+2025-10-11 08:50:22,428 [INFO] __main__: Using proxy: http://gate.nodemaven.com:8080
+2025-10-11 08:50:22,790 [INFO] __main__: Navigating to: https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1
+2025-10-11 08:50:33,588 [INFO] __main__: Screenshot saved: /opt/realestate/logs/playwright_test.png
+2025-10-11 08:50:36,545 [INFO] __main__: Found 56 offer elements on page
+2025-10-11 08:50:36,738 [INFO] __main__: ================================================================================
+2025-10-11 08:50:36,738 [INFO] __main__: ✅ SUCCESS: Playwright with Stealth Fingerprint
+2025-10-11 08:50:36,739 [INFO] __main__: Duration: 15.12s
+2025-10-11 08:50:36,739 [INFO] __main__: Status Code: 200
+2025-10-11 08:50:36,739 [INFO] __main__: Response Size: 4611064 bytes
+2025-10-11 08:50:36,739 [WARNING] __main__: 🚫 BLOCKED by anti-bot
+2025-10-11 08:50:36,739 [ERROR] __main__: Error: Blocking detected: 'blocked' found in page
+2025-10-11 08:50:36,740 [DEBUG] __main__: Response Preview (first 500 chars):
+<!DOCTYPE html><html lang="ru"><head><script async="" src="//www.googletagmanager.com/gtm.js?id=GTM-KC2KW5"></script><script>window.performance&&window.performance.mark&&window.performance.mark("first-mark")</script><meta charset="UTF-8"><title>Купить квартиру в Москве от 6,4&nbsp;млн руб., продажа квартир во вторичке и первичке на Циан. Найдено 100&nbsp;888 объявлений</title><script>window._cianGlobalSystemLogger={application:"frontend-serp",filters:["(chrome|moz)-extension:\u002F\u002F","(UXS|
+2025-10-11 08:50:36,740 [INFO] __main__: ================================================================================
+2025-10-11 08:50:38,740 [INFO] __main__: ================================================================================
+2025-10-11 08:50:38,741 [INFO] __main__: ❌ FAILED: Playwright with Storage State
+2025-10-11 08:50:38,741 [INFO] __main__: Duration: 0.00s
+2025-10-11 08:50:38,741 [ERROR] __main__: Error: No storage state configured (set CIAN_STORAGE_STATE)
+2025-10-11 08:50:38,741 [INFO] __main__: ================================================================================
+2025-10-11 08:50:38,741 [INFO] __main__: 
+================================================================================
+2025-10-11 08:50:38,741 [INFO] __main__: 📊 TEST SUMMARY
+2025-10-11 08:50:38,741 [INFO] __main__: ================================================================================
+2025-10-11 08:50:38,741 [INFO] __main__: ❌ HTTP Direct (no proxy)                             🚫 BLOCKED 
+2025-10-11 08:50:38,741 [INFO] __main__:    Error: Blocked with status 404
+2025-10-11 08:50:38,741 [INFO] __main__: ❌ HTTP with Residential Proxy (NodeMaven)             
+2025-10-11 08:50:38,741 [INFO] __main__:    Error: Client.__init__() got an unexpected keyword argument 'proxies'
+2025-10-11 08:50:38,741 [INFO] __main__: ✅ Playwright with Stealth Fingerprint                🚫 BLOCKED 
+2025-10-11 08:50:38,741 [INFO] __main__:    Error: Blocking detected: 'blocked' found in page
+2025-10-11 08:50:38,741 [INFO] __main__: ❌ Playwright with Storage State                       
+2025-10-11 08:50:38,741 [INFO] __main__:    Error: No storage state configured (set CIAN_STORAGE_STATE)
+2025-10-11 08:50:38,741 [INFO] __main__: ================================================================================
+2025-10-11 08:50:38,741 [INFO] __main__: Success Rate: 1/4 (25.0%)
+2025-10-11 08:50:38,742 [INFO] __main__: Results saved to: /opt/realestate/logs/antibot_test_results.json
