@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIAN Analytics - Демо</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            background: #f8f9fa;
+            padding: 15px 25px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .search-box {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .search-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .feature {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .feature-desc {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .demo-listing {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+        
+        .listing-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+        
+        .listing-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .listing-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #28a745;
+        }
+        
+        .listing-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .detail {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .detail-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .ai-badge {
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 30px;
+        }
+        
+        .status {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .stats {
+                gap: 15px;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🏠 CIAN Analytics</div>
+            <div class="subtitle">Аналитика недвижимости с AI оценкой состояния</div>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">100,000+</div>
+                    <div class="stat-label">Объявлений</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">🤖 AI</div>
+                    <div class="stat-label">Анализ фото</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">📈</div>
+                    <div class="stat-label">История цен</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="🔍 Поиск по адресу (например: Ленинский проспект, Москва)">
+            <button class="search-btn">Найти недвижимость</button>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🔍</div>
+                <div class="feature-title">Умный поиск</div>
+                <div class="feature-desc">Фильтры по цене, комнатам, району и AI оценке состояния</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🤖</div>
+                <div class="feature-title">AI анализ</div>
+                <div class="feature-desc">Автоматическая оценка состояния квартиры по фотографиям</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">Аналитика</div>
+                <div class="feature-desc">Графики, статистика и тренды рынка недвижимости</div>
+            </div>
+        </div>
+        
+        <div class="demo-listing">
+            <div class="listing-header">
+                <div class="listing-title">2-комн квартира, 65.5 м²</div>
+                <div class="listing-price">12.5 млн ₽</div>
+            </div>
+            <div class="listing-details">
+                <div class="detail">
+                    <div class="detail-label">Комнат</div>
+                    <div class="detail-value">2-комн</div>
+                </div>
+                <div class="detail">
+                    <div class="detail-label">Площадь</div>
+                    <div class="detail-value">65.5 м²</div>
+                </div>
+                <div class="detail">
+                    <div class="detail-label">Этаж</div>
+                    <div class="detail-value">5/12</div>
+                </div>
+                <div class="detail">
+                    <div class="detail-label">Цена за м²</div>
+                    <div class="detail-value">190,000 ₽</div>
+                </div>
+                <div class="detail">
+                    <div class="detail-label">Продавец</div>
+                    <div class="detail-value">Собственник</div>
+                </div>
+                <div class="detail">
+                    <div class="detail-label">Район</div>
+                    <div class="detail-value">ЦАО</div>
+                </div>
+            </div>
+            <div class="ai-badge">🤖 AI: Хорошее состояние (3/5)</div>
+        </div>
+        
+        <div class="demo-listing">
+            <div class="listing-header">
+                <div class="listing-title">3-комн квартира, 85.2 м²</div>
+                <div class="listing-price">18.7 млн ₽</div>
+            </div>
+            <div class="listing-details">
+                <div class="detail">
+                    <div class="detail-label">Комнат</div>
+                    <div class="detail-value">3-комн</div>
+                </div>
+                <div class="detail">
+                    <div class="detail-label">Площадь</div>
+                    <div class="detail-value">85.2 м²</div>
+                </div>
+                <div class="detail">
+                    <div class="detail-label">Этаж</div>
+                    <div class="detail-value">8/15</div>
+                </div>
+                <div class="detail">
+                    <div class="detail-label">Цена за м²</div>
+                    <div class="detail-value">219,000 ₽</div>
+                </div>
+                <div class="detail">
+                    <div class="detail-label">Продавец</div>
+                    <div class="detail-value">Агентство</div>
+                </div>
+                <div class="detail">
+                    <div class="detail-label">Район</div>
+                    <div class="detail-value">ЗАО</div>
+                </div>
+            </div>
+            <div class="ai-badge">🤖 AI: Отличное состояние (4/5)</div>
+        </div>
+        
+        <div class="footer">
+            <div class="status">✅ Frontend готов к работе!</div>
+            <p style="margin-top: 20px; opacity: 0.8;">
+                Это демо-версия CIAN Analytics. Полная версия включает:<br>
+                • Поиск по 100,000+ объявлениям<br>
+                • AI оценку состояния квартир<br>
+                • Аналитику и графики<br>
+                • Интеграцию с PostgreSQL
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // Простая интерактивность
+        document.querySelector('.search-btn').addEventListener('click', function() {
+            const query = document.querySelector('.search-input').value;
+            if (query.trim()) {
+                alert('🔍 Поиск: "' + query + '"\n\nВ полной версии здесь будет поиск по базе данных!');
+            } else {
+                alert('Введите адрес для поиска');
+            }
+        });
+        
+        // Анимация появления
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.feature, .demo-listing');
+            elements.forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    el.style.transition = 'all 0.6s ease';
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
