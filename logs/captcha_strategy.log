@@ -79,3 +79,45 @@
 2025-10-11 09:21:52,110 [INFO] Savings: $320.87 (100.0%)
 2025-10-11 09:21:52,110 [INFO] ================================================================================
 2025-10-11 09:21:52,111 [INFO] Metrics saved to: /opt/realestate/logs/captcha_strategy_metrics.json
+2025-10-11 19:50:19,803 [INFO] ================================================================================
+2025-10-11 19:50:19,805 [INFO] 🚀 CAPTCHA-SOLVING STRATEGY TEST
+2025-10-11 19:50:19,806 [INFO] ================================================================================
+2025-10-11 19:50:19,806 [INFO] Target Pages: 10
+2025-10-11 19:50:19,806 [INFO] Proxy Strategy: All pages
+2025-10-11 19:50:19,806 [INFO] ================================================================================
+2025-10-11 19:50:19,807 [INFO] Loaded 10 proxies from pool
+2025-10-11 19:50:19,807 [INFO] Proxy pool: 10 proxies available
+2025-10-11 19:50:19,807 [WARNING] ⚠️ No captcha solver (set ANTICAPTCHA_KEY)
+2025-10-11 19:50:21,425 [INFO] Using proxy: http://gate.nodemaven.com:8080
+2025-10-11 19:50:21,425 [INFO] 🔓 Page 1: WITHOUT PROXY (using cookies)
+2025-10-11 19:50:21,826 [INFO] Scraping page 1...
+2025-10-11 19:50:30,242 [INFO] ✅ Page 1: 56 offers | Total: 56 | Captchas: 0 | Cost: $0.0000 | Time: 8.8s
+2025-10-11 19:50:30,925 [INFO] Scraping page 2...
+2025-10-11 19:50:31,579 [ERROR] Error on page 2: Page.goto: net::ERR_NETWORK_CHANGED at https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1&p=2
+Call log:
+  - navigating to "https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1&p=2", waiting until "domcontentloaded"
+
+2025-10-11 19:50:32,080 [INFO] Scraping page 3...
+2025-10-11 19:50:40,490 [INFO] ✅ Page 3: 56 offers | Total: 112 | Captchas: 0 | Cost: $0.0000 | Time: 8.4s
+2025-10-11 19:50:41,340 [INFO] Scraping page 4...
+2025-10-11 19:50:42,137 [ERROR] Error on page 4: Page.goto: net::ERR_NETWORK_CHANGED at https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1&p=4
+Call log:
+  - navigating to "https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1&p=4", waiting until "domcontentloaded"
+
+2025-10-11 19:50:42,644 [INFO] Scraping page 5...
+2025-10-11 19:50:49,621 [INFO] ✅ Page 5: 56 offers | Total: 168 | Captchas: 0 | Cost: $0.0000 | Time: 7.0s
+2025-10-11 19:50:50,476 [INFO] Scraping page 6...
+2025-10-11 19:51:20,494 [ERROR] Error on page 6: Page.goto: Timeout 30000ms exceeded.
+Call log:
+  - navigating to "https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1&p=6", waiting until "domcontentloaded"
+
+2025-10-11 19:51:50,514 [INFO] Scraping page 7...
+2025-10-11 19:51:57,961 [INFO] ✅ Page 7: 56 offers | Total: 224 | Captchas: 0 | Cost: $0.0000 | Time: 7.4s
+2025-10-11 19:51:58,918 [INFO] Scraping page 8...
+2025-10-11 19:52:00,771 [ERROR] Error on page 8: Page.goto: net::ERR_NETWORK_CHANGED at https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1&p=8
+Call log:
+  - navigating to "https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1&p=8", waiting until "domcontentloaded"
+
+2025-10-11 19:52:01,238 [INFO] Scraping page 9...
+2025-10-11 19:52:08,594 [INFO] ✅ Page 9: 56 offers | Total: 280 | Captchas: 0 | Cost: $0.0000 | Time: 7.4s
+2025-10-11 19:52:09,196 [INFO] Scraping page 10...

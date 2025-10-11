@@ -1,5 +1,5 @@
 {
-  "timestamp": 1760172638.7424538,
+  "timestamp": 1760212066.1513221,
   "results": [
     {
       "name": "HTTP Direct (no proxy)",
@@ -7,7 +7,7 @@
       "blocked": true,
       "captcha_detected": false,
       "status_code": 404,
-      "duration": 0.4216799736022949,
+      "duration": 0.4967167377471924,
       "error": "Blocked with status 404"
     },
     {
@@ -16,17 +16,17 @@
       "blocked": false,
       "captcha_detected": false,
       "status_code": null,
-      "duration": 0.005495548248291016,
-      "error": "Client.__init__() got an unexpected keyword argument 'proxies'"
+      "duration": 0.0,
+      "error": "No proxy configured (set NODEMAVEN_PROXY_URL)"
     },
     {
       "name": "Playwright with Stealth Fingerprint",
-      "success": true,
-      "blocked": true,
+      "success": false,
+      "blocked": false,
       "captcha_detected": false,
-      "status_code": 200,
-      "duration": 15.119423866271973,
-      "error": "Blocking detected: 'blocked' found in page"
+      "status_code": null,
+      "duration": 3.1871681213378906,
+      "error": "Page.goto: net::ERR_NETWORK_CHANGED at https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1\nCall log:\n  - navigating to \"https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1\", waiting until \"domcontentloaded\"\n"
     },
     {
       "name": "Playwright with Storage State",
