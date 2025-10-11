@@ -1,0 +1,69 @@
+# Production payload for CIAN scraping
+# Filters configured for optimal data collection
+
+jsonQuery:
+  # Регион: Москва
+  region:
+    type: terms
+    value: [1]
+  
+  # Engine version
+  engine_version:
+    type: term
+    value: 2
+  
+  # Тип сделки: продажа
+  deal_type:
+    type: term
+    value: sale
+  
+  # Категория: Квартиры (исключаем апартаменты и комнаты)
+  offer_type:
+    type: term
+    value: flat
+  
+  # Тип жилья: вторичка
+  building_status:
+    type: term
+    value: secondary
+  
+  # Цена: до 30 000 000 ₽
+  price:
+    type: range
+    value:
+      lte: 30000000
+  
+  # Этаж: от 2 (не первый этаж)
+  floor:
+    type: range
+    value:
+      gte: 2
+  
+  # Количество комнат: студия (0), 1-к, 2-к, 3-к
+  room:
+    type: terms
+    value: [0, 1, 2, 3]  # 0 = студия
+  
+  # Исключить апартаменты (category)
+  category:
+    type: term
+    value: flatSale  # Только квартиры, не апартаменты
+  
+  # Исключить комнаты (room_type)
+  is_by_homeowner:
+    type: term
+    value: null  # Исключаем комнаты в коммуналках
+  
+  # Минус-слова для исключения долей, аукционов, торгов
+  keywords:
+    type: terms
+    value: ["-доля", "-аукцион", "-торги", "-банкротство"]
+
+# Лимит объявлений на страницу
+limit: 28
+
+# Сортировка: по дате создания (новые первые)
+sort:
+  type: term
+  value: creation_date_desc
+
