@@ -1,0 +1,13 @@
+import React__default from 'react';
+
+interface AutoResizingTextareaProps {
+    maxRows?: number;
+    placeholder?: string;
+    value: string;
+    onChange: (event: React__default.ChangeEvent<HTMLTextAreaElement>) => void;
+    onKeyDown?: (event: React__default.KeyboardEvent<HTMLTextAreaElement>) => void;
+    autoFocus?: boolean;
+}
+declare const AutoResizingTextarea: React__default.ForwardRefExoticComponent<AutoResizingTextareaProps & React__default.RefAttributes<HTMLTextAreaElement>>;
+
+export { AutoResizingTextarea as default };
