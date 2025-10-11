@@ -1,0 +1,15 @@
+{
+  "start_time": 1760174464.3916032,
+  "pages_scraped": 10,
+  "offers_collected": 280,
+  "captchas_solved": 0,
+  "captcha_cost_usd": 0.0,
+  "proxy_used_pages": 1,
+  "no_proxy_pages": 0,
+  "cookie_refreshes": 10,
+  "blocks_encountered": 0,
+  "errors": [],
+  "elapsed_time": 47.72005558013916,
+  "offers_per_minute": 352.0532309518931,
+  "avg_cost_per_page": 0.0
+}
