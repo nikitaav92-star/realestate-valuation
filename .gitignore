@@ -4,3 +4,4 @@ venv/
 .env
 db/data/
 .DS_Store
+infra/nginx/state/
