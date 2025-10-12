@@ -1,0 +1,75 @@
+2025-10-12 19:24:42,224 [INFO] __main__: ================================================================================
+2025-10-12 19:24:42,228 [INFO] __main__: 🚀 STARTING COMPREHENSIVE DATA COLLECTION TEST
+2025-10-12 19:24:42,228 [INFO] __main__: 🚀 ЗАПУСК КОМПЛЕКСНОГО ТЕСТА СБОРА ДАННЫХ
+2025-10-12 19:24:42,228 [INFO] __main__: ================================================================================
+2025-10-12 19:24:42,228 [INFO] __main__: 
+🔍 Test 1: Database Connection / Подключение к БД
+2025-10-12 19:24:42,252 [INFO] __main__: ✅ Database connected, tables exist
+2025-10-12 19:24:42,258 [INFO] __main__:    Current data: 4 listings, 4 prices
+2025-10-12 19:24:42,261 [INFO] __main__: 
+🔍 Test 2: Payload Loading / Загрузка конфигурации
+2025-10-12 19:24:42,266 [INFO] __main__: ✅ Payload loaded successfully: 8 filters in jsonQuery
+2025-10-12 19:24:42,269 [INFO] __main__:    Limit: 20, Sort: creation_date_desc
+2025-10-12 19:24:42,269 [INFO] __main__: 
+🔍 Test 3: Data Collection / Сбор данных
+2025-10-12 19:24:42,269 [INFO] __main__: Collecting data from CIAN (1 page)...
+2025-10-12 19:24:42,881 [INFO] httpx: HTTP Request: POST https://www.cian.ru/site/v1/offers/search/grouped/ "HTTP/1.1 404 Not Found"
+2025-10-12 19:24:46,002 [INFO] httpx: HTTP Request: POST https://www.cian.ru/site/v1/offers/search/grouped/ "HTTP/1.1 404 Not Found"
+2025-10-12 19:24:48,396 [INFO] httpx: HTTP Request: POST https://www.cian.ru/site/v1/offers/search/grouped/ "HTTP/1.1 404 Not Found"
+2025-10-12 19:24:48,397 [ERROR] __main__: ❌ Data collection failed: RetryError[<Future at 0x74e0ae508d40 state=finished raised CianBlockedError>]
+2025-10-12 19:24:48,398 [INFO] __main__: 
+🔍 Test 4: Data Mapping / Преобразование данных
+2025-10-12 19:24:48,399 [WARNING] __main__: ⚠️  No offers to map
+2025-10-12 19:24:48,399 [INFO] __main__: 
+🔍 Test 5: Database Upsert / Сохранение в БД
+2025-10-12 19:24:48,399 [WARNING] __main__: ⚠️  No data to save
+2025-10-12 19:24:48,399 [INFO] __main__: 
+🔍 Test 6: Data Retrieval / Проверка сохраненных данных
+2025-10-12 19:24:48,416 [INFO] __main__: ✅ Data retrieved successfully: 4 listings
+2025-10-12 19:24:48,417 [INFO] __main__: 
+   Latest listings:
+2025-10-12 19:24:48,418 [INFO] __main__:    1. ID: 322341323
+2025-10-12 19:24:48,418 [INFO] __main__:       Address: Unknown...
+2025-10-12 19:24:48,418 [INFO] __main__:       Area: 40.1 m², Floor: 11, Rooms: 2
+2025-10-12 19:24:48,418 [INFO] __main__:       Price: 24,580,000 RUB
+2025-10-12 19:24:48,418 [INFO] __main__:    2. ID: 315562134
+2025-10-12 19:24:48,418 [INFO] __main__:       Address: Unknown...
+2025-10-12 19:24:48,418 [INFO] __main__:       Area: 77.4 m², Floor: 9, Rooms: 3
+2025-10-12 19:24:48,418 [INFO] __main__:       Price: 25,500,000 RUB
+2025-10-12 19:24:48,418 [INFO] __main__:    3. ID: 318570417
+2025-10-12 19:24:48,418 [INFO] __main__:       Address: Unknown...
+2025-10-12 19:24:48,418 [INFO] __main__:       Area: 77.3 m², Floor: 5, Rooms: 3
+2025-10-12 19:24:48,418 [INFO] __main__:       Price: 22,250,000 RUB
+2025-10-12 19:24:48,418 [INFO] __main__:    4. ID: 305914265
+2025-10-12 19:24:48,418 [INFO] __main__:       Address: Unknown...
+2025-10-12 19:24:48,418 [INFO] __main__:       Area: 49.8 m², Floor: 2, Rooms: 2
+2025-10-12 19:24:48,418 [INFO] __main__:       Price: 23,176,920 RUB
+2025-10-12 19:24:48,419 [INFO] __main__: 
+🔍 Test 7: Algorithm Logic / Проверка алгоритма (SCD Type 2)
+2025-10-12 19:24:48,441 [INFO] __main__: ✅ SCD Type 2 ready (no price changes detected yet)
+2025-10-12 19:24:48,444 [INFO] __main__: 
+================================================================================
+2025-10-12 19:24:48,444 [INFO] __main__: 📊 SUMMARY OF TESTS / ИТОГИ ТЕСТИРОВАНИЯ
+2025-10-12 19:24:48,444 [INFO] __main__: ================================================================================
+2025-10-12 19:24:48,444 [INFO] __main__: 1. ✅ PASS: Database Connection
+2025-10-12 19:24:48,444 [INFO] __main__:    Details: Tables found: ['listing_prices', 'listings']
+2025-10-12 19:24:48,444 [INFO] __main__: 2. ✅ PASS: Payload Loading
+2025-10-12 19:24:48,444 [INFO] __main__:    Details: Loaded payload with 8 filters
+2025-10-12 19:24:48,444 [INFO] __main__: 3. ❌ FAIL: Data Collection
+2025-10-12 19:24:48,444 [INFO] __main__:    Details: RetryError[<Future at 0x74e0ae508d40 state=finished raised CianBlockedError>]
+2025-10-12 19:24:48,444 [INFO] __main__: 4. ❌ FAIL: Data Mapping
+2025-10-12 19:24:48,444 [INFO] __main__:    Details: No offers to map
+2025-10-12 19:24:48,444 [INFO] __main__: 5. ❌ FAIL: Database Upsert
+2025-10-12 19:24:48,444 [INFO] __main__:    Details: No data to save
+2025-10-12 19:24:48,444 [INFO] __main__: 6. ✅ PASS: Data Retrieval
+2025-10-12 19:24:48,444 [INFO] __main__:    Details: Retrieved 4 listings
+2025-10-12 19:24:48,444 [INFO] __main__: 7. ✅ PASS: Algorithm Logic (SCD2)
+2025-10-12 19:24:48,444 [INFO] __main__:    Details: No price changes yet (expected for first run)
+2025-10-12 19:24:48,444 [INFO] __main__: ================================================================================
+2025-10-12 19:24:48,444 [INFO] __main__: Success Rate: 4/7 (57.1%)
+2025-10-12 19:24:48,444 [INFO] __main__: Total Duration: 6.22s
+2025-10-12 19:24:48,444 [INFO] __main__: ================================================================================
+2025-10-12 19:24:48,448 [INFO] __main__: 
+📄 Results saved to: /opt/realestate/logs/test_results.json
+2025-10-12 19:24:48,449 [WARNING] __main__: 
+⚠️  SOME TESTS FAILED / НЕКОТОРЫЕ ТЕСТЫ НЕ ПРОШЛИ

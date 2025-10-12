@@ -1,0 +1,55 @@
+{
+  "timestamp": 1760297088.4485474,
+  "all_tests_passed": false,
+  "tests": [
+    {
+      "name": "Database Connection",
+      "success": true,
+      "details": "Tables found: ['listing_prices', 'listings']",
+      "data": null,
+      "timestamp": 1760297082.2524104
+    },
+    {
+      "name": "Payload Loading",
+      "success": true,
+      "details": "Loaded payload with 8 filters",
+      "data": null,
+      "timestamp": 1760297082.266711
+    },
+    {
+      "name": "Data Collection",
+      "success": false,
+      "details": "RetryError[<Future at 0x74e0ae508d40 state=finished raised CianBlockedError>]",
+      "data": null,
+      "timestamp": 1760297088.3975747
+    },
+    {
+      "name": "Data Mapping",
+      "success": false,
+      "details": "No offers to map",
+      "data": null,
+      "timestamp": 1760297088.3994043
+    },
+    {
+      "name": "Database Upsert",
+      "success": false,
+      "details": "No data to save",
+      "data": null,
+      "timestamp": 1760297088.3995383
+    },
+    {
+      "name": "Data Retrieval",
+      "success": true,
+      "details": "Retrieved 4 listings",
+      "data": null,
+      "timestamp": 1760297088.416602
+    },
+    {
+      "name": "Algorithm Logic (SCD2)",
+      "success": true,
+      "details": "No price changes yet (expected for first run)",
+      "data": null,
+      "timestamp": 1760297088.4416523
+    }
+  ]
+}

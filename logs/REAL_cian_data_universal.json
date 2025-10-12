@@ -1,0 +1,391 @@
+{
+  "collection_info": {
+    "type": "REAL CIAN DATA - UNIVERSAL",
+    "collected_at": "2025-10-11T21:34:51.520203",
+    "total_offers": 23,
+    "page_structure": [
+      {
+        "element": "LI._93444fe79c--container--Havpv.null.null.",
+        "count": 701
+      },
+      {
+        "element": "DIV._93444fe79c--content-wrapper--pPBmj.null.null.",
+        "count": 701
+      },
+      {
+        "element": "IMG._93444fe79c--container--KIwW4.null.null.",
+        "count": 673
+      },
+      {
+        "element": "path.[object SVGAnimatedString].null.null.",
+        "count": 495
+      },
+      {
+        "element": "svg.[object SVGAnimatedString].null.null.",
+        "count": 361
+      },
+      {
+        "element": "DIV..null.null.",
+        "count": 175
+      },
+      {
+        "element": "DIV._93444fe79c--cont--qEPRO.ControlWrapper.null.",
+        "count": 168
+      },
+      {
+        "element": "A._93444fe79c--link--NQlVc.GeoLabel.null.",
+        "count": 159
+      },
+      {
+        "element": "DIV._93444fe79c--row--kEHOK.GeneralInfoSectionRowComponent.null.",
+        "count": 142
+      },
+      {
+        "element": "BUTTON._93444fe79c--button--KVooB _93444fe79c--button--gs5R_ _93444fe79c--XS--O4Jq_ _93444fe79c--button--WChcG _93444fe79c--button--before-icon--vksWM.null.null.",
+        "count": 140
+      },
+      {
+        "element": "g.[object SVGAnimatedString].null.null.",
+        "count": 129
+      },
+      {
+        "element": "DIV._93444fe79c--container--aWzpE.ContentRow.null.",
+        "count": 122
+      },
+      {
+        "element": "SPAN..null.null.",
+        "count": 114
+      },
+      {
+        "element": "DIV._93444fe79c--inner--B4YYM _93444fe79c--controls--tD3y2.null.null.",
+        "count": 112
+      },
+      {
+        "element": "DIV._93444fe79c--container--BIifh _93444fe79c--container--M0xiL.null.null.",
+        "count": 90
+      },
+      {
+        "element": "IMG._93444fe79c--image--XmJ9Z.null.null.",
+        "count": 90
+      },
+      {
+        "element": "DIV._93444fe79c--thumbnail--h1mYS.Thumbnail.null.",
+        "count": 84
+      },
+      {
+        "element": "DIV._93444fe79c--button--vynM5.null.null.",
+        "count": 84
+      },
+      {
+        "element": "SPAN._93444fe79c--text--V2xLI.null.null.",
+        "count": 62
+      },
+      {
+        "element": "SPAN._93444fe79c--color_gray60_100--r_axa _93444fe79c--lineHeight_20px--fX7_V _93444fe79c--fontWeight_normal--JEG_c _93444fe79c--fontSize_14px--reQMB _93444fe79c--display_inline--ySCqY _93444fe79c--text--b2YS3 _93444fe79c--text_letterSpacing__normal--yhcXb.null.null.",
+        "count": 62
+      }
+    ],
+    "note": "Реальные данные, извлеченные универсальным методом"
+  },
+  "offers": [
+    {
+      "id": 313324118,
+      "url": "https://www.cian.ru/sale/flat/313324118/",
+      "title": "3-комн. квартира, 70 м², 8/10 этаж",
+      "price": "32 800 000 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.457Z",
+      "page_index": 3,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 321016241,
+      "url": "https://www.cian.ru/sale/flat/321016241/",
+      "title": "Прописка МСК! До центра 60 мин!",
+      "price": "5 450 000 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.457Z",
+      "page_index": 5,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 321869584,
+      "url": "https://www.cian.ru/sale/flat/321869584/",
+      "title": "Своя квартира от 120 000 ₽/мес",
+      "price": "25 791 040 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.457Z",
+      "page_index": 7,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 318567451,
+      "url": "https://www.cian.ru/sale/flat/318567451/",
+      "title": "3-комн. квартира, 62,8 м², 16/33 этаж",
+      "price": "33 500 000 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.458Z",
+      "page_index": 9,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 316738482,
+      "url": "https://www.cian.ru/sale/flat/316738482/",
+      "title": "Евро планировка! Кухня 16 кв.м.!",
+      "price": "6 060 000 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.459Z",
+      "page_index": 11,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 318956113,
+      "url": "https://www.cian.ru/sale/flat/318956113/",
+      "title": "Панорамные виды на зеленые зоны",
+      "price": "13 230 000 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.459Z",
+      "page_index": 13,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 318428942,
+      "url": "https://www.cian.ru/sale/flat/318428942/",
+      "title": "3-комн. квартира, 71,5 м², 3/14 этаж",
+      "price": "39 700 000 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.459Z",
+      "page_index": 15,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 319767029,
+      "url": "https://www.cian.ru/sale/flat/319767029/",
+      "title": "Отличная цена! Прописка МСК",
+      "price": "7 990 000 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.459Z",
+      "page_index": 17,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 320103824,
+      "url": "https://www.cian.ru/sale/flat/320103824/",
+      "title": "2-комн. квартира, 45,8 м², 11/18 этаж",
+      "price": "64 475 972 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.459Z",
+      "page_index": 19,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 318636373,
+      "url": "https://www.cian.ru/sale/flat/318636373/",
+      "title": "1-комн. квартира, 44,7 м², 8/16 этаж",
+      "price": "42 000 000 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.459Z",
+      "page_index": 21,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 318860622,
+      "url": "https://www.cian.ru/sale/flat/318860622/",
+      "title": "Лучшие условия для вашей жизни",
+      "price": "21 500 000 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.459Z",
+      "page_index": 23,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 322414802,
+      "url": "https://www.cian.ru/sale/flat/322414802/",
+      "title": "Бизнес-класс у реки. ПРОСМОТР!",
+      "price": "38 474 262 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.460Z",
+      "page_index": 27,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 322662555,
+      "url": "https://www.cian.ru/sale/flat/322662555/",
+      "title": "Стильная однушка после ремонта!",
+      "price": "18 350 000 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.460Z",
+      "page_index": 29,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 305914265,
+      "url": "https://www.cian.ru/sale/flat/305914265/",
+      "title": "2-комн. квартира, 49,8 м², 2/24 этаж",
+      "price": "23 176 920 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.463Z",
+      "page_index": 31,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 318570417,
+      "url": "https://www.cian.ru/sale/flat/318570417/",
+      "title": "3-комн. квартира, 77,3 м², 5/5 этаж",
+      "price": "22 250 000 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.463Z",
+      "page_index": 33,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 322286415,
+      "url": "https://www.cian.ru/sale/flat/322286415/",
+      "title": "Премиальный дизайнерский ремонт",
+      "price": "1 140 000 000 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.463Z",
+      "page_index": 35,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 315562134,
+      "url": "https://www.cian.ru/sale/flat/315562134/",
+      "title": "3-комн. квартира, 77,4 м², 9/9 этаж",
+      "price": "25 500 000 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.463Z",
+      "page_index": 39,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 321293966,
+      "url": "https://www.cian.ru/sale/flat/321293966/",
+      "title": "Спальня •кухня-гостиная• гардероб",
+      "price": "14 700 000 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.463Z",
+      "page_index": 41,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 317722134,
+      "url": "https://www.cian.ru/sale/flat/317722134/",
+      "title": "4-комн. апартаменты, 87 м², 2/5 этаж",
+      "price": "24 999 999 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.463Z",
+      "page_index": 45,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 321742080,
+      "url": "https://www.cian.ru/sale/flat/321742080/",
+      "title": "Шикарная квартира в Хамовниках!",
+      "price": "1 136 657 200 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.464Z",
+      "page_index": 47,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 322341323,
+      "url": "https://www.cian.ru/sale/flat/322341323/",
+      "title": "2-комн. квартира, 40,1 м², 11/21 этаж",
+      "price": "24 580 000 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.464Z",
+      "page_index": 51,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 319812624,
+      "url": "https://www.cian.ru/sale/flat/319812624/",
+      "title": "Просторная двушка + 2 балкона",
+      "price": "11 250 000 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.464Z",
+      "page_index": 53,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    },
+    {
+      "id": 319303180,
+      "url": "https://www.cian.ru/sale/flat/319303180/",
+      "title": "Открой новые горизонты осенью",
+      "price": "96 800 000 ₽",
+      "address": null,
+      "rooms": null,
+      "area": null,
+      "floor": null,
+      "extracted_at": "2025-10-11T21:34:51.464Z",
+      "page_index": 55,
+      "selector_used": "[data-name=\"LinkArea\"]"
+    }
+  ]
+}

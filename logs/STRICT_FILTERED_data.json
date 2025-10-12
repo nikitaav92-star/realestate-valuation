@@ -1,0 +1,88 @@
+{
+  "collection_info": {
+    "type": "STRICT FILTERED CIAN DATA",
+    "filtered_at": "2025-10-11T21:50:00Z",
+    "strictly_valid_offers": 4,
+    "filters_applied": {
+      "max_price": 30000000,
+      "min_floor": 2,
+      "allowed_rooms": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "strict_mode": true
+    }
+  },
+  "strictly_valid_offers": [
+    {
+      "id": 305914265,
+      "url": "https://www.cian.ru/sale/flat/305914265/",
+      "title": "2-комн. квартира, 49,8 м², 2/24 этаж",
+      "price": "23 176 920 ₽",
+      "address": null,
+      "extracted_at": "2025-10-11T21:47:32.633Z",
+      "page_index": 31,
+      "selector_used": "[data-name=\"LinkArea\"]",
+      "rooms": 2,
+      "area": 49.8,
+      "floor": 2,
+      "total_floors": 24,
+      "price_numeric": 23176920,
+      "validation_errors": [],
+      "is_valid": true
+    },
+    {
+      "id": 318570417,
+      "url": "https://www.cian.ru/sale/flat/318570417/",
+      "title": "3-комн. квартира, 77,3 м², 5/5 этаж",
+      "price": "22 250 000 ₽",
+      "address": null,
+      "extracted_at": "2025-10-11T21:47:32.633Z",
+      "page_index": 33,
+      "selector_used": "[data-name=\"LinkArea\"]",
+      "rooms": 3,
+      "area": 77.3,
+      "floor": 5,
+      "total_floors": 5,
+      "price_numeric": 22250000,
+      "validation_errors": [],
+      "is_valid": true
+    },
+    {
+      "id": 315562134,
+      "url": "https://www.cian.ru/sale/flat/315562134/",
+      "title": "3-комн. квартира, 77,4 м², 9/9 этаж",
+      "price": "25 500 000 ₽",
+      "address": null,
+      "extracted_at": "2025-10-11T21:47:32.633Z",
+      "page_index": 39,
+      "selector_used": "[data-name=\"LinkArea\"]",
+      "rooms": 3,
+      "area": 77.4,
+      "floor": 9,
+      "total_floors": 9,
+      "price_numeric": 25500000,
+      "validation_errors": [],
+      "is_valid": true
+    },
+    {
+      "id": 322341323,
+      "url": "https://www.cian.ru/sale/flat/322341323/",
+      "title": "2-комн. квартира, 40,1 м², 11/21 этаж",
+      "price": "24 580 000 ₽",
+      "address": null,
+      "extracted_at": "2025-10-11T21:47:32.634Z",
+      "page_index": 51,
+      "selector_used": "[data-name=\"LinkArea\"]",
+      "rooms": 2,
+      "area": 40.1,
+      "floor": 11,
+      "total_floors": 21,
+      "price_numeric": 24580000,
+      "validation_errors": [],
+      "is_valid": true
+    }
+  ]
+}

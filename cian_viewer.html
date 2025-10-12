@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIAN Analytics - Просмотр объявлений</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card .number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card .label {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        
+        .filters {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filters label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .filters select, .filters input {
+            padding: 8px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .filters select:focus, .filters input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .offers-container {
+            padding: 30px;
+            max-height: 800px;
+            overflow-y: auto;
+        }
+        
+        .offer-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .offer-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .offer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+        
+        .offer-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+            flex: 1;
+        }
+        
+        .offer-price {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #27ae60;
+            white-space: nowrap;
+            margin-left: 20px;
+        }
+        
+        .offer-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #6c757d;
+        }
+        
+        .detail-item .icon {
+            font-size: 1.2em;
+        }
+        
+        .offer-ai {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: inline-block;
+        }
+        
+        .ai-score {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 3px 10px;
+            border-radius: 5px;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        
+        .offer-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+        
+        .offer-link:hover {
+            text-decoration: underline;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2em;
+            color: #6c757d;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 50px;
+            color: #6c757d;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 CIAN Analytics</h1>
+            <p>Просмотр собранных объявлений с AI-анализом</p>
+        </div>
+        
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="number" id="total-offers">100</div>
+                <div class="label">Всего объявлений</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="avg-price">-</div>
+                <div class="label">Средняя цена</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="avg-area">-</div>
+                <div class="label">Средняя площадь</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="avg-score">-</div>
+                <div class="label">Средняя AI оценка</div>
+            </div>
+        </div>
+        
+        <div class="filters">
+            <label>Комнаты:</label>
+            <select id="filter-rooms">
+                <option value="all">Все</option>
+                <option value="0">Студия</option>
+                <option value="1">1-комн</option>
+                <option value="2">2-комн</option>
+                <option value="3">3-комн</option>
+                <option value="4">4+ комн</option>
+            </select>
+            
+            <label>Цена до:</label>
+            <input type="number" id="filter-price" placeholder="30000000" step="1000000">
+            
+            <label>Площадь от:</label>
+            <input type="number" id="filter-area" placeholder="20" step="5">
+            
+            <label>AI оценка от:</label>
+            <select id="filter-ai">
+                <option value="1">1+</option>
+                <option value="2">2+</option>
+                <option value="3">3+</option>
+                <option value="4">4+</option>
+                <option value="5">5</option>
+            </select>
+            
+            <label>Продавец:</label>
+            <select id="filter-seller">
+                <option value="all">Все</option>
+                <option value="Собственник">Собственник</option>
+                <option value="Агент">Агент</option>
+                <option value="Застройщик">Застройщик</option>
+            </select>
+        </div>
+        
+        <div class="offers-container" id="offers-container">
+            <div class="loading">Загрузка данных...</div>
+        </div>
+    </div>
+    
+    <script>
+        let allOffers = [];
+        let filteredOffers = [];
+        
+        // Load data
+        async function loadData() {
+            try {
+                const response = await fetch('logs/demo_cian_data.json');
+                const data = await response.json();
+                allOffers = data.offers;
+                filteredOffers = allOffers;
+                
+                updateStats();
+                renderOffers();
+                setupFilters();
+            } catch (error) {
+                document.getElementById('offers-container').innerHTML = 
+                    '<div class="no-results">❌ Ошибка загрузки данных: ' + error.message + '</div>';
+            }
+        }
+        
+        // Update statistics
+        function updateStats() {
+            document.getElementById('total-offers').textContent = filteredOffers.length;
+            
+            const avgPrice = filteredOffers.reduce((sum, o) => sum + o.price_numeric, 0) / filteredOffers.length;
+            document.getElementById('avg-price').textContent = 
+                (avgPrice / 1000000).toFixed(1) + ' млн ₽';
+            
+            const avgArea = filteredOffers.reduce((sum, o) => sum + o.area_total, 0) / filteredOffers.length;
+            document.getElementById('avg-area').textContent = avgArea.toFixed(0) + ' м²';
+            
+            const avgScore = filteredOffers.reduce((sum, o) => sum + o.condition_score, 0) / filteredOffers.length;
+            document.getElementById('avg-score').textContent = avgScore.toFixed(1) + '/5';
+        }
+        
+        // Render offers
+        function renderOffers() {
+            const container = document.getElementById('offers-container');
+            
+            if (filteredOffers.length === 0) {
+                container.innerHTML = '<div class="no-results">😔 Объявлений не найдено. Попробуйте изменить фильтры.</div>';
+                return;
+            }
+            
+            container.innerHTML = filteredOffers.map(offer => `
+                <div class="offer-card">
+                    <div class="offer-header">
+                        <div class="offer-title">${offer.title}</div>
+                        <div class="offer-price">${offer.price}</div>
+                    </div>
+                    
+                    <div class="offer-details">
+                        <div class="detail-item">
+                            <span class="icon">📍</span>
+                            <span>${offer.address}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="icon">🏠</span>
+                            <span>${offer.rooms} комн. | ${offer.area_total} м²</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="icon">🏢</span>
+                            <span>Этаж: ${offer.floor}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="icon">👤</span>
+                            <span>${offer.seller_type}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="icon">💰</span>
+                            <span>${offer.price_per_sqm.toLocaleString()} ₽/м²</span>
+                        </div>
+                    </div>
+                    
+                    <div class="offer-ai">
+                        <span>🤖 AI Анализ: ${offer.ai_analysis}</span>
+                        <span class="ai-score">${offer.condition_label} (${offer.condition_score}/5)</span>
+                    </div>
+                    
+                    <a href="${offer.url}" target="_blank" class="offer-link">
+                        Открыть объявление →
+                    </a>
+                </div>
+            `).join('');
+        }
+        
+        // Setup filters
+        function setupFilters() {
+            document.getElementById('filter-rooms').addEventListener('change', applyFilters);
+            document.getElementById('filter-price').addEventListener('input', applyFilters);
+            document.getElementById('filter-area').addEventListener('input', applyFilters);
+            document.getElementById('filter-ai').addEventListener('change', applyFilters);
+            document.getElementById('filter-seller').addEventListener('change', applyFilters);
+        }
+        
+        // Apply filters
+        function applyFilters() {
+            const rooms = document.getElementById('filter-rooms').value;
+            const maxPrice = document.getElementById('filter-price').value;
+            const minArea = document.getElementById('filter-area').value;
+            const minAI = document.getElementById('filter-ai').value;
+            const seller = document.getElementById('filter-seller').value;
+            
+            filteredOffers = allOffers.filter(offer => {
+                if (rooms !== 'all' && offer.rooms != rooms) return false;
+                if (maxPrice && offer.price_numeric > maxPrice) return false;
+                if (minArea && offer.area_total < minArea) return false;
+                if (minAI && offer.condition_score < minAI) return false;
+                if (seller !== 'all' && offer.seller_type !== seller) return false;
+                return true;
+            });
+            
+            updateStats();
+            renderOffers();
+        }
+        
+        // Load on page load
+        loadData();
+    </script>
+</body>
+</html>
+

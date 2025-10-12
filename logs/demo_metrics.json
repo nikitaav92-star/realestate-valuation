@@ -1,0 +1,16 @@
+{
+  "start_time": 1760217207.870384,
+  "pages_scraped": 5,
+  "offers_collected": 100,
+  "captchas_solved": 0,
+  "captcha_cost_usd": 0.0,
+  "proxy_used_pages": 1,
+  "no_proxy_pages": 4,
+  "cookie_refreshes": 5,
+  "blocks_encountered": 0,
+  "errors": [],
+  "elapsed_time": 45.5,
+  "offers_per_minute": 132.0,
+  "avg_cost_per_page": 0.0,
+  "data_type": "DEMO"
+}
