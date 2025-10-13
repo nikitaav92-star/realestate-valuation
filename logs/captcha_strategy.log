@@ -121,3 +121,46 @@ Call log:
 2025-10-11 19:52:01,238 [INFO] Scraping page 9...
 2025-10-11 19:52:08,594 [INFO] ✅ Page 9: 56 offers | Total: 280 | Captchas: 0 | Cost: $0.0000 | Time: 7.4s
 2025-10-11 19:52:09,196 [INFO] Scraping page 10...
+2025-10-12 19:31:52,666 [INFO] ================================================================================
+2025-10-12 19:31:52,672 [INFO] 🚀 CAPTCHA-SOLVING STRATEGY TEST
+2025-10-12 19:31:52,672 [INFO] ================================================================================
+2025-10-12 19:31:52,672 [INFO] Target Pages: 3
+2025-10-12 19:31:52,672 [INFO] Proxy Strategy: First page only
+2025-10-12 19:31:52,672 [INFO] ================================================================================
+2025-10-12 19:31:52,672 [INFO] Loaded 10 proxies from pool
+2025-10-12 19:31:52,672 [INFO] Proxy pool: 10 proxies available
+2025-10-12 19:31:52,672 [WARNING] ⚠️ No captcha solver (set ANTICAPTCHA_KEY)
+2025-10-12 19:31:54,172 [INFO] Using proxy: http://gate.nodemaven.com:8080
+2025-10-12 19:31:54,175 [INFO] 📡 Page 1: WITH PROXY
+2025-10-12 19:31:54,980 [INFO] Scraping page 1...
+2025-10-12 19:31:55,170 [ERROR] Error on page 1: Page.goto: net::ERR_NETWORK_CHANGED at https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1
+Call log:
+  - navigating to "https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1", waiting until "domcontentloaded"
+
+2025-10-12 19:31:55,516 [INFO] Scraping page 2...
+2025-10-12 19:31:55,809 [ERROR] Error on page 2: Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1&p=2
+Call log:
+  - navigating to "https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1&p=2", waiting until "domcontentloaded"
+
+2025-10-12 19:31:56,038 [INFO] Scraping page 3...
+2025-10-12 19:31:56,125 [ERROR] Error on page 3: Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1&p=3
+Call log:
+  - navigating to "https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1&p=3", waiting until "domcontentloaded"
+
+2025-10-12 19:31:56,390 [INFO] 
+================================================================================
+2025-10-12 19:31:56,390 [INFO] 📊 FINAL RESULTS
+2025-10-12 19:31:56,390 [INFO] ================================================================================
+2025-10-12 19:31:56,390 [INFO] Pages Scraped: 0/3
+2025-10-12 19:31:56,390 [INFO] Offers Collected: 0
+2025-10-12 19:31:56,390 [INFO] Captchas Solved: 0
+2025-10-12 19:31:56,390 [INFO] Captcha Cost: $0.0000
+2025-10-12 19:31:56,390 [INFO] Proxy Used: 1 pages
+2025-10-12 19:31:56,391 [INFO] No Proxy: 0 pages
+2025-10-12 19:31:56,391 [INFO] Cookie Refreshes: 0
+2025-10-12 19:31:56,391 [INFO] Blocks: 0
+2025-10-12 19:31:56,391 [INFO] Total Time: 4s (0.1 min)
+2025-10-12 19:31:56,391 [INFO] Speed: 0 offers/min
+2025-10-12 19:31:56,391 [INFO] Avg Cost/Page: $0.0000
+2025-10-12 19:31:56,391 [INFO] ================================================================================
+2025-10-12 19:31:56,392 [INFO] Metrics saved to: /opt/realestate/logs/captcha_strategy_metrics.json

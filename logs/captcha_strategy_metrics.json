@@ -1,15 +1,19 @@
 {
-  "start_time": 1760174464.3916032,
-  "pages_scraped": 10,
-  "offers_collected": 280,
+  "start_time": 1760297512.6725438,
+  "pages_scraped": 0,
+  "offers_collected": 0,
   "captchas_solved": 0,
   "captcha_cost_usd": 0.0,
   "proxy_used_pages": 1,
   "no_proxy_pages": 0,
-  "cookie_refreshes": 10,
+  "cookie_refreshes": 0,
   "blocks_encountered": 0,
-  "errors": [],
-  "elapsed_time": 47.72005558013916,
-  "offers_per_minute": 352.0532309518931,
-  "avg_cost_per_page": 0.0
+  "errors": [
+    "Page 1: Page.goto: net::ERR_NETWORK_CHANGED at https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1\nCall log:\n  - navigating to \"https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1\", waiting until \"domcontentloaded\"\n",
+    "Page 2: Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1&p=2\nCall log:\n  - navigating to \"https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1&p=2\", waiting until \"domcontentloaded\"\n",
+    "Page 3: Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1&p=3\nCall log:\n  - navigating to \"https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1&p=3\", waiting until \"domcontentloaded\"\n"
+  ],
+  "elapsed_time": 3.719961166381836,
+  "offers_per_minute": 0.0,
+  "avg_cost_per_page": 0
 }

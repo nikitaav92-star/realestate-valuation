@@ -1,0 +1,162 @@
+{
+  "collection_info": {
+    "collected_at": "2025-10-12T19:29:44.254272",
+    "total_offers": 11,
+    "pages_scraped": 10,
+    "filters": {
+      "max_price": 30000000,
+      "min_floor": 2,
+      "allowed_rooms": [
+        0,
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  "offers": [
+    {
+      "id": 305914265,
+      "url": "https://www.cian.ru/sale/flat/305914265/",
+      "title": "2-комн. квартира, 49,8 м², 2/24 этаж",
+      "price": "23 176 920 ₽",
+      "address": null,
+      "extracted_at": "2025-10-12T19:28:31.155Z",
+      "rooms": 2,
+      "area": 49.8,
+      "floor": 2,
+      "total_floors": 24,
+      "price_numeric": 23176920
+    },
+    {
+      "id": 322341323,
+      "url": "https://www.cian.ru/sale/flat/322341323/",
+      "title": "2-комн. квартира, 40,1 м², 11/21 этаж",
+      "price": "24 580 000 ₽",
+      "address": null,
+      "extracted_at": "2025-10-12T19:28:31.155Z",
+      "rooms": 2,
+      "area": 40.1,
+      "floor": 11,
+      "total_floors": 21,
+      "price_numeric": 24580000
+    },
+    {
+      "id": 315562134,
+      "url": "https://www.cian.ru/sale/flat/315562134/",
+      "title": "3-комн. квартира, 77,4 м², 9/9 этаж",
+      "price": "25 500 000 ₽",
+      "address": null,
+      "extracted_at": "2025-10-12T19:28:31.155Z",
+      "rooms": 3,
+      "area": 77.4,
+      "floor": 9,
+      "total_floors": 9,
+      "price_numeric": 25500000
+    },
+    {
+      "id": 315116332,
+      "url": "https://www.cian.ru/sale/flat/315116332/",
+      "title": "2-комн. апартаменты, 46,2 м², 2/29 этаж",
+      "price": "13 608 672 ₽",
+      "address": null,
+      "extracted_at": "2025-10-12T19:28:45.255Z",
+      "rooms": 2,
+      "area": 46.2,
+      "floor": 2,
+      "total_floors": 29,
+      "price_numeric": 13608672
+    },
+    {
+      "id": 318298443,
+      "url": "https://www.cian.ru/sale/flat/318298443/",
+      "title": "2-комн. квартира, 56,3 м², 2/17 этаж",
+      "price": "16 200 000 ₽",
+      "address": null,
+      "extracted_at": "2025-10-12T19:28:45.256Z",
+      "rooms": 2,
+      "area": 56.3,
+      "floor": 2,
+      "total_floors": 17,
+      "price_numeric": 16200000
+    },
+    {
+      "id": 321004642,
+      "url": "https://www.cian.ru/sale/flat/321004642/",
+      "title": "Апартаменты-студия, 26,87 м², 4/20 этаж",
+      "price": "12 376 404 ₽",
+      "address": null,
+      "extracted_at": "2025-10-12T19:28:45.256Z",
+      "rooms": 0,
+      "area": 26.87,
+      "floor": 4,
+      "total_floors": 20,
+      "price_numeric": 12376404
+    },
+    {
+      "id": 313351066,
+      "url": "https://www.cian.ru/sale/flat/313351066/",
+      "title": "3-комн. квартира, 59 м², 3/9 этаж",
+      "price": "13 000 000 ₽",
+      "address": null,
+      "extracted_at": "2025-10-12T19:28:45.256Z",
+      "rooms": 3,
+      "area": 59.0,
+      "floor": 3,
+      "total_floors": 9,
+      "price_numeric": 13000000
+    },
+    {
+      "id": 315171624,
+      "url": "https://www.cian.ru/sale/flat/315171624/",
+      "title": "3-комн. квартира, 75,7 м², 7/24 этаж",
+      "price": "22 900 000 ₽",
+      "address": null,
+      "extracted_at": "2025-10-12T19:28:45.256Z",
+      "rooms": 3,
+      "area": 75.7,
+      "floor": 7,
+      "total_floors": 24,
+      "price_numeric": 22900000
+    },
+    {
+      "id": 317616971,
+      "url": "https://www.cian.ru/sale/flat/317616971/",
+      "title": "1-комн. квартира, 34,3 м², 11/14 этаж",
+      "price": "17 700 000 ₽",
+      "address": null,
+      "extracted_at": "2025-10-12T19:28:45.256Z",
+      "rooms": 1,
+      "area": 34.3,
+      "floor": 11,
+      "total_floors": 14,
+      "price_numeric": 17700000
+    },
+    {
+      "id": 315466830,
+      "url": "https://www.cian.ru/sale/flat/315466830/",
+      "title": "Апартаменты-студия, 24,2 м², 4/29 этаж",
+      "price": "10 500 000 ₽",
+      "address": null,
+      "extracted_at": "2025-10-12T19:28:45.256Z",
+      "rooms": 0,
+      "area": 24.2,
+      "floor": 4,
+      "total_floors": 29,
+      "price_numeric": 10500000
+    },
+    {
+      "id": 322696204,
+      "url": "https://www.cian.ru/sale/flat/322696204/",
+      "title": "2-комн. квартира, 55 м², 7/52 этаж",
+      "price": "24 038 924 ₽",
+      "address": null,
+      "extracted_at": "2025-10-12T19:29:43.401Z",
+      "rooms": 2,
+      "area": 55.0,
+      "floor": 7,
+      "total_floors": 52,
+      "price_numeric": 24038924
+    }
+  ]
+}
