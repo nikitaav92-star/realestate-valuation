@@ -2,8 +2,9 @@
 from __future__ import annotations
 
 import os
+from datetime import datetime
 from decimal import Decimal
-from typing import Optional
+from typing import Dict, List, Optional, Any
 
 import psycopg2
 from psycopg2.extensions import connection as PGConnection
@@ -102,3 +103,92 @@ def upsert_price_if_changed(conn: PGConnection, listing_id: int, new_price: floa
             (listing_id, price_decimal),
         )
     return True
+
+
+def update_listing_details(
+    conn: PGConnection,
+    listing_id: int,
+    details: Dict[str, Any]
+) -> None:
+    """Update listing with detailed information from detail page.
+
+    Parameters
+    ----------
+    conn : PGConnection
+        Database connection
+    listing_id : int
+        Listing ID
+    details : dict
+        Dictionary with keys: description, published_at, building_type, property_type
+    """
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            UPDATE listings
+            SET
+                description = COALESCE(%(description)s, description),
+                published_at = COALESCE(%(published_at)s, published_at),
+                building_type = COALESCE(%(building_type)s, building_type),
+                property_type = COALESCE(%(property_type)s, property_type)
+            WHERE id = %(listing_id)s;
+            """,
+            {
+                "listing_id": listing_id,
+                "description": details.get("description"),
+                "published_at": details.get("published_at"),
+                "building_type": details.get("building_type"),
+                "property_type": details.get("property_type"),
+            },
+        )
+
+
+def insert_listing_photos(
+    conn: PGConnection,
+    listing_id: int,
+    photos: List[Dict[str, Any]]
+) -> int:
+    """Insert photos for a listing.
+
+    Parameters
+    ----------
+    conn : PGConnection
+        Database connection
+    listing_id : int
+        Listing ID
+    photos : list of dict
+        List of photo dicts with keys: url, order, width, height
+
+    Returns
+    -------
+    int
+        Number of photos inserted (excludes duplicates)
+    """
+    inserted = 0
+    with conn.cursor() as cur:
+        for photo in photos:
+            try:
+                cur.execute(
+                    """
+                    INSERT INTO listing_photos (listing_id, photo_url, photo_order, width, height)
+                    VALUES (%(listing_id)s, %(photo_url)s, %(photo_order)s, %(width)s, %(height)s)
+                    ON CONFLICT (listing_id, photo_url) DO NOTHING;
+                    """,
+                    {
+                        "listing_id": listing_id,
+                        "photo_url": photo["url"],
+                        "photo_order": photo["order"],
+                        "width": photo.get("width"),
+                        "height": photo.get("height"),
+                    },
+                )
+                if cur.rowcount > 0:
+                    inserted += 1
+            except Exception as e:
+                # Log and continue with next photo
+                import logging
+                logging.getLogger(__name__).warning(
+                    f"Failed to insert photo {photo['url']} for listing {listing_id}: {e}"
+                )
+                continue
+
+    return inserted
