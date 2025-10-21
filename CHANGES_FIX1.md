@@ -247,16 +247,14 @@ ON CONFLICT (listing_id, photo_url) DO NOTHING;
 ## Files Changed
 
 ### Modified:
-1. `etl/collector_cian/browser_fetcher.py` - Updated HTML parsing logic
-2. `config/proxy_pool.txt` - Refreshed proxy list
+1. `etl/collector_cian/browser_fetcher.py` - Updated HTML parsing logic + added `parse_listing_detail()` ✅
+2. `etl/collector_cian/cli.py` - Integrated detailed parsing with `--parse-details` flag ✅
+3. `etl/upsert.py` - Added `update_listing_details()` and `insert_listing_photos()` ✅
+4. `config/proxy_pool.txt` - Refreshed proxy list ✅
 
 ### Added:
-1. `db/migrations/003_add_detailed_fields.sql` - Schema changes
-2. `CHANGES_FIX1.md` - This documentation
-
-### Pending:
-1. `etl/collector_cian/browser_fetcher.py` - Add `parse_listing_detail()` function
-2. `etl/collector_cian/cli.py` - Integrate detailed parsing into workflow
+1. `db/migrations/003_add_detailed_fields.sql` - Schema changes ✅
+2. `CHANGES_FIX1.md` - This documentation ✅
 
 ## Usage Instructions
 
@@ -268,12 +266,26 @@ export $(grep -v "^#" .env | xargs)
 psql $PG_DSN -f db/migrations/003_add_detailed_fields.sql
 ```
 
-### Run Parser:
+### Run Parser (Basic - Search Pages Only):
 ```bash
 python -m etl.collector_cian.cli to-db \
   --payload etl/collector_cian/payloads/cheap_first.yaml \
   --pages 4
 ```
+
+### Run Parser with Detailed Parsing (Photos + Descriptions):
+```bash
+python -m etl.collector_cian.cli to-db \
+  --payload etl/collector_cian/payloads/cheap_first.yaml \
+  --pages 1 \
+  --parse-details  # ⚠️ Significantly slower: visits each listing's detail page
+```
+
+**Note**: `--parse-details` will:
+- Visit individual listing URLs (adds ~3-5 sec per listing)
+- Extract full descriptions, photos, publication dates, building types
+- Recommended for initial data collection or periodic updates
+- For 1 page (~30 listings): ~3-5 minutes total
 
 ### Check Results:
 ```sql
@@ -296,15 +308,32 @@ FROM listing_photos;
 ### High Priority:
 1. ✅ Fix HTML selector (OfferTitle vs OfferSubtitle) - COMPLETED
 2. ✅ Create database migration - COMPLETED
-3. ⏳ Implement detailed page parsing function
-4. ⏳ Test on 100+ listings to verify data completeness
-5. ⏳ Commit to git branch "fix1"
+3. ✅ Implement detailed page parsing function - COMPLETED
+4. ✅ Integrate into CLI with `--parse-details` flag - COMPLETED
+5. ✅ Commit to git branch "fix1" - IN PROGRESS
 
-### Medium Priority:
-1. ⏳ Add error handling for blocked pages
-2. ⏳ Implement retry logic for failed detail page loads
-3. ⏳ Add rate limiting to avoid detection
-4. ⏳ Optimize photo downloads (async, compression)
+### Medium Priority (Refinements Needed):
+1. ⚠️ Fix photo selectors - current selectors don't match CIAN's structure
+   - Need to inspect actual detail page HTML to find correct selectors
+   - Current attempt: `img[data-name='GalleryImage']`, `.gallery img`, etc.
+   - All returned 0 photos in testing
+
+2. ⚠️ Fix publication date parsing - month parsing error
+   - Error: "month must be in 1..12"
+   - Regex may be capturing incorrect groups
+   - Need to handle edge cases (no year provided, different formats)
+
+3. ⏳ Add proxy support to detail page parsing
+   - Currently uses direct connection (causes timeouts)
+   - Need to pass proxy configuration to `parse_listing_detail()`
+   - 3 out of 28 listings timed out in testing
+
+4. ⏳ Add transaction rollback on browser crash
+   - Browser crashed with EPIPE error during testing
+   - Data wasn't committed to database
+   - Need better error handling and commit strategy
+
+5. ⏳ Test on 100+ listings to verify data completeness
 
 ### Low Priority:
 1. Add unit tests for new parsing patterns
