@@ -308,14 +308,24 @@ def parse_listing_detail(page: Page, listing_url: str) -> Optional[Dict[str, Any
         LOGGER.info(f"Parsing detail page: {listing_url}")
 
         # Navigate to listing page
-        response = page.goto(listing_url, wait_until="networkidle", timeout=30000)
+        # Use domcontentloaded instead of networkidle to save proxy traffic (~70-80% less)
+        # networkidle waits for ALL resources (images, CSS, JS, fonts) - very heavy on proxy
+        # domcontentloaded waits only for HTML + DOM - much faster and lighter
+        response = page.goto(listing_url, wait_until="domcontentloaded", timeout=60000)
 
         if not response or response.status >= 400:
             LOGGER.warning(f"Failed to load {listing_url}: HTTP {response.status if response else 'None'}")
             return None
 
-        # Wait for content to load
-        page.wait_for_selector("[data-name='Description']", timeout=10000)
+        # Wait for content to load and render
+        # Give DOM time to render after domcontentloaded
+        page.wait_for_timeout(2000)  # 2 sec for dynamic content
+
+        # Then wait for description element (or timeout silently if not present)
+        try:
+            page.wait_for_selector("[data-name='Description']", timeout=5000)
+        except:
+            pass  # Description might not exist on all pages
 
         result = {
             "description": None,
