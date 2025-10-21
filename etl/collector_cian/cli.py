@@ -96,7 +96,7 @@ def _process_offers(offers: Iterable[dict], parse_details: bool = False) -> tupl
 
 
 def _parse_listing_details(conn, listing_urls: list[tuple[int, str]]) -> tuple[int, int]:
-    """Parse detailed information for each listing URL.
+    """Parse detailed information for each listing URL using proxy.
     
     Args:
         conn: Database connection
@@ -105,11 +105,49 @@ def _parse_listing_details(conn, listing_urls: list[tuple[int, str]]) -> tuple[i
     Returns:
         Tuple of (details_parsed_count, photos_inserted_count)
     """
+    from etl.collector_cian.proxy_manager import get_random_proxy
+    import random
+    
     details_count = 0
     photos_count = 0
     
+    # Get proxy from pool
+    try:
+        with open("config/proxy_pool.txt") as f:
+            proxies = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+        proxy_url = random.choice(proxies) if proxies else None
+    except Exception:
+        proxy_url = None
+    
+    LOGGER.info(f"🔐 Using proxy for detail parsing: {proxy_url[:60] if proxy_url else None}...")
+    
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        # Launch browser with proxy
+        if proxy_url:
+            try:
+                # Parse proxy URL: http://user:pass@host:port
+                proxy_parts = proxy_url.replace("http://", "").split("@")
+                if len(proxy_parts) == 2:
+                    auth, server = proxy_parts
+                    username, password = auth.split(":")
+                    
+                    browser = p.chromium.launch(
+                        headless=True,
+                        proxy={
+                            "server": f"http://{server}",
+                            "username": username,
+                            "password": password
+                        }
+                    )
+                else:
+                    LOGGER.warning("Invalid proxy format, launching without proxy")
+                    browser = p.chromium.launch(headless=True)
+            except Exception as e:
+                LOGGER.warning(f"Failed to configure proxy: {e}, launching without proxy")
+                browser = p.chromium.launch(headless=True)
+        else:
+            browser = p.chromium.launch(headless=True)
+        
         page = browser.new_page()
         
         try:
@@ -129,9 +167,10 @@ def _parse_listing_details(conn, listing_urls: list[tuple[int, str]]) -> tuple[i
                         if details.get("photos"):
                             photos = insert_listing_photos(conn, listing_id, details["photos"])
                             photos_count += photos
-                            LOGGER.info(f"  ✅ Saved: desc={len(details.get(description, )) if details.get(description) else 0} chars, "
-                                      f"photos={len(details.get(photos, []))}, "
-                                      f"building_type={details.get(building_type, N/A)}")
+                            desc_len = len(details.get("description", "")) if details.get("description") else 0
+                            photo_count = len(details.get("photos", []))
+                            building = details.get("building_type", "N/A")
+                            LOGGER.info(f"  ✅ Saved: desc={desc_len} chars, photos={photo_count}, building_type={building}")
                         else:
                             LOGGER.warning(f"  ⚠️ No photos found for listing {listing_id}")
                     else:

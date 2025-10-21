@@ -336,32 +336,24 @@ def parse_listing_detail(page: Page, listing_url: str) -> Optional[Dict[str, Any
 
         # Extract photos from gallery
         try:
-            # CIAN uses different selectors for photo galleries
-            # Try multiple selectors to find images
-            photo_selectors = [
-                "img[data-name='GalleryImage']",
-                "img[data-testid='gallery-image']",
-                ".gallery img",
-                "[data-name='PhotoGallery'] img"
-            ]
-
+            # CIAN stores photos at: https://images.cdn-cian.ru/images/XXXXXX-1.jpg
+            # Find all img tags and filter by URL pattern
+            all_images = page.query_selector_all("img")
             photo_urls = []
-            for selector in photo_selectors:
-                images = page.query_selector_all(selector)
-                if images:
-                    for img in images:
-                        src = img.get_attribute("src") or img.get_attribute("data-src")
-                        if src and src.startswith("http"):
-                            # Extract dimensions if available
-                            width = img.get_attribute("width")
-                            height = img.get_attribute("height")
-                            photo_urls.append({
-                                "url": src,
-                                "width": int(width) if width and width.isdigit() else None,
-                                "height": int(height) if height and height.isdigit() else None
-                            })
-                    if photo_urls:
-                        break
+
+            for img in all_images:
+                src = img.get_attribute("src") or img.get_attribute("data-src") or ""
+
+                # Filter: only CIAN photo images from images.cdn-cian.ru
+                if "images.cdn-cian.ru/images/" in src and src.endswith((".jpg", ".jpeg", ".png")):
+                    # Extract dimensions if available
+                    width = img.get_attribute("width")
+                    height = img.get_attribute("height")
+                    photo_urls.append({
+                        "url": src,
+                        "width": int(width) if width and width.isdigit() else None,
+                        "height": int(height) if height and height.isdigit() else None
+                    })
 
             # Deduplicate photos by URL
             seen_urls = set()
@@ -415,10 +407,15 @@ def parse_listing_detail(page: Page, listing_url: str) -> Optional[Dict[str, Any
                             break
                     else:
                         # DD.MM.YYYY format
-                        day, month, year = int(match.group(1)), int(match.group(2)), int(match.group(3))
-                        result["published_at"] = datetime(year, month, day)
-                        LOGGER.debug(f"Publication date: {result['published_at']}")
-                        break
+                        try:
+                            day, month, year = int(match.group(1)), int(match.group(2)), int(match.group(3))
+                            # Validate before creating datetime
+                            if 1 <= day <= 31 and 1 <= month <= 12 and 2000 <= year <= 2030:
+                                result["published_at"] = datetime(year, month, day)
+                                LOGGER.debug(f"Publication date: {result['published_at']}")
+                                break
+                        except (ValueError, IndexError):
+                            continue
 
         except Exception as e:
             LOGGER.warning(f"Failed to extract publication date: {e}")
