@@ -1,0 +1,56 @@
+# Парсинг от самых дешёвых квартир (по цене за м²)
+
+jsonQuery:
+  # Регион: Москва
+  region:
+    type: terms
+    value: [1]
+  
+  engine_version:
+    type: term
+    value: 2
+  
+  # Тип сделки: продажа
+  deal_type:
+    type: term
+    value: sale
+  
+  # Категория: Квартиры
+  offer_type:
+    type: term
+    value: flat
+  
+  # Тип жилья: вторичка
+  building_status:
+    type: term
+    value: secondary
+  
+  # Цена: до 30 000 000 ₽
+  price:
+    type: range
+    value:
+      lte: 30000000
+  
+  # Этаж: от 2 (не первый этаж)
+  floor:
+    type: range
+    value:
+      gte: 2
+  
+  # Количество комнат: студия, 1-к, 2-к, 3-к
+  room:
+    type: terms
+    value: [0, 1, 2, 3]
+  
+  # Категория: только квартиры
+  category:
+    type: term
+    value: flatSale
+
+# Лимит объявлений на страницу
+limit: 28
+
+# СОРТИРОВКА: по цене за м² (от дешёвых к дорогим)
+sort:
+  type: term
+  value: price_object_order_asc

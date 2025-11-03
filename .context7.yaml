@@ -1,0 +1,136 @@
+# Context7 MCP Configuration for Real Estate Parser
+# https://github.com/upstash/context7
+
+# Project metadata
+project:
+  name: realestate-parser
+  description: CIAN.ru real estate scraper with anti-bot protection
+  version: 1.0.0
+  language: python
+  framework: playwright
+
+# Indexing rules
+index:
+  # Include these directories
+  include:
+    - etl/
+    - db/
+    - tests/
+    - scripts/
+    - .speckit/
+  
+  # Exclude these patterns
+  exclude:
+    - "**/__pycache__"
+    - "**/*.pyc"
+    - "**/venv"
+    - "**/node_modules"
+    - "**/.git"
+    - "**/logs"
+    - "**/config/cian_browser_state.json"
+    - "**/config/proxy_pool.txt"
+  
+  # File types to index
+  extensions:
+    - .py
+    - .sql
+    - .md
+    - .yaml
+    - .yml
+    - .json
+
+# Code documentation preferences
+documentation:
+  # Key entry points for AI to understand
+  entry_points:
+    - etl/collector_cian/cli.py
+    - etl/collector_cian/browser_fetcher.py
+    - etl/collector_cian/mapper.py
+    - etl/upsert.py
+  
+  # Critical files to always include in context
+  always_include:
+    - .speckit/constitution/project-constitution.md
+    - README.md
+    - db/schema.sql
+  
+  # Architecture documentation
+  architecture:
+    style: layered
+    layers:
+      - name: CLI
+        files: ["etl/collector_cian/cli.py"]
+      - name: Fetching
+        files: ["etl/collector_cian/fetcher.py", "etl/collector_cian/browser_fetcher.py"]
+      - name: Parsing
+        files: ["etl/collector_cian/mapper.py", "etl/collector_cian/mapper_v2.py"]
+      - name: Anti-bot
+        files: ["etl/antibot/*.py", "etl/collector_cian/proxy_manager.py"]
+      - name: Persistence
+        files: ["etl/upsert.py", "db/schema.sql"]
+
+# Search optimization
+search:
+  # When AI asks about these topics, prioritize these files
+  topic_mapping:
+    parsing:
+      - etl/collector_cian/browser_fetcher.py
+      - etl/collector_cian/mapper.py
+    
+    antibot:
+      - etl/antibot/
+      - etl/collector_cian/proxy_manager.py
+    
+    database:
+      - db/schema.sql
+      - etl/upsert.py
+    
+    testing:
+      - tests/
+    
+    bugs:
+      - .speckit/bugs/
+    
+    tasks:
+      - .speckit/tasks/
+    
+    architecture:
+      - .speckit/constitution/
+      - README.md
+
+# AI prompt enhancement
+ai_context:
+  # System context to prepend
+  system_prompt: |
+    This is a real estate scraper for CIAN.ru (Russian real estate site).
+    Key challenges:
+    - Anti-bot protection (requires proxies + Playwright)
+    - HTML structure changes frequently
+    - Data completeness is critical (address, rooms, area, floor)
+    
+    Tech stack: Python 3.13, Playwright, PostgreSQL, httpx
+    
+  # Code style guidelines
+  style_guide:
+    - Follow PEP 8
+    - Use type hints (Python 3.10+ syntax)
+    - Prefer async/await for I/O
+    - Log all HTTP requests with timing
+    - Validate data before DB insert
+
+# Performance
+cache:
+  ttl: 3600  # Cache indexed content for 1 hour
+  max_size: 100MB
+
+# Integration
+integrations:
+  github:
+    repo: nikitaav92-star/realestate
+    branch: fix1
+  
+  speckit:
+    enabled: true
+    constitution: .speckit/constitution/project-constitution.md
+    tasks_dir: .speckit/tasks/
+    bugs_dir: .speckit/bugs/

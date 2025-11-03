@@ -5,3 +5,20 @@ venv/
 db/data/
 .DS_Store
 infra/nginx/state/
+
+# SpecKit temporary files
+.speckit/**/*.tmp
+.speckit/**/.DS_Store
+
+# Context7 cache
+.context7_cache/
+
+# Browser state (contains cookies)
+config/cian_browser_state.json
+
+# Proxy credentials
+config/proxy_pool.txt
+
+# Debug outputs
+logs/debug_*.html
+logs/debug_*.png
