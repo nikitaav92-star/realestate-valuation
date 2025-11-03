@@ -221,37 +221,65 @@ def _parse_offers_from_html(page: Page) -> List[Dict[str, Any]]:
                     offer["address"] = ", ".join(address_parts[:4])  # Limit to first 4 parts
 
             # Get title with params (rooms, area, floor)
-            # NOTE: Data is in OfferTitle, not OfferSubtitle on search pages
-            title_elem = element.query_selector("[data-mark='OfferTitle']")
-            if title_elem:
-                title_text = title_elem.inner_text().strip()
-                offer["title"] = title_text
-                # Example: "1 комната, 2,4 м², 6/23 этаж"
-                # Example: "2-комн. квартира, 40,5 м², 6/27 этаж"
+            # FIXED: Check BOTH OfferSubtitle (preferred) and OfferTitle (fallback)
+            # Reason: OfferTitle often contains promotional text ("Рассрочка 0%"),
+            # while OfferSubtitle has actual property data ("2-комн. квартира, 60 м²")
 
+            subtitle_elem = element.query_selector("[data-mark='OfferSubtitle']")
+            title_elem = element.query_selector("[data-mark='OfferTitle']")
+
+            # Determine which text contains property data
+            text_to_parse = None
+            data_source = None
+
+            # Try OfferSubtitle first
+            if subtitle_elem:
+                subtitle_text = subtitle_elem.inner_text().strip()
+                # Check if subtitle contains property info (rooms, area, floor)
+                if re.search(r'\d+[-\s]*комн|м²|этаж|Студия', subtitle_text):
+                    text_to_parse = subtitle_text
+                    data_source = "OfferSubtitle"
+                    offer["title"] = subtitle_text
+
+            # Fallback to OfferTitle if subtitle is empty or doesn't have property data
+            if not text_to_parse and title_elem:
+                title_text = title_elem.inner_text().strip()
+                # Check if title has property data (not just promo text)
+                if re.search(r'\d+[-\s]*комн|м²|этаж|Студия', title_text):
+                    text_to_parse = title_text
+                    data_source = "OfferTitle"
+                if "title" not in offer:
+                    offer["title"] = title_text
+
+            # Extract property data from chosen text
+            if text_to_parse:
                 # Extract rooms
-                # Pattern 1: "1 комната", "2 комнаты"
-                rooms_match = re.search(r'(\d+)\s+комнат', title_text)
+                # Pattern 1: "1 комната", "2 комнаты", "3 комнаты"
+                rooms_match = re.search(r'\b(\d+)\s+комнат', text_to_parse)
                 if rooms_match:
                     offer["rooms"] = int(rooms_match.group(1))
-                # Pattern 2: "2-комн."
-                elif re.search(r'(\d+)-комн', title_text):
-                    rooms_match = re.search(r'(\d+)-комн', title_text)
+                # Pattern 2: "2-комн.", "3-комн. квартира"
+                elif re.search(r'\b(\d+)-комн', text_to_parse):
+                    rooms_match = re.search(r'\b(\d+)-комн', text_to_parse)
                     offer["rooms"] = int(rooms_match.group(1))
                 # Pattern 3: "Студия"
-                elif "Студия" in title_text or "студия" in title_text:
+                elif "Студия" in text_to_parse or "студия" in text_to_parse:
                     offer["rooms"] = 0
 
                 # Extract area (m²)
-                area_match = re.search(r'(\d+(?:[.,]\d+)?)\s*м²', title_text)
+                area_match = re.search(r'(\d+(?:[.,]\d+)?)\s*м²', text_to_parse)
                 if area_match:
                     offer["totalSquare"] = float(area_match.group(1).replace(",", "."))
 
-                # Extract floor
-                floor_match = re.search(r'(\d+)/(\d+)\s*этаж', title_text)
+                # Extract floor (format: "16/49 этаж")
+                floor_match = re.search(r'(\d+)/(\d+)\s*этаж', text_to_parse)
                 if floor_match:
                     offer["floor"] = int(floor_match.group(1))
                     offer["floorsCount"] = int(floor_match.group(2))
+
+                # Log which source was used (helps debugging)
+                if data_source:
+                    LOGGER.debug(f"Offer {offer.get('offerId', idx)}: parsed from {data_source}")
 
             # Get seller type
             seller_elem = element.query_selector("[data-mark='OfferCardSeller']")
