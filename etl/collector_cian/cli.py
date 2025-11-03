@@ -239,7 +239,14 @@ def build_parser() -> argparse.ArgumentParser:
     to_db_parser.add_argument(
         "--parse-details",
         action="store_true",
-        help="Parse detailed information (description, photos, publication date) for each listing",
+        default=True,
+        help="Parse detailed information (description, photos, publication date) for each listing (default: True)",
+    )
+    to_db_parser.add_argument(
+        "--no-parse-details",
+        action="store_false",
+        dest="parse_details",
+        help="Skip detailed parsing (faster but less data)",
     )
     
     return parser
