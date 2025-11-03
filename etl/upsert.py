@@ -192,3 +192,47 @@ def insert_listing_photos(
                 continue
 
     return inserted
+
+
+def upsert_fias_data(
+    conn: PGConnection,
+    listing_id: int,
+    fias_address: Optional[str] = None,
+    fias_id: Optional[str] = None,
+    postal_code: Optional[str] = None,
+    cadastral_number: Optional[str] = None,
+    quality_code: Optional[int] = None,
+) -> None:
+    """
+    Update FIAS and cadastral data for a listing.
+    
+    Args:
+        conn: Database connection
+        listing_id: Listing ID
+        fias_address: Normalized FIAS address
+        fias_id: FIAS GUID
+        postal_code: 6-digit postal code
+        cadastral_number: Cadastral number from Rosreestr
+        quality_code: Address quality (0=exact, 1=good, 2-5=problems)
+    """
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            UPDATE listings
+            SET
+                fias_address = %(fias_address)s,
+                fias_id = %(fias_id)s,
+                postal_code = %(postal_code)s,
+                cadastral_number = %(cadastral_number)s,
+                address_quality_code = %(quality_code)s
+            WHERE id = %(listing_id)s;
+            """,
+            {
+                "listing_id": listing_id,
+                "fias_address": fias_address,
+                "fias_id": fias_id,
+                "postal_code": postal_code,
+                "cadastral_number": cadastral_number,
+                "quality_code": quality_code,
+            },
+        )
