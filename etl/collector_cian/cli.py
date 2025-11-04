@@ -40,7 +40,7 @@ def command_pull(payload_path: str, pages: int) -> None:
         root_exc = getattr(exc, "__cause__", None) or exc
         if isinstance(root_exc, CianBlockedError):
             LOGGER.warning("HTTP access blocked (%s), falling back to Playwright with smart proxy", root_exc)
-            responses = collect_with_playwright(payload, pages, use_smart_proxy=True)
+            responses = collect_with_playwright(payload, pages, use_smart_proxy=False)
         else:
             raise
     count = 0
@@ -205,7 +205,7 @@ def command_to_db(payload_path: str, pages: int, parse_details: bool = False) ->
         root_exc = getattr(exc, "__cause__", None) or exc
         if isinstance(root_exc, CianBlockedError):
             LOGGER.warning("HTTP access blocked (%s), falling back to Playwright with smart proxy", root_exc)
-            responses = collect_with_playwright(payload, pages, use_smart_proxy=True)
+            responses = collect_with_playwright(payload, pages, use_smart_proxy=False)
         else:
             raise
     

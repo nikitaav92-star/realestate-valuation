@@ -117,13 +117,13 @@ def normalize_all_addresses(limit: Optional[int] = None, skip_existing: bool = T
     # Print summary
     LOGGER.info("=" * 60)
     LOGGER.info("📊 Normalization Summary:")
-    LOGGER.info(f"  Total processed: {stats[total]}")
-    LOGGER.info(f"  ✅ Success: {stats[success]} ({100*stats[success]/stats[total]:.1f}%)")
-    LOGGER.info(f"  ❌ Failed: {stats[failed]}")
-    LOGGER.info(f"  🏠 With cadastral: {stats[with_cadastral]}")
-    LOGGER.info(f"  🎯 Exact match (QC=0): {stats[exact_match]}")
-    LOGGER.info(f"  ✓ Good match (QC=1): {stats[good_match]}")
-    LOGGER.info(f"  ⚠️ Need review (QC>=2): {stats[need_review]}")
+    LOGGER.info(f"  Total processed: {stats["total"]}")
+    LOGGER.info(f"  ✅ Success: {stats["success"]} ({100*stats["success"]/stats["total"]:.1f}%)")
+    LOGGER.info(f"  ❌ Failed: {stats["failed"]}")
+    LOGGER.info(f"  🏠 With cadastral: {stats["with_cadastral"]}")
+    LOGGER.info(f"  🎯 Exact match (QC=0): {stats["exact_match"]}")
+    LOGGER.info(f"  ✓ Good match (QC=1): {stats["good_match"]}")
+    LOGGER.info(f"  ⚠️ Need review (QC>=2): {stats["need_review"]}")
     LOGGER.info("=" * 60)
     
     return stats
