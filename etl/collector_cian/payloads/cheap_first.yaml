@@ -31,6 +31,12 @@ jsonQuery:
     value:
       lte: 30000000
   
+  # Площадь: минимум 18 м² (исключает доли)
+  area:
+    type: range
+    value:
+      gte: 18
+  
   # Этаж: от 2 (не первый этаж)
   floor:
     type: range
