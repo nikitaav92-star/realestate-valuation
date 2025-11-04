@@ -28,7 +28,7 @@ async def index(limit: int = Query(50), rooms: Optional[int] = None, min_price: 
     where_sql = "WHERE " + " AND ".join(where) if where else ""
     sort_sql = {"price_asc": "lp.price", "price_desc": "lp.price DESC", "area_asc": "l.area_total", "recent": "l.first_seen DESC"}.get(sort, "lp.price")
     
-    cur.execute(f"SELECT l.id, l.url, l.address, l.rooms, l.area_total, l.floor, l.floor_total, lp.price, l.first_seen::date FROM listings l JOIN listing_prices lp ON l.id = lp.id {where_sql} ORDER BY {sort_sql} LIMIT %(limit)s", params)
+    cur.execute(f"SELECT l.id, l.url, l.address, l.rooms, l.area_total, l.floor, l.total_floors, lp.price, l.first_seen::date FROM listings l JOIN listing_prices lp ON l.id = lp.id {where_sql} ORDER BY {sort_sql} LIMIT %(limit)s", params)
     listings = cur.fetchall()
     cur.execute("SELECT COUNT(*), AVG(price)::bigint, MIN(price)::bigint, MAX(price)::bigint FROM listing_prices")
     total, avg, min_p, max_p = cur.fetchone()
