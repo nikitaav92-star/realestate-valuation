@@ -13,7 +13,7 @@ from .behavior import HumanBehavior, BehaviorConfig, BehaviorPresets
 from .captcha import CaptchaSolver, CaptchaTelemetry
 from .fingerprint import DeviceFingerprint, FingerprintPainter, create_stealth_context
 from .proxy import ProxyRotator, ProxyConfig
-from .retry import CircuitBreaker, RetryBudget, EscalationMatrix
+from .retry import CircuitBreaker, CircuitBreakerConfig, RetryBudget, EscalationMatrix
 from .storage import StorageStateManager
 from .user_agent import UserAgentPool
 
@@ -29,6 +29,7 @@ __all__ = [
     "ProxyRotator",
     "ProxyConfig",
     "CircuitBreaker",
+    "CircuitBreakerConfig",
     "RetryBudget",
     "EscalationMatrix",
     "StorageStateManager",

@@ -1,0 +1,33 @@
+[Unit]
+Description=CIAN Data Scraper - Daily Data Collection
+Documentation=https://github.com/nikitaav92-star/realestate
+After=network.target postgresql.service docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/realestate
+Environment="PATH=/home/ubuntu/realestate/venv/bin:/usr/local/bin:/usr/bin:/bin"
+EnvironmentFile=/home/ubuntu/realestate/.env
+
+# Activate virtual environment and run scraper
+ExecStart=/bin/bash -c 'source /home/ubuntu/realestate/venv/bin/activate && python -m etl.collector_cian.cli to-db --pages 10 --payload etl/collector_cian/payloads/cheap_first.yaml'
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=cian-scraper
+
+# Restart policy (only on failure, not for oneshot)
+Restart=on-failure
+RestartSec=300
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+

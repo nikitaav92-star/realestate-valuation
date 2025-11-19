@@ -212,6 +212,28 @@ def command_to_db(payload_path: str, pages: int, parse_details: bool = False) ->
     offers = (offer for resp in responses for offer in extract_offers(resp))
     listings, prices, details, photos = _process_offers(offers, parse_details=parse_details)
     
+    # TASK-005: Log data quality metrics
+    try:
+        from etl.upsert import get_db_connection
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT 
+                        COUNT(*) as total,
+                        COUNT(*) FILTER (WHERE rooms IS NOT NULL) * 100.0 / NULLIF(COUNT(*), 0) as pct_rooms,
+                        COUNT(*) FILTER (WHERE area_total IS NOT NULL) * 100.0 / NULLIF(COUNT(*), 0) as pct_area,
+                        COUNT(*) FILTER (WHERE address IS NOT NULL AND address != '') * 100.0 / NULLIF(COUNT(*), 0) as pct_address
+                    FROM listings
+                    WHERE is_active = TRUE
+                """)
+                row = cur.fetchone()
+                if row:
+                    total, pct_rooms, pct_area, pct_address = row
+                    LOGGER.info("📈 Data Quality: total=%s, rooms=%.1f%%, area=%.1f%%, address=%.1f%%", 
+                               total, pct_rooms or 0, pct_area or 0, pct_address or 0)
+    except Exception as e:
+        LOGGER.warning("Failed to log data quality metrics: %s", e)
+    
     if parse_details:
         LOGGER.info("📊 Summary: listings=%s, new_prices=%s, details_parsed=%s, photos_inserted=%s", 
                    listings, prices, details, photos)

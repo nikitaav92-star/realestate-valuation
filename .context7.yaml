@@ -18,6 +18,11 @@ index:
     - tests/
     - scripts/
     - .speckit/
+    - api/
+    - web/
+    - infra/
+    - docs/
+    - config/
   
   # Exclude these patterns
   exclude:
@@ -29,6 +34,8 @@ index:
     - "**/logs"
     - "**/config/cian_browser_state.json"
     - "**/config/proxy_pool.txt"
+    - "**/db/data"
+    - "**/.pytest_cache"
   
   # File types to index
   extensions:
@@ -38,6 +45,9 @@ index:
     - .yaml
     - .yml
     - .json
+    - .sh
+    - .conf
+    - .dockerfile
 
 # Code documentation preferences
 documentation:
@@ -53,6 +63,11 @@ documentation:
     - .speckit/constitution/project-constitution.md
     - README.md
     - db/schema.sql
+    - PRODUCTION_REQUIREMENTS.md
+    - PRODUCTION_QUICKSTART.md
+    - TEST_REPORT.md
+    - docker-compose.yml
+    - requirements.txt
   
   # Architecture documentation
   architecture:
@@ -87,6 +102,8 @@ search:
     
     testing:
       - tests/
+      - test_system.py
+      - TEST_REPORT.md
     
     bugs:
       - .speckit/bugs/
@@ -97,6 +114,32 @@ search:
     architecture:
       - .speckit/constitution/
       - README.md
+    
+    production:
+      - PRODUCTION_REQUIREMENTS.md
+      - PRODUCTION_QUICKSTART.md
+      - docker-compose.yml
+      - infra/
+      - api/
+      - web/
+    
+    deployment:
+      - PRODUCTION_REQUIREMENTS.md
+      - FINAL_DEPLOYMENT_GUIDE.md
+      - DEPLOYMENT_STATUS.md
+      - CLOUDFLARE_SETUP_INSTRUCTIONS.md
+      - infra/
+    
+    web:
+      - web_viewer.py
+      - web_simple.py
+      - web/
+      - api/
+    
+    api:
+      - api/main.py
+      - web_viewer.py
+      - web_simple.py
 
 # AI prompt enhancement
 ai_context:

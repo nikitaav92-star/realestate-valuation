@@ -106,6 +106,30 @@ realestate/
     └── ideas/             # Future ideas
 ```
 
+## Production Deployment
+
+### Production Principles
+- All services must be containerized or systemd-managed
+- Environment variables for all secrets
+- Health checks for all services
+- Automated backups for database
+- HTTPS for all external access
+- Monitoring and alerting in place
+
+### Production Stack
+- **Web:** FastAPI with Uvicorn (systemd service)
+- **API:** FastAPI microservice (Docker container)
+- **Database:** PostgreSQL 14+ (Docker container)
+- **Reverse Proxy:** Nginx or Cloudflare Tunnel
+- **Monitoring:** Health checks, logs, metrics
+- **Backup:** Automated daily backups
+
+### Deployment Documentation
+- `PRODUCTION_REQUIREMENTS.md` - Complete deployment guide
+- `PRODUCTION_QUICKSTART.md` - Quick start guide
+- `TEST_REPORT.md` - System test results
+- `.speckit/specifications/production-deployment.md` - Full specification
+
 ## Non-Goals
 
 - Real-time scraping (batch processing is OK)

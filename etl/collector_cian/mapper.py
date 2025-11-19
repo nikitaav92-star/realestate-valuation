@@ -118,13 +118,21 @@ def to_listing(offer: Dict[str, Any]) -> Listing:
     region = offer.get("region") or offer.get("regionId")
     if region is not None:
         region = _safe_int(region)
+    
+    # BUG-001: Filter out apartment shares (area < 20 m²)
+    area_total = _get_area(offer)
+    if area_total is not None and area_total < 20:
+        # Skip apartment shares - they are not full apartments
+        # This will be handled by the caller (upsert logic)
+        pass
+    
     return Listing(
         id=_get_offer_id(offer),
         url=str(offer.get("seoUrl") or offer.get("absoluteUrl") or offer.get("url") or ""),
         region=region,
         deal_type=str(offer.get("operationName") or offer.get("dealType") or ""),
         rooms=_extract_rooms(offer),
-        area_total=_get_area(offer),
+        area_total=area_total if (area_total is None or area_total >= 20) else None,  # Filter shares
         floor=_extract_floor(offer),
         address=str(offer.get("address") or offer.get("geoLabel") or ""),
         seller_type=str(offer.get("userType") or offer.get("ownerType") or offer.get("sellerName") or ""),

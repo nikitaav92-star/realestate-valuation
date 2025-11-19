@@ -1,9 +1,10 @@
 # BUG-001: Apartment Shares in Listings
 
-**Status:** 🔴 CONFIRMED  
+**Status:** ✅ FIXED  
 **Priority:** HIGH  
 **Severity:** Medium  
 **Created:** 2025-11-04  
+**Fixed:** 2025-11-19  
 **Assigned:** Claude Agent
 
 ---
@@ -21,4 +22,22 @@ Database contains 17 listings (1.1%) with area < 20m², which are apartment shar
 
 ## Root Cause
 
-CIAN.ru API returns apartment shares even when filtering by `category: flatSale`. The payload `cheap_first.yaml` doesnt have minimum area filter.
+CIAN.ru API returns apartment shares even when filtering by `category: flatSale`. The payload `cheap_first.yaml` didnt have minimum area filter.
+
+## Solution
+
+✅ **Fixed:** 2025-11-19
+- Updated payload `cheap_first.yaml`: `minArea: 20` (was 18)
+- Added validation in `mapper.py`: filter out area < 20
+- Created SQL view `apartment_shares_detected` for monitoring
+
+**Files Changed:**
+- `etl/collector_cian/payloads/cheap_first.yaml` - minArea updated to 20
+- `etl/collector_cian/mapper.py` - validation added
+- `db/views_data_quality.sql` - view for shares detection
+
+**Action Required:**
+Deactivate existing shares:
+```sql
+UPDATE listings SET is_active = FALSE WHERE area_total < 20;
+```

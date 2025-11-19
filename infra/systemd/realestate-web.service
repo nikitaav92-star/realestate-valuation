@@ -1,0 +1,33 @@
+[Unit]
+Description=Real Estate Web Viewer
+Documentation=https://github.com/nikitaav92-star/realestate
+After=network.target postgresql.service docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/realestate
+Environment="PATH=/home/ubuntu/realestate/venv/bin:/usr/local/bin:/usr/bin:/bin"
+EnvironmentFile=/home/ubuntu/realestate/.env
+
+# Activate virtual environment and run web viewer
+ExecStart=/bin/bash -c 'source /home/ubuntu/realestate/venv/bin/activate && python /home/ubuntu/realestate/web_viewer.py'
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=realestate-web
+
+# Restart policy
+Restart=always
+RestartSec=10
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+
