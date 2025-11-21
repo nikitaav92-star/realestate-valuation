@@ -20,10 +20,16 @@ jsonQuery:
     type: term
     value: flat
   
-  # Тип жилья: вторичка
+  # Тип жилья: вторичка (исключаем новостройки)
   building_status:
     type: term
     value: secondary
+  
+  # Дополнительно исключаем новостройки через category
+  # category: flatSale - только вторичный рынок (не новостройки)
+  category:
+    type: term
+    value: flatSale
   
   # Цена: до 30 000 000 ₽
   price:
@@ -48,10 +54,15 @@ jsonQuery:
     type: terms
     value: [0, 1, 2, 3]
   
-  # Категория: только квартиры
+  # Категория: только квартиры (исключаем доли, апартаменты)
   category:
     type: term
     value: flatSale
+  
+  # Исключить доли квартир через минус-слова
+  keywords:
+    type: terms
+    value: ["-доля", "-доли", "-долевая", "-share", "-аукцион", "-торги"]
 
 # Лимит объявлений на страницу
 limit: 28

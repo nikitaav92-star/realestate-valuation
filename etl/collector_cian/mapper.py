@@ -113,18 +113,147 @@ def _extract_seen_at(offer: Dict[str, Any]) -> datetime:
     return datetime.now(timezone.utc).replace(tzinfo=None)
 
 
+def _is_newbuilding(offer: Dict[str, Any]) -> bool:
+    """Check if offer is a newbuilding (should be excluded)."""
+    # Check building_status field
+    building_status = offer.get("buildingStatus") or offer.get("building_status") or ""
+    if isinstance(building_status, str):
+        building_status = building_status.lower()
+        if building_status in ("new", "newbuilding", "новостройка", "новострой"):
+            return True
+    
+    # Check category field
+    category = offer.get("category") or ""
+    if isinstance(category, str):
+        category = category.lower()
+        if "newbuilding" in category or "новострой" in category:
+            return True
+    
+    # Check URL for newbuilding indicators
+    url = str(offer.get("seoUrl") or offer.get("absoluteUrl") or offer.get("url") or "")
+    url_lower = url.lower()
+    if "/newbuilding/" in url_lower or "/new/" in url_lower:
+        return True
+    
+    # Check houseType or objectType
+    house_type = offer.get("houseType") or offer.get("house_type") or offer.get("objectType") or ""
+    if isinstance(house_type, str):
+        house_type = house_type.lower()
+        if "newbuilding" in house_type or "новострой" in house_type:
+            return True
+    
+    return False
+
+
+def _is_apartment(offer: Dict[str, Any]) -> bool:
+    """Check if offer is an apartment (апартаменты) - should be excluded."""
+    # Check property_type field
+    property_type = offer.get("propertyType") or offer.get("property_type") or ""
+    if isinstance(property_type, str):
+        property_type = property_type.lower()
+        if "apartment" in property_type or "апартамент" in property_type:
+            return True
+    
+    # Check URL for apartment indicators
+    url = str(offer.get("seoUrl") or offer.get("absoluteUrl") or offer.get("url") or "")
+    url_lower = url.lower()
+    if "/apartment/" in url_lower or "/апартамент" in url_lower:
+        return True
+    
+    # Check title/description for apartment indicators
+    title = str(offer.get("title") or offer.get("name") or "").lower()
+    description = str(offer.get("description") or offer.get("text") or "").lower()
+    
+    apartment_keywords = [
+        "апартамент", "apartment", "апартаменты", "apartments",
+        "коммерческая недвижимость", "коммерческая"
+    ]
+    
+    text_to_check = f"{title} {description}"
+    for keyword in apartment_keywords:
+        if keyword in text_to_check:
+            return True
+    
+    return False
+
+
+def _is_apartment_share(offer: Dict[str, Any]) -> bool:
+    """Check if offer is an apartment share (доля квартиры) - should be excluded."""
+    # Check area - shares are usually < 20 m²
+    area_total = _get_area(offer)
+    if area_total is not None and area_total < 20:
+        return True
+    
+    # Check title/description for share indicators
+    title = str(offer.get("title") or offer.get("name") or "").lower()
+    description = str(offer.get("description") or offer.get("text") or "").lower()
+    
+    share_keywords = [
+        "доля", "доли", "долевая", "долевое", "долевой",
+        "share", "shares", "часть квартиры", "часть кв",
+        "1/2", "1/3", "1/4", "2/3", "3/4", "1/5", "доля в",
+        "продается доля", "продаю долю"
+    ]
+    
+    text_to_check = f"{title} {description}"
+    for keyword in share_keywords:
+        if keyword in text_to_check:
+            return True
+    
+    # Check URL for share indicators
+    url = str(offer.get("seoUrl") or offer.get("absoluteUrl") or offer.get("url") or "")
+    url_lower = url.lower()
+    if "/share/" in url_lower or "/доля" in url_lower:
+        return True
+    
+    # Check propertyType or objectType
+    property_type = offer.get("propertyType") or offer.get("property_type") or ""
+    if isinstance(property_type, str):
+        property_type = property_type.lower()
+        if "share" in property_type or "доля" in property_type:
+            return True
+    
+    # Check roomType - sometimes shares are marked differently
+    room_type = offer.get("roomType") or offer.get("room_type") or ""
+    if isinstance(room_type, str):
+        room_type = room_type.lower()
+        if "share" in room_type or "доля" in room_type:
+            return True
+    
+    # Check address for share indicators
+    address = str(offer.get("address") or offer.get("geoLabel") or "").lower()
+    if "доля" in address or "долевая" in address:
+        return True
+    
+    return False
+
+
 def to_listing(offer: Dict[str, Any]) -> Listing:
-    """Map a raw offer dict to Listing."""
+    """Map a raw offer dict to Listing.
+    
+    Performs validation checks:
+    - Excludes newbuildings (only secondary market)
+    - Excludes apartment shares (доли квартир)
+    - Excludes apartments (апартаменты) - only flats allowed
+    """
+    # Filter out newbuildings - only secondary market allowed
+    if _is_newbuilding(offer):
+        raise ValueError("Newbuilding detected - should be excluded")
+    
+    # Filter out apartment shares - only full apartments allowed
+    if _is_apartment_share(offer):
+        raise ValueError("Apartment share detected - should be excluded")
+    
+    # Filter out apartments (апартаменты) - only flats allowed
+    if _is_apartment(offer):
+        raise ValueError("Apartment detected - should be excluded")
+    
     region = offer.get("region") or offer.get("regionId")
     if region is not None:
         region = _safe_int(region)
     
-    # BUG-001: Filter out apartment shares (area < 20 m²)
+    # Get area (already validated by _is_apartment_share)
     area_total = _get_area(offer)
-    if area_total is not None and area_total < 20:
-        # Skip apartment shares - they are not full apartments
-        # This will be handled by the caller (upsert logic)
-        pass
     
     return Listing(
         id=_get_offer_id(offer),
@@ -132,7 +261,7 @@ def to_listing(offer: Dict[str, Any]) -> Listing:
         region=region,
         deal_type=str(offer.get("operationName") or offer.get("dealType") or ""),
         rooms=_extract_rooms(offer),
-        area_total=area_total if (area_total is None or area_total >= 20) else None,  # Filter shares
+        area_total=area_total,  # Already validated by _is_apartment_share
         floor=_extract_floor(offer),
         address=str(offer.get("address") or offer.get("geoLabel") or ""),
         seller_type=str(offer.get("userType") or offer.get("ownerType") or offer.get("sellerName") or ""),

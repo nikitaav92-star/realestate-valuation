@@ -42,15 +42,43 @@ def collect_task(payload_path: str, pages: int) -> List[Dict[str, Any]]:
 def _persist_offers(offers: Iterable[Dict[str, Any]]) -> Tuple[int, int]:
     conn = get_db_connection()
     listings = prices = 0
+    newbuildings_skipped = 0
+    shares_skipped = 0
+    apartments_skipped = 0
     try:
         for offer in offers:
-            listing = to_listing(offer)
+            try:
+                listing = to_listing(offer)
+            except ValueError as e:
+                # Skip newbuildings, apartment shares, and apartments
+                error_msg = str(e)
+                if "Newbuilding" in error_msg:
+                    newbuildings_skipped += 1
+                    continue
+                elif "Apartment share" in error_msg or "share" in error_msg.lower():
+                    shares_skipped += 1
+                    continue
+                elif "Apartment detected" in error_msg or "apartment" in error_msg.lower():
+                    apartments_skipped += 1
+                    continue
+                raise
+            
             price = to_price(offer)
             upsert_listing(conn, listing)
             if upsert_price_if_changed(conn, listing.id, price.price):
                 prices += 1
             listings += 1
         conn.commit()
+        if newbuildings_skipped > 0 or shares_skipped > 0 or apartments_skipped > 0:
+            logger = get_run_logger()
+            skip_info = []
+            if newbuildings_skipped > 0:
+                skip_info.append(f"{newbuildings_skipped} newbuildings")
+            if shares_skipped > 0:
+                skip_info.append(f"{shares_skipped} shares")
+            if apartments_skipped > 0:
+                skip_info.append(f"{apartments_skipped} apartments")
+            logger.info("Skipped: %s", ", ".join(skip_info))
     finally:
         conn.close()
     return listings, prices
