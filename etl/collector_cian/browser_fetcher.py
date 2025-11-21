@@ -212,13 +212,39 @@ def _parse_offers_from_html(page: Page) -> List[Dict[str, Any]]:
                 except ValueError:
                     pass
 
-            # Get address from multiple GeoLabel elements
+            # Get address from multiple selectors (fallback chain)
+            # TASK-002: Improved address extraction with multiple selectors
+            address_parts = []
+            
+            # Try primary selector: GeoLabel
             geo_labels = element.query_selector_all("[data-name='GeoLabel']")
             if geo_labels:
-                # Combine all geo labels into address (e.g., "Москва, ЮАО, р-н Даниловский")
                 address_parts = [label.inner_text().strip() for label in geo_labels if label.inner_text().strip()]
-                if address_parts:
-                    offer["address"] = ", ".join(address_parts[:4])  # Limit to first 4 parts
+            
+            # Fallback 1: SpecialGeo
+            if not address_parts:
+                special_geo = element.query_selector("[data-name='SpecialGeo']")
+                if special_geo:
+                    address_parts = [special_geo.inner_text().strip()]
+            
+            # Fallback 2: Any element with geo-related classes
+            if not address_parts:
+                geo_fallback = element.query_selector(".geo-label, .address-label, [class*='geo']")
+                if geo_fallback:
+                    address_parts = [geo_fallback.inner_text().strip()]
+            
+            # Validate address: must contain "Москва" or metro station name
+            if address_parts:
+                address_text = ", ".join(address_parts[:4])  # Limit to first 4 parts
+                # Validate address contains location indicator
+                if "Москва" in address_text or any(
+                    metro in address_text for metro in 
+                    ["метро", "ст.", "станция", "м.", "мкр", "район", "р-н"]
+                ):
+                    offer["address"] = address_text
+                else:
+                    # Log warning for missing/invalid address
+                    LOGGER.warning(f"Offer {offer.get('offerId', 'unknown')}: Invalid address format: {address_text}")
 
             # Get title with params (rooms, area, floor)
             # FIXED: Check BOTH OfferSubtitle (preferred) and OfferTitle (fallback)
@@ -310,11 +336,13 @@ def parse_listing_detail(page: Page, listing_url: str) -> Optional[Dict[str, Any
     """Parse detailed information from individual listing page.
 
     Extracts:
+    - Full address (complete address from page)
     - Full description text
     - All photos from gallery (URLs, order, dimensions)
     - Publication date
-    - Building type
-    - Property type
+    - Building type and house details (year, material, series, elevator, parking)
+    - Property type (flat, apartment, studio, share, newbuilding)
+    - Apartment details (living area, kitchen area, balcony, loggia, renovation, layout)
 
     Parameters
     ----------
@@ -326,7 +354,9 @@ def parse_listing_detail(page: Page, listing_url: str) -> Optional[Dict[str, Any
     Returns
     -------
     dict or None
-        Dictionary with keys: description, published_at, building_type, property_type, photos
+        Dictionary with keys: address_full, description, published_at, building_type, property_type,
+        photos, area_living, area_kitchen, balcony, loggia, renovation, rooms_layout,
+        house_year, house_material, house_series, house_has_elevator, house_has_parking
         Returns None if page fails to load or parsing fails
     """
     import re
@@ -356,19 +386,373 @@ def parse_listing_detail(page: Page, listing_url: str) -> Optional[Dict[str, Any
             pass  # Description might not exist on all pages
 
         result = {
+            "address_full": None,
             "description": None,
             "published_at": None,
             "building_type": None,
             "property_type": None,
-            "photos": []
+            "photos": [],
+            # Apartment details
+            "area_living": None,
+            "area_kitchen": None,
+            "balcony": None,
+            "loggia": None,
+            "renovation": None,
+            "rooms_layout": None,
+            # House details
+            "house_year": None,
+            "house_material": None,
+            "house_series": None,
+            "house_has_elevator": None,
+            "house_has_parking": None,
         }
 
-        # Extract description
+        # Extract full address - comprehensive scan of entire page
+        # Strategy: Scan entire page DOM for address patterns using multiple methods
         try:
-            desc_elem = page.query_selector("[data-name='Description']")
-            if desc_elem:
-                result["description"] = desc_elem.inner_text().strip()
-                LOGGER.debug(f"Description: {len(result['description'])} chars")
+            import re
+            import json
+            
+            LOGGER.debug(f"🔍 Starting comprehensive address extraction for {listing_url}")
+            
+            # Method 1: Try JSON-LD structured data (most reliable, priority)
+            try:
+                json_ld_scripts = page.query_selector_all("script[type='application/ld+json']")
+                LOGGER.debug(f"Found {len(json_ld_scripts)} JSON-LD scripts")
+                for script in json_ld_scripts:
+                    try:
+                        json_text = script.inner_text()
+                        data = json.loads(json_text)
+                        
+                        # Recursive function to find address in JSON-LD
+                        def find_address_in_json(obj):
+                            if isinstance(obj, dict):
+                                # Check common address fields
+                                for key in ['address', 'streetAddress', 'addressLocality', 'addressRegion', 'addressCountry']:
+                                    if key in obj and isinstance(obj[key], str):
+                                        if "Москва" in obj[key] or len(obj[key]) > 20:
+                                            return obj[key]
+                                # Recursively search nested objects
+                                for value in obj.values():
+                                    result = find_address_in_json(value)
+                                    if result:
+                                        return result
+                            elif isinstance(obj, list):
+                                for item in obj:
+                                    result = find_address_in_json(item)
+                                    if result:
+                                        return result
+                            return None
+                        
+                        address_from_json = find_address_in_json(data)
+                        if address_from_json and len(address_from_json) > 15:
+                            result["address_full"] = address_from_json.strip()
+                            LOGGER.info(f"✅ Full address from JSON-LD: {address_from_json[:100]}")
+                            return result
+                    except (json.JSONDecodeError, Exception) as e:
+                        LOGGER.debug(f"JSON-LD parsing failed: {e}")
+                        continue
+            except Exception as e:
+                LOGGER.debug(f"JSON-LD extraction failed: {e}")
+            
+            # Method 2: Comprehensive DOM scan - find all elements containing address parts
+            if not result["address_full"]:
+                try:
+                    LOGGER.debug("Scanning DOM for address elements...")
+                    
+                    # Get all text elements and links on the page
+                    all_elements = page.query_selector_all("a, span, div, p, li")
+                    address_candidates = []
+                    
+                    for elem in all_elements:
+                        try:
+                            elem_text = elem.inner_text().strip()
+                            if not elem_text or len(elem_text) < 5:
+                                continue
+                            
+                            # Skip common non-address elements
+                            skip_patterns = [
+                                r'^Фотографи',
+                                r'^Описани',
+                                r'^Расположени',
+                                r'^Похожие',
+                                r'^Недвижимость',
+                                r'^Цена',
+                                r'^Площадь',
+                                r'^Комнат',
+                                r'^Этаж',
+                            ]
+                            
+                            should_skip = any(re.match(pattern, elem_text, re.I) for pattern in skip_patterns)
+                            if should_skip:
+                                continue
+                            
+                            # Check if element contains address indicators
+                            has_moscow = "Москва" in elem_text
+                            has_street = bool(re.search(r'(ул\.|улица|проспект|пр\.|переулок|пер\.)', elem_text, re.I))
+                            has_number = bool(re.search(r'\d+', elem_text))
+                            has_district = bool(re.search(r'(СВАО|САО|СЗАО|ЮАО|ЮВАО|ВАО|ЗАО|ЦАО|р-н|район)', elem_text, re.I))
+                            
+                            # Must have Москва to be considered
+                            if not has_moscow:
+                                continue
+                            
+                            # Score element based on address indicators
+                            score = 0
+                            if has_moscow:
+                                score += 5  # Москва is mandatory
+                            if has_street:
+                                score += 3  # Street is very important
+                            if has_district:
+                                score += 2  # District is important
+                            if has_number and re.search(r'\d{1,3}', elem_text):  # House number (1-3 digits)
+                                score += 2
+                            
+                            # Must have at least Москва + street or district
+                            if score >= 7 and len(elem_text) > 20:
+                                # Additional validation: should contain comma-separated parts
+                                if ',' in elem_text or 'ул.' in elem_text or 'улица' in elem_text:
+                                    address_candidates.append((score, elem_text, elem))
+                        except Exception:
+                            continue
+                    
+                    # Sort candidates by score (highest first)
+                    address_candidates.sort(key=lambda x: x[0], reverse=True)
+                    LOGGER.debug(f"Found {len(address_candidates)} address candidates")
+                    
+                    # Try to find complete address from candidates
+                    for score, candidate_text, elem in address_candidates[:10]:  # Check top 10
+                        # Strict validation: must be a real address
+                        candidate_clean = candidate_text.strip()
+                        
+                        # Must have Москва
+                        if "Москва" not in candidate_clean:
+                            continue
+                        
+                        # Must have street indicator
+                        if not re.search(r'(ул\.|улица|проспект|пр\.|переулок|пер\.)', candidate_clean, re.I):
+                            continue
+                        
+                        # Must have house number (not just any number)
+                        if not re.search(r'(дом|д\.|,)\s*\d{1,3}', candidate_clean, re.I):
+                            # Try alternative: number after street name
+                            if not re.search(r'ул\.?\s+[^,]+,\s*\d+', candidate_clean, re.I):
+                                continue
+                        
+                        # Exclude common non-address words
+                        exclude_words = [
+                            r'мебель', r'цена', r'₽', r'рубл', r'только', r'циан',
+                            r'фотографи', r'описани', r'расположени', r'похожие',
+                            r'хорош', r'плох', r'новый', r'старый'
+                        ]
+                        if any(re.search(word, candidate_clean, re.I) for word in exclude_words):
+                            LOGGER.debug(f"Skipping candidate (contains excluded word): {candidate_clean[:50]}")
+                            continue
+                        
+                        # Clean up: remove common prefixes that are not part of address
+                        # Remove things like "Продается X-комн. квартира..." before "Москва"
+                        if "Москва" in candidate_clean:
+                            moscow_index = candidate_clean.find("Москва")
+                            if moscow_index > 0:
+                                # Check if there's address-like content before Москва
+                                before_moscow = candidate_clean[:moscow_index].strip()
+                                # If before Москва contains "Продается", "квартира", etc., remove it
+                                if re.search(r'(Продается|квартира|м²|ЖК|в\s+ЖК|комн\.|комнат)', before_moscow, re.I):
+                                    candidate_clean = candidate_clean[moscow_index:].strip()
+                        
+                        # Additional cleanup: remove common prefixes at the start
+                        # Patterns to remove from the beginning
+                        prefix_patterns = [
+                            r'^Продается\s+[\d\-комн\.\s]+квартира[^,]*,\s*',
+                            r'^[\d\-комн\.\s]+квартира[^,]*,\s*',
+                            r'^в\s+ЖК[^,]*,\s*',
+                            r'^ЖК[^,]*,\s*',
+                            r'^[\d,\.]+\s*м²[^,]*,\s*',
+                        ]
+                        for pattern in prefix_patterns:
+                            candidate_clean = re.sub(pattern, '', candidate_clean, flags=re.I).strip()
+                        
+                        # Remove text after house number (like "На карте", metro stations, etc.)
+                        # Pattern: number followed by "На карте" or metro station names
+                        candidate_clean = re.sub(r'(\d+[кК]?\d*)\s*На\s+карте.*$', r'\1', candidate_clean, flags=re.I)
+                        candidate_clean = re.sub(r'(\d+[кК]?\d*)\s*\d+\s*мин\..*$', r'\1', candidate_clean, flags=re.I)
+                        
+                        # Remove newlines and extra whitespace
+                        candidate_clean = re.sub(r'\s+', ' ', candidate_clean).strip()
+                        
+                        # If address starts with something that's not Москва or district, try to find Москва
+                        if not candidate_clean.startswith(('Москва', 'СВАО', 'САО', 'СЗАО', 'ЮАО', 'ЮВАО', 'ВАО', 'ЗАО', 'ЦАО')):
+                            moscow_match = re.search(r'Москва', candidate_clean)
+                            if moscow_match:
+                                # Extract from Москва onwards
+                                candidate_clean = candidate_clean[moscow_match.start():].strip()
+                        
+                        # Must be long enough and contain commas (addresses usually have multiple parts)
+                        if len(candidate_clean) > 25 and (',' in candidate_clean or len(candidate_clean.split()) > 3):
+                            result["address_full"] = candidate_clean
+                            LOGGER.info(f"✅ Full address from DOM scan (score={score}): {candidate_clean[:100]}")
+                            break
+                    
+                    # If no single element has complete address, try to combine nearby elements
+                    if not result["address_full"] and address_candidates:
+                        LOGGER.debug("Trying to combine address parts from multiple elements...")
+                        # Get elements near H1
+                        h1 = page.query_selector("h1")
+                        if h1:
+                            # Find parent container
+                            try:
+                                parent = h1.evaluate("(el) => el.parentElement")
+                                if parent:
+                                    # Get all text from parent container
+                                    container_text = page.evaluate("""
+                                        (el) => {
+                                            if (!el) return '';
+                                            const links = el.querySelectorAll('a');
+                                            const parts = [];
+                                            links.forEach(link => {
+                                                const text = link.innerText.trim();
+                                                if (text && (text.includes('Москва') || text.match(/[ул\\.]|улица|дом|д\\./i) || /\\d+/.test(text))) {
+                                                    parts.push(text);
+                                                }
+                                            });
+                                            return parts.join(', ');
+                                        }
+                                    """, parent)
+                                    
+                                    if container_text and len(container_text) > 15 and "Москва" in container_text:
+                                        if re.search(r'(ул\.|улица)', container_text, re.I) and re.search(r'\d+', container_text):
+                                            # Clean up the combined address
+                                            address_clean = container_text.strip()
+                                            # Remove prefixes
+                                            moscow_index = address_clean.find("Москва")
+                                            if moscow_index > 0:
+                                                address_clean = address_clean[moscow_index:].strip()
+                                            # Remove common prefixes
+                                            address_clean = re.sub(r'^Продается\s+[\d\-комн\.\s]+квартира[^,]*,\s*', '', address_clean, flags=re.I).strip()
+                                            address_clean = re.sub(r'\s+', ' ', address_clean).strip()
+                                            result["address_full"] = address_clean
+                                            LOGGER.info(f"✅ Full address from combined elements: {address_clean[:100]}")
+                            except Exception as e:
+                                LOGGER.debug(f"Combining elements failed: {e}")
+                except Exception as e:
+                    LOGGER.warning(f"DOM scan failed: {e}")
+            
+            # Method 3: Full page text scan with regex patterns
+            if not result["address_full"]:
+                try:
+                    LOGGER.debug("Scanning full page text with regex patterns...")
+                    page_text = page.inner_text() if hasattr(page, 'inner_text') else page.evaluate("() => document.body.innerText")
+                    
+                    # More comprehensive patterns
+                    address_patterns = [
+                        r'Москва[^\\n]*?ул\.?[^\\n]*?\\d+',  # Москва ... ул. ... число
+                        r'Москва[^\\n]*?улица[^\\n]*?\\d+',  # Москва ... улица ... число
+                        r'Москва[^,]*,[^,]*,[^,]*,[^,]*,[^\\n]*\\d+',  # Москва, ..., ..., ..., ..., число
+                        r'Москва[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^\\n]*\\d+',  # Москва, ..., ..., ..., ..., ..., число
+                        r'Москва[^,]*,[^,]*,[^,]*ул\.?[^,]*,[^\\n]*\\d+',  # Москва, ..., ..., ул. ..., число
+                    ]
+                    
+                    for pattern in address_patterns:
+                        matches = re.findall(pattern, page_text, re.IGNORECASE | re.MULTILINE | re.DOTALL)
+                        if matches:
+                            LOGGER.debug(f"Pattern {pattern} found {len(matches)} matches")
+                            for match in matches:
+                                match_clean = " ".join(match.split())
+                                if len(match_clean) > 20 and "Москва" in match_clean:
+                                    # Validate: should have street indicator and house number
+                                    if re.search(r'(ул\.|улица)', match_clean, re.I) and re.search(r'\d+', match_clean):
+                                        result["address_full"] = match_clean.strip()
+                                        LOGGER.info(f"✅ Full address from regex pattern: {match_clean[:100]}")
+                                        break
+                            if result["address_full"]:
+                                break
+                except Exception as e:
+                    LOGGER.warning(f"Regex pattern scan failed: {e}")
+            
+            # Method 4: Try to get address from page HTML directly
+            if not result["address_full"]:
+                try:
+                    LOGGER.debug("Trying to extract from page HTML...")
+                    page_html = page.content()
+                    
+                    # Look for address in HTML attributes or data attributes
+                    html_address_patterns = [
+                        r'data-address=["\']([^"\']*Москва[^"\']*)["\']',
+                        r'itemprop=["\']address["\'][^>]*>([^<]*Москва[^<]*)<',
+                        r'class=["\'][^"\']*address[^"\']*["\'][^>]*>([^<]*Москва[^<]*)<',
+                    ]
+                    
+                    for pattern in html_address_patterns:
+                        matches = re.findall(pattern, page_html, re.IGNORECASE)
+                        if matches:
+                            for match in matches:
+                                match_clean = " ".join(match.split())
+                                if len(match_clean) > 15 and "Москва" in match_clean:
+                                    if re.search(r'(ул\.|улица)', match_clean, re.I) and re.search(r'\d+', match_clean):
+                                        result["address_full"] = match_clean.strip()
+                                        LOGGER.info(f"✅ Full address from HTML attributes: {match_clean[:100]}")
+                                        break
+                            if result["address_full"]:
+                                break
+                except Exception as e:
+                    LOGGER.debug(f"HTML extraction failed: {e}")
+                    
+        except Exception as e:
+            LOGGER.warning(f"Failed to extract full address: {e}")
+        
+        # Log final result
+        if result["address_full"]:
+            LOGGER.info(f"✅ Full address saved: {result['address_full'][:100]}")
+        else:
+            LOGGER.warning(f"⚠️ Full address NOT extracted for {listing_url} - all methods failed")
+            # Log page structure for debugging
+            try:
+                h1_exists = bool(page.query_selector("h1"))
+                links_count = len(page.query_selector_all("a"))
+                LOGGER.debug(f"Page structure: H1={h1_exists}, Links={links_count}")
+            except Exception:
+                pass
+
+        # Extract description (full text, not truncated)
+        try:
+            # Try multiple selectors for description
+            desc_selectors = [
+                "[data-name='Description']",
+                ".object-description",
+                "[data-name='ObjectDescription']",
+                ".offer-description",
+                ".description",
+            ]
+            
+            for selector in desc_selectors:
+                try:
+                    desc_elem = page.query_selector(selector)
+                    if desc_elem:
+                        # Get full text including all paragraphs
+                        desc_text = desc_elem.inner_text().strip()
+                        # Preserve paragraph breaks but clean up extra whitespace
+                        desc_text = "\n".join([p.strip() for p in desc_text.split("\n") if p.strip()])
+                        if desc_text and len(desc_text) > 20:  # Valid description should be substantial
+                            result["description"] = desc_text
+                            LOGGER.debug(f"Description extracted via {selector}: {len(desc_text)} chars")
+                            break
+                except Exception:
+                    continue
+            
+            # If still no description, try to get from textarea or content divs
+            if not result["description"]:
+                try:
+                    # Some pages have description in textarea or content divs
+                    content_elem = page.query_selector("textarea[name='description'], .content-text, .offer-text")
+                    if content_elem:
+                        desc_text = content_elem.inner_text().strip()
+                        desc_text = "\n".join([p.strip() for p in desc_text.split("\n") if p.strip()])
+                        if desc_text and len(desc_text) > 20:
+                            result["description"] = desc_text
+                            LOGGER.debug(f"Description from content: {len(desc_text)} chars")
+                except Exception:
+                    pass
+                    
         except Exception as e:
             LOGGER.warning(f"Failed to extract description: {e}")
 
@@ -480,21 +864,115 @@ def parse_listing_detail(page: Page, listing_url: str) -> Optional[Dict[str, Any
         except Exception as e:
             LOGGER.warning(f"Failed to extract building type: {e}")
 
-        # Extract property type (usually from title or metadata)
+        # Extract property type - check for apartments, newbuildings, shares
         try:
+            page_content = page.content()
+            page_content_lower = page_content.lower()
+            
+            # Check for "Тип жилья" section which shows: Вторичка / Апартаменты or Новостройка
+            # Look for property type indicators
+            if 'апартамент' in page_content_lower or 'apartment' in page_content_lower:
+                result["property_type"] = 'apartment'
+            elif 'новостройка' in page_content_lower or 'newbuilding' in page_content_lower or '/newbuilding/' in listing_url.lower():
+                result["property_type"] = 'newbuilding'
+            elif 'доля' in page_content_lower or 'share' in page_content_lower or '/share/' in listing_url.lower():
+                result["property_type"] = 'share'
+            elif 'студия' in page_content_lower or 'studio' in page_content_lower:
+                result["property_type"] = 'studio'
+            elif 'квартира' in page_content_lower:
+                result["property_type"] = 'flat'
+            
+            # Also check title
             title = page.title()
-            if title:
+            if title and not result["property_type"]:
                 title_lower = title.lower()
-                if 'квартира' in title_lower:
-                    result["property_type"] = 'flat'
-                elif 'апартамент' in title_lower:
+                if 'апартамент' in title_lower:
                     result["property_type"] = 'apartment'
+                elif 'новостройка' in title_lower:
+                    result["property_type"] = 'newbuilding'
                 elif 'студия' in title_lower:
                     result["property_type"] = 'studio'
+                elif 'квартира' in title_lower:
+                    result["property_type"] = 'flat'
+            
                 LOGGER.debug(f"Property type: {result.get('property_type', 'unknown')}")
 
         except Exception as e:
             LOGGER.warning(f"Failed to extract property type: {e}")
+
+        # Extract apartment details (living area, kitchen area, balcony, loggia, renovation, layout)
+        try:
+            page_content = page.content()
+            
+            # Extract living area (жилая площадь)
+            living_area_match = re.search(r'жилая[:\s]+(\d+(?:[.,]\d+)?)\s*м²', page_content, re.IGNORECASE)
+            if living_area_match:
+                result["area_living"] = float(living_area_match.group(1).replace(",", "."))
+            
+            # Extract kitchen area (площадь кухни)
+            kitchen_area_match = re.search(r'кухн[аи][:\s]+(\d+(?:[.,]\d+)?)\s*м²', page_content, re.IGNORECASE)
+            if kitchen_area_match:
+                result["area_kitchen"] = float(kitchen_area_match.group(1).replace(",", "."))
+            
+            # Check for balcony
+            result["balcony"] = bool(re.search(r'балкон', page_content, re.IGNORECASE))
+            
+            # Check for loggia
+            result["loggia"] = bool(re.search(r'лоджия', page_content, re.IGNORECASE))
+            
+            # Extract renovation type
+            renovation_types = {
+                'без ремонта': 'без ремонта',
+                'требуется ремонт': 'требуется ремонт',
+                'косметический': 'косметический',
+                'евроремонт': 'евроремонт',
+                'евро': 'евроремонт',
+                'дизайнерский': 'дизайнерский',
+                'хороший': 'хороший',
+            }
+            for ru_name, value in renovation_types.items():
+                if re.search(ru_name, page_content, re.IGNORECASE):
+                    result["renovation"] = value
+                    break
+            
+            # Extract room layout
+            if re.search(r'смежн', page_content, re.IGNORECASE):
+                result["rooms_layout"] = 'смежные'
+            elif re.search(r'раздельн', page_content, re.IGNORECASE):
+                result["rooms_layout"] = 'раздельные'
+            elif re.search(r'свободная', page_content, re.IGNORECASE):
+                result["rooms_layout"] = 'свободная планировка'
+            
+        except Exception as e:
+            LOGGER.warning(f"Failed to extract apartment details: {e}")
+
+        # Extract house details (year, material, series, elevator, parking)
+        try:
+            page_content = page.content()
+            
+            # Extract year of construction
+            year_match = re.search(r'год[:\s]+(\d{4})', page_content, re.IGNORECASE)
+            if year_match:
+                year = int(year_match.group(1))
+                if 1900 <= year <= 2030:  # Validate year
+                    result["house_year"] = year
+            
+            # Extract house material (already extracted as building_type, but keep for consistency)
+            # building_type is already set above
+            
+            # Extract house series (e.g., П-44, КОПЭ, И-209А)
+            series_match = re.search(r'серия[:\s]+([А-ЯЁ0-9\-]+)', page_content, re.IGNORECASE)
+            if series_match:
+                result["house_series"] = series_match.group(1).strip()
+            
+            # Check for elevator
+            result["house_has_elevator"] = bool(re.search(r'лифт', page_content, re.IGNORECASE))
+            
+            # Check for parking
+            result["house_has_parking"] = bool(re.search(r'парковк[аи]|паркинг', page_content, re.IGNORECASE))
+            
+        except Exception as e:
+            LOGGER.warning(f"Failed to extract house details: {e}")
 
         return result
 
