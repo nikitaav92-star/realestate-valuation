@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Parser - Главная</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+        
+        h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+        
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .card-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .card-description {
+            color: #7f8c8d;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .card-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+        
+        .card-features li {
+            padding: 8px 0;
+            color: #34495e;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .card-features li:last-child {
+            border-bottom: none;
+        }
+        
+        .card-features li:before {
+            content: "✓ ";
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .card-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        .card-button:hover {
+            transform: scale(1.05);
+        }
+        
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 50px;
+            opacity: 0.8;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏠 Real Estate Parser</h1>
+            <p class="subtitle">Система анализа рынка недвижимости Москвы</p>
+        </header>
+        
+        <div class="cards">
+            <!-- Карточка: Браузер объявлений -->
+            <a href="/listings" class="card">
+                <div class="card-icon">📊</div>
+                <div class="card-title">
+                    Браузер объявлений
+                    <span class="status-badge">LIVE</span>
+                </div>
+                <div class="card-description">
+                    Просмотр и анализ объявлений с CIAN. Фильтры по цене, площади, количеству комнат.
+                </div>
+                <ul class="card-features">
+                    <li>Фильтрация по параметрам</li>
+                    <li>Статистика по комнатности</li>
+                    <li>Цена за м²</li>
+                    <li>История изменений</li>
+                </ul>
+                <span class="card-button">Открыть браузер →</span>
+            </a>
+            
+            <!-- Карточка: Управление обременениями -->
+            <a href="/encumbrances" class="card">
+                <div class="card-icon">⚠️</div>
+                <div class="card-title">
+                    Управление обременениями
+                    <span class="status-badge">NEW</span>
+                </div>
+                <div class="card-description">
+                    Анализ и контроль обременений: зарегистрированные, залог, выселение.
+                </div>
+                <ul class="card-features">
+                    <li>Автоматический анализ обременений</li>
+                    <li>Контекстное определение</li>
+                    <li>Пометка ошибок парсинга</li>
+                    <li>Комментарии для правок</li>
+                </ul>
+                <span class="card-button">Открыть управление →</span>
+            </a>
+        </div>
+        
+        <footer>
+            <p>Real Estate Parser v2.0 | Все данные актуальны</p>
+            <p style="margin-top: 10px; font-size: 14px;">
+                <a href="/health" style="color: white;">Health Check</a>
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
+

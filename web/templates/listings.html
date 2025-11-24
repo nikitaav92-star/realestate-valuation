@@ -204,7 +204,7 @@
                 
                 // Calculate average price from by_rooms
                 if (data.by_rooms && data.by_rooms.length > 0) {
-                    const totalPrice = data.by_rooms.reduce((sum, r) => sum + (r.avg_price || 0), 0);
+                    const totalPrice = data.by_rooms.reduce((sum, r) => sum + parseFloat(r.avg_price || 0), 0);
                     const avgPrice = totalPrice / data.by_rooms.length;
                     document.getElementById('stat-avg-price').textContent = 
                         (avgPrice / 1000000).toFixed(1) + ' млн ₽';
@@ -275,7 +275,7 @@
                     <div class="row">
                         <div class="col-md-8">
                             <div class="listing-title">
-                                \${listing.rooms || '?'}-комн квартира, \${listing.area_total ? listing.area_total.toFixed(1) : '?'} м²
+                                \${listing.rooms || '?'}-комн квартира, \${listing.area_total ? parseFloat(listing.area_total).toFixed(1) : '?'} м²
                             </div>
                             <div class="listing-address">
                                 <i class="fas fa-map-marker-alt"></i> \${listing.address || 'Адрес не указан'}
@@ -288,10 +288,10 @@
                         </div>
                         <div class="col-md-4 text-end">
                             <div class="listing-price">
-                                \${(listing.price / 1000000).toFixed(2)} млн ₽
+                                \${(parseFloat(listing.price) / 1000000).toFixed(2)} млн ₽
                             </div>
                             <div class="text-muted">
-                                \${listing.price_per_sqm ? listing.price_per_sqm.toLocaleString() + ' ₽/м²' : ''}
+                                \${listing.price_per_sqm ? parseFloat(listing.price_per_sqm).toLocaleString('ru-RU') + ' ₽/м²' : ''}
                             </div>
                             <a href="\${listing.url}" target="_blank" class="btn btn-primary mt-2">
                                 <i class="fas fa-external-link-alt"></i> Открыть на CIAN

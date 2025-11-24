@@ -23,15 +23,17 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
 
 # Register blueprints
-from web.routes.listings import bp as listings_bp
+from routes.listings import bp as listings_bp
+from routes.encumbrances import bp as encumbrances_bp
+
 app.register_blueprint(listings_bp)
+app.register_blueprint(encumbrances_bp)
 
 
 @app.route('/')
 def index():
-    """Home page - redirect to listings."""
-    from flask import redirect, url_for
-    return redirect(url_for('listings.index'))
+    """Home page with links to all sections."""
+    return render_template('home.html')
 
 
 @app.route('/health')
