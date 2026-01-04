@@ -1,0 +1,14 @@
+httpx
+tenacity
+pydantic
+psycopg2-binary
+prefect
+orjson
+PyYAML
+python-dotenv
+pytest
+playwright
+anticaptchaofficial
+anthropic
+python-multipart
+git+https://github.com/quonaro/fias-public-api.git

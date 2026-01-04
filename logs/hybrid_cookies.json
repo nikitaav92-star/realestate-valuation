@@ -1,0 +1,65 @@
+{
+  "cookies": [
+    {
+      "name": "_CIAN_GK",
+      "value": "739da4f4-de3b-46b7-8b3c-13ad912d9011",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1794733722.990864,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_yasc",
+      "value": "KgI6oCBBHuwFinM+bVEzQtNjTgc6LVE60CGM0eO4t7FNw5pYdYsvSRzoCpIUWA==",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1794733722.990983,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "session_region_id",
+      "value": "1",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "session_main_town_region_id",
+      "value": "1",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "frontend-serp.offer_chat_onboarding_shown",
+      "value": "1",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1791709732,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_gcl_au",
+      "value": "1.1.64959679.1760173733",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1767949733,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": []
+}

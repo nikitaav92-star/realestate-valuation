@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отчёт об оценке - Коцюбинского ул. 10, кв. 80</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #192B1F;
+            --color-accent: #C6A27B;
+            --color-light: #f8f9fa;
+            --color-text: #333;
+            --color-muted: #6c757d;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: #f5f5f5;
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .report {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: var(--color-primary);
+            color: white;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            height: 50px;
+        }
+
+        .logo-text {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--color-accent);
+            letter-spacing: 1px;
+        }
+
+        .header-info {
+            text-align: right;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Content */
+        .content {
+            padding: 40px;
+        }
+
+        h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: var(--color-primary);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: var(--color-primary);
+            margin-top: 35px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--color-accent);
+            font-weight: 500;
+        }
+
+        h3 {
+            font-size: 16px;
+            color: var(--color-muted);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        th {
+            background: var(--color-light);
+            font-weight: 600;
+            color: var(--color-primary);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        .highlight {
+            background: rgba(198, 162, 123, 0.15) !important;
+            font-weight: 600;
+        }
+
+        .excluded {
+            color: #999;
+            text-decoration: line-through;
+        }
+
+        /* Result box */
+        .result-box {
+            background: linear-gradient(135deg, var(--color-primary), #2a4536);
+            color: white;
+            padding: 35px;
+            border-radius: 12px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .result-box h2 {
+            color: var(--color-accent);
+            border: none;
+            margin: 0 0 10px 0;
+            padding: 0;
+            font-size: 18px;
+        }
+
+        .result-box .price {
+            font-family: 'Oswald', sans-serif;
+            font-size: 48px;
+            font-weight: 700;
+            margin: 15px 0;
+            color: white;
+        }
+
+        .result-box .subtitle {
+            opacity: 0.85;
+            font-size: 14px;
+        }
+
+        .result-box .price-per-sqm {
+            font-size: 20px;
+            color: var(--color-accent);
+            margin-top: 10px;
+        }
+
+        /* Comparison cards */
+        .comparison {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .comparison-item {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .comparison-item.seller {
+            background: #fee2e2;
+            border: 2px solid var(--color-danger);
+        }
+
+        .comparison-item.market {
+            background: #fef3c7;
+            border: 2px solid var(--color-warning);
+        }
+
+        .comparison-item.interest {
+            background: #d1fae5;
+            border: 2px solid var(--color-success);
+        }
+
+        .comparison-item .label {
+            font-size: 12px;
+            color: var(--color-muted);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .comparison-item .value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        /* Formula box */
+        .formula {
+            background: var(--color-light);
+            padding: 20px 25px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            border-left: 4px solid var(--color-accent);
+            font-size: 14px;
+        }
+
+        .formula strong {
+            color: var(--color-primary);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-success { background: #d1fae5; color: #059669; }
+        .badge-warning { background: #fef3c7; color: #d97706; }
+        .badge-danger { background: #fee2e2; color: #dc2626; }
+        .badge-primary { background: rgba(198, 162, 123, 0.2); color: var(--color-primary); }
+
+        /* Info box */
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            line-height: 1.8;
+        }
+
+        /* Warning box */
+        .warning-box {
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .warning-box strong {
+            color: var(--color-danger);
+        }
+
+        /* Methodology list */
+        .methodology-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .methodology-list li {
+            padding: 10px 0;
+            padding-left: 25px;
+            position: relative;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .methodology-list li:last-child {
+            border-bottom: none;
+        }
+
+        .methodology-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 14px;
+            width: 10px;
+            height: 10px;
+            background: var(--color-accent);
+            border-radius: 50%;
+        }
+
+        /* Meta info */
+        .meta {
+            color: var(--color-muted);
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+
+        .meta a {
+            color: var(--color-accent);
+            text-decoration: none;
+        }
+
+        .meta a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--color-light);
+            padding: 20px 40px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--color-muted);
+            border-top: 1px solid #e9ecef;
+        }
+
+        .footer-brand {
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .header-info {
+                text-align: center;
+            }
+
+            .content {
+                padding: 25px;
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .result-box .price {
+                font-size: 36px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+            padding: 25px;
+            background: var(--color-light);
+            border-radius: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0d1a13;
+        }
+
+        .btn-telegram {
+            background: #0088cc;
+            color: white;
+        }
+
+        .btn-telegram:hover {
+            background: #006699;
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--color-primary);
+            border: 2px solid var(--color-primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .container {
+                max-width: 100%;
+                padding: 0;
+            }
+
+            .report {
+                box-shadow: none;
+            }
+
+            .action-buttons {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="report">
+            <!-- Header -->
+            <div class="header">
+                <div>
+                    <div class="logo-text">НЕВСКИЙ ЭКСПРЕСС</div>
+                    <div style="font-size: 12px; opacity: 0.8; margin-top: 5px;">Оценка недвижимости</div>
+                </div>
+                <div class="header-info">
+                    <div><strong>Дата:</strong> 22 декабря 2025 г.</div>
+                    <div><strong>ID:</strong> 634666D8</div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                <h1>Отчёт об оценке квартиры</h1>
+
+                <div class="meta">
+                    
+                </div>
+
+                <!-- 1. Object Info -->
+                <h2>1. Объект оценки</h2>
+                <table>
+                    <tr><th style="width: 40%">Параметр</th><th>Значение</th></tr>
+                    <tr><td>Адрес</td><td><strong>Коцюбинского ул. 10, кв. 80</strong></td></tr>
+                    
+                    <tr><td>Район</td><td>Кунцево</td></tr>
+                    
+                    
+                    <tr><td>Метро</td><td>Молодёжная</td></tr>
+                    
+                    <tr><td>Площадь</td><td><strong>53.6 м²</strong></td></tr>
+                    
+                    <tr><td>Комнаты</td><td>2</td></tr>
+                    
+                    
+                    <tr><td>Этаж</td><td>8/17</td></tr>
+                    
+                    
+                    <tr><td>Цена продавца</td><td><strong>17 800 000 ₽</strong></td></tr>
+                    <tr><td>₽/м² продавца</td><td>332 090</td></tr>
+                    
+                </table>
+
+                <!-- 2. Data Sources -->
+                <h2>2. Источники данных</h2>
+
+                
+                <h3>2.1 Росреестр — официальные сделки</h3>
+                <table>
+                    <tr>
+                        <th>Улица</th>
+                        <th>Площадь</th>
+                        <th>Этаж</th>
+                        <th>Год</th>
+                        <th>Материал</th>
+                        <th>Цена сделки</th>
+                        <th>₽/м²</th>
+                        <th>Статус</th>
+                    </tr>
+                    
+                    <tr class="highlight">
+                        <td><strong>Коцюбинского</strong></td>
+                        <td><strong>52.2 м²</strong></td>
+                        <td>8</td>
+                        <td>2013</td>
+                        <td>Монолит</td>
+                        <td><strong>13 900 000 ₽</strong></td>
+                        <td><strong>266 284</strong></td>
+                        <td>
+                            
+                            <span class="badge badge-success">ПРЯМОЙ АНАЛОГ</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>Коцюбинского</td>
+                        <td>47.7 м²</td>
+                        <td>15</td>
+                        <td>2013</td>
+                        <td>Монолит</td>
+                        <td>15 570 000 ₽</td>
+                        <td><strong>326 415</strong></td>
+                        <td>
+                            
+                            <span class="badge badge-warning">Новостройка</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="excluded">
+                        <td>Ярцевская</td>
+                        <td>57.3 м²</td>
+                        <td>3</td>
+                        <td>2006</td>
+                        <td>Панель</td>
+                        <td>15 700 000 ₽</td>
+                        <td><strong>274 000</strong></td>
+                        <td>
+                            
+                            <span class="badge badge-danger">Панель</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="excluded">
+                        <td>Ельнинская</td>
+                        <td>52.7 м²</td>
+                        <td>7</td>
+                        <td>2004</td>
+                        <td>Панель</td>
+                        <td>15 500 000 ₽</td>
+                        <td><strong>294 119</strong></td>
+                        <td>
+                            
+                            <span class="badge badge-danger">Панель</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>Партизанская</td>
+                        <td>58.9 м²</td>
+                        <td>17</td>
+                        <td>2018</td>
+                        <td>Монолит</td>
+                        <td>14 000 000 ₽</td>
+                        <td><strong>237 690</strong></td>
+                        <td>
+                            
+                            <span class="badge badge-primary">Релевантный</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>Оршанская</td>
+                        <td>55.1 м²</td>
+                        <td>15</td>
+                        <td>2019</td>
+                        <td>Монолит</td>
+                        <td>14 775 000 ₽</td>
+                        <td><strong>268 148</strong></td>
+                        <td>
+                            
+                            <span class="badge badge-primary">Релевантный</span>
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+                
+
+                
+                <h3>2.2 ЦИАН — актуальные предложения</h3>
+                
+                <p style="color: var(--color-muted); margin-bottom: 15px;"><strong>Фильтр: 2-комн, 45-62 м², Кунцево/соседние, монолит/кирпич 2000+</strong></p>
+                
+                <table>
+                    <tr>
+                        <th>Адрес</th>
+                        <th>Площадь</th>
+                        <th>Год</th>
+                        <th>Ремонт</th>
+                        <th>Цена</th>
+                        <th>₽/м²</th>
+                    </tr>
+                    
+                    <tr class="highlight">
+                        <td>Ельнинская ул., 15к2</td>
+                        <td>51.0 м²</td>
+                        <td>2007</td>
+                        <td>евро</td>
+                        <td>17 900 000 ₽</td>
+                        <td><strong>351 000</strong></td>
+                    </tr>
+                    
+                    <tr class="highlight">
+                        <td>Коцюбинского ул., 1</td>
+                        <td>53.7 м²</td>
+                        <td>2008</td>
+                        <td>евро</td>
+                        <td>18 700 000 ₽</td>
+                        <td><strong>348 230</strong></td>
+                    </tr>
+                    
+                    <tr class="highlight">
+                        <td>Ярцевская ул., 33к1</td>
+                        <td>49.8 м²</td>
+                        <td>2018</td>
+                        <td>косметический</td>
+                        <td>16 000 000 ₽</td>
+                        <td><strong>321 285</strong></td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>Оршанская ул., 10</td>
+                        <td>56.0 м²</td>
+                        <td>2020</td>
+                        <td>косметический</td>
+                        <td>17 300 000 ₽</td>
+                        <td><strong>308 929</strong></td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>Гродненская ул., 4</td>
+                        <td>54.1 м²</td>
+                        <td>2015</td>
+                        <td>дизайнерский</td>
+                        <td>17 200 000 ₽</td>
+                        <td><strong>317 930</strong></td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>Партизанская ул., 22</td>
+                        <td>50.5 м²</td>
+                        <td>2019</td>
+                        <td>евро</td>
+                        <td>15 900 000 ₽</td>
+                        <td><strong>314 851</strong></td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>Рублёвское ш., 40к4</td>
+                        <td>52.3 м²</td>
+                        <td>2017</td>
+                        <td>без ремонта</td>
+                        <td>14 800 000 ₽</td>
+                        <td><strong>283 000</strong></td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>Ярцевская ул., 10к2</td>
+                        <td>55.2 м²</td>
+                        <td>2016</td>
+                        <td>косметический</td>
+                        <td>15 500 000 ₽</td>
+                        <td><strong>280 797</strong></td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>Молодогвардейская ул., 36к1</td>
+                        <td>48.9 м²</td>
+                        <td>2014</td>
+                        <td>без ремонта</td>
+                        <td>13 800 000 ₽</td>
+                        <td><strong>282 208</strong></td>
+                    </tr>
+                    
+                </table>
+                
+
+                <!-- 3. Statistics -->
+                <h2>3. Статистика (очищенная от аномалий)</h2>
+
+                
+                <div class="info-box">
+                    <strong>Критерии отбора:</strong><br>
+                    
+                    • 2-комнатные квартиры<br>
+                    
+                    • Площадь 45-61 м²<br>
+                    
+                    • Современные дома (2000+)<br>
+                    
+                    • Кунцево<br>
+                    
+                </div>
+                
+
+                <table>
+                    <tr><th>Показатель</th><th>Значение</th></tr>
+                    
+                    <tr><td>Аналогов использовано</td><td>13</td></tr>
+                    
+                    
+                    <tr><td>Средняя площадь</td><td>53.2 м²</td></tr>
+                    
+                    <tr><td><strong>Средняя ₽/м²</strong></td><td><strong>289 541</strong></td></tr>
+                    <tr><td><strong>Медиана ₽/м²</strong></td><td><strong>283 000</strong></td></tr>
+                    <tr><td>Минимум</td><td>237 690</td></tr>
+                    <tr><td>Максимум</td><td>351 000</td></tr>
+                </table>
+
+                <!-- 4. BOTTOM-3 Calculation -->
+                <h2>4. Расчёт по методу BOTTOM-3</h2>
+
+                <h3>Шаг 1: Отбор релевантных аналогов</h3>
+                <table>
+                    <tr>
+                        <th>№</th>
+                        <th>Источник</th>
+                        <th>Площадь</th>
+                        <th>Год</th>
+                        <th>₽/м²</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>1</td>
+                        <td>Росреестр</td>
+                        <td>58.9 м²</td>
+                        <td>2018</td>
+                        <td>237 690</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>2</td>
+                        <td>Росреестр</td>
+                        <td>52.2 м²</td>
+                        <td>2013</td>
+                        <td>266 284</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>3</td>
+                        <td>Росреестр</td>
+                        <td>55.1 м²</td>
+                        <td>2019</td>
+                        <td>268 148</td>
+                    </tr>
+                    
+                </table>
+
+                <h3>Шаг 2: Выбор 3 нижних по цене</h3>
+                <table>
+                    <tr><th>№</th><th>₽/м²</th></tr>
+                    
+                    <tr><td>1</td><td>237 690</td></tr>
+                    
+                    <tr><td>2</td><td>266 284</td></tr>
+                    
+                    <tr><td>3</td><td>268 148</td></tr>
+                    
+                </table>
+
+                <h3>Шаг 3-5: Расчёт</h3>
+                <div class="formula">
+                    <strong>Средняя BOTTOM-3:</strong><br>
+                    (237690 + 266284 + 268148) / 3 = <strong>257 374 ₽/м²</strong><br><br>
+
+                    <strong>С торгом -7%:</strong><br>
+                    257 374 × 0.93 = <strong>239 358 ₽/м²</strong><br><br>
+
+                    <strong>Итоговая цена:</strong><br>
+                    239 358 × 53.6 м² = <strong>13 200 000 ₽</strong>
+                </div>
+
+                <!-- 5. Price Range -->
+                <h2>5. Диапазон оценок</h2>
+                <table>
+                    <tr>
+                        <th>Метод</th>
+                        <th>₽/м²</th>
+                        <th>Цена</th>
+                        <th>Комментарий</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Медиана</td>
+                        <td>283 000</td>
+                        <td>15.2 млн</td>
+                        <td>Без торга</td>
+                    </tr>
+                    
+                    <tr class="highlight">
+                        <td><strong>BOTTOM-3 с торгом -7%</strong></td>
+                        <td><strong>239 358</strong></td>
+                        <td><strong>13.2 млн</strong></td>
+                        <td><strong>Цена интереса</strong></td>
+                    </tr>
+                </table>
+
+                
+                <!-- Comparison -->
+                <h2>6. Сравнение с ценой продавца</h2>
+                <div class="comparison">
+                    <div class="comparison-item seller">
+                        <div class="label">Цена продавца</div>
+                        <div class="value">18 млн ₽</div>
+                    </div>
+                    <div class="comparison-item market">
+                        <div class="label">Рыночная цена</div>
+                        <div class="value">14-16 млн ₽</div>
+                    </div>
+                    <div class="comparison-item interest">
+                        <div class="label">Цена интереса</div>
+                        <div class="value">13 млн ₽</div>
+                    </div>
+                </div>
+
+                
+                
+                <div class="warning-box">
+                    <strong>Переоценка: +34%</strong><br>
+                    Продавец завышает цену на 4 600 000 рублей относительно цены интереса.
+                </div>
+                
+                
+
+                <!-- Result -->
+                <div class="result-box">
+                    <h2>Итоговая оценка</h2>
+                    <div class="price">13 200 000 ₽</div>
+                    <div class="subtitle">Цена интереса (BOTTOM-3 с торгом -7%)</div>
+                    <div class="price-per-sqm">239 358 ₽/м²</div>
+                </div>
+
+                <!-- Methodology -->
+                <h2>7. Обоснование методологии</h2>
+                <ol class="methodology-list">
+                    
+                    <li><strong>Источники данных</strong> — использованы данные Росреестра (официальные сделки) и ЦИАН (актуальные предложения)</li>
+                    
+                    <li><strong>Исключён старый фонд</strong> — квартиры в домах до 1990 года нерелевантны для современного жилья</li>
+                    
+                    <li><strong>Метод BOTTOM-3</strong> — консервативная оценка по 3 нижним аналогам для определения цены интереса</li>
+                    
+                    <li><strong>Торг -7%</strong> — стандартная скидка при переговорах о покупке</li>
+                    
+                </ol>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="action-buttons">
+                <button onclick="window.print()" class="btn btn-primary">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 8px;">
+                        <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>
+                        <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+                    </svg>
+                    Скачать PDF
+                </button>
+                <a href="https://t.me/share/url?url=https%3A//rating.ourdocs.org/r/634666d8-45a7-463e-9d12-1ca95eac5966&text=%D0%9E%D1%82%D1%87%D1%91%D1%82%20%D0%BE%D0%B1%20%D0%BE%D1%86%D0%B5%D0%BD%D0%BA%D0%B5%3A%20%D0%9A%D0%BE%D1%86%D1%8E%D0%B1%D0%B8%D0%BD%D1%81%D0%BA%D0%BE%D0%B3%D0%BE%20%D1%83%D0%BB.%2010%2C%20%D0%BA%D0%B2.%2080" target="_blank" class="btn btn-telegram">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 8px;">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.287 5.906c-.778.324-2.334.994-4.666 2.01-.378.15-.577.298-.595.442-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294.26.006.549-.1.868-.32 2.179-1.471 3.304-2.214 3.374-2.229.05-.01.119-.026.166.016.047.041.042.12.037.141-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8.154 8.154 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629.094.06.183.125.27.187.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.426 1.426 0 0 0-.013-.315.337.337 0 0 0-.114-.217.526.526 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09z"/>
+                    </svg>
+                    Поделиться в Telegram
+                </a>
+                <a href="https://nevsky.express" target="_blank" class="btn btn-outline">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 8px;">
+                        <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm7.5-6.923c-.67.204-1.335.82-1.887 1.855A7.97 7.97 0 0 0 5.145 4H7.5V1.077zM4.09 4a9.267 9.267 0 0 1 .64-1.539 6.7 6.7 0 0 1 .597-.933A7.025 7.025 0 0 0 2.255 4H4.09zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a6.958 6.958 0 0 0-.656 2.5h2.49zM4.847 5a12.5 12.5 0 0 0-.338 2.5H7.5V5H4.847zM8.5 5v2.5h2.99a12.495 12.495 0 0 0-.337-2.5H8.5zM4.51 8.5a12.5 12.5 0 0 0 .337 2.5H7.5V8.5H4.51zm3.99 0V11h2.653c.187-.765.306-1.608.338-2.5H8.5zM5.145 12c.138.386.295.744.468 1.068.552 1.035 1.218 1.65 1.887 1.855V12H5.145zm.182 2.472a6.696 6.696 0 0 1-.597-.933A9.268 9.268 0 0 1 4.09 12H2.255a7.024 7.024 0 0 0 3.072 2.472zM3.82 11a13.652 13.652 0 0 1-.312-2.5h-2.49c.062.89.291 1.733.656 2.5H3.82zm6.853 3.472A7.024 7.024 0 0 0 13.745 12H11.91a9.27 9.27 0 0 1-.64 1.539 6.688 6.688 0 0 1-.597.933zM8.5 12v2.923c.67-.204 1.335-.82 1.887-1.855.173-.324.33-.682.468-1.068H8.5zm3.68-1h2.146c.365-.767.594-1.61.656-2.5h-2.49a13.65 13.65 0 0 1-.312 2.5zm2.802-3.5a6.959 6.959 0 0 0-.656-2.5H12.18c.174.782.282 1.623.312 2.5h2.49zM11.27 2.461c.247.464.462.98.64 1.539h1.835a7.024 7.024 0 0 0-3.072-2.472c.218.284.418.598.597.933zM10.855 4a7.966 7.966 0 0 0-.468-1.068C9.835 1.897 9.17 1.282 8.5 1.077V4h2.355z"/>
+                    </svg>
+                    nevsky.express
+                </a>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <p>Отчёт сформирован автоматически на основе данных Росреестра и ЦИАН</p>
+                <p><span class="footer-brand">Невский Экспресс</span> • 22 декабря 2025 г.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIAN Listings Browser</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #111827;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #ffffff;
+        }
+        
+        .header {
+            background: #1f2937;
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            border-bottom: 1px solid #374151;
+        }
+        
+        .stats-card {
+            background: #1f2937;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            border: 1px solid #374151;
+            color: #ffffff;
+        }
+        
+        .listing-card {
+            background: #1f2937;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #374151;
+        }
+        
+        .listing-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+        
+        .listing-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+        
+        .listing-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #3b82f6;
+            margin-bottom: 0.5rem;
+        }
+        
+        .listing-details {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+        
+        .listing-address {
+            color: #d1d5db;
+            margin-top: 0.5rem;
+        }
+        
+        .filter-panel {
+            background: #1f2937;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            border: 1px solid #374151;
+            color: #ffffff;
+        }
+        
+        .pagination {
+            margin-top: 2rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+        }
+        
+        .spinner {
+            border: 4px solid #374151;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        .form-select, .form-control {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #ffffff;
+        }
+
+        .form-select:focus, .form-control:focus {
+            background-color: #374151;
+            border-color: #3b82f6;
+            color: #ffffff;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+            border-color: #2563eb;
+        }
+
+        .text-muted {
+            color: #9ca3af !important;
+        }
+
+        .page-link {
+            background-color: #1f2937;
+            border-color: #374151;
+            color: #ffffff;
+        }
+
+        .page-link:hover {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #ffffff;
+        }
+
+        .page-item.active .page-link {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .page-item.disabled .page-link {
+            background-color: #1f2937;
+            border-color: #374151;
+            color: #6b7280;
+        }
+
+        label {
+            color: #d1d5db;
+        }
+
+        .stats-card h5 {
+            color: #9ca3af;
+        }
+
+        .stats-card h2 {
+            color: #ffffff;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1><i class="fas fa-building"></i> CIAN Listings Browser</h1>
+            <p class="mb-0">Просмотр собранных объявлений недвижимости</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Statistics -->
+        <div class="row mb-4" id="stats-container">
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <h5><i class="fas fa-list"></i> Всего объявлений</h5>
+                    <h2 id="stat-total">-</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <h5><i class="fas fa-check-circle"></i> Активных</h5>
+                    <h2 id="stat-active">-</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <h5><i class="fas fa-ruble-sign"></i> Средняя цена</h5>
+                    <h2 id="stat-avg-price">-</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <h5><i class="fas fa-clock"></i> Последнее обновление</h5>
+                    <h2 id="stat-last-update">-</h2>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="filter-panel">
+            <h5><i class="fas fa-filter"></i> Фильтры</h5>
+            <div class="row">
+                <div class="col-md-2">
+                    <label>Комнат:</label>
+                    <select class="form-select" id="filter-rooms">
+                        <option value="">Все</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4+</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label>Цена от:</label>
+                    <input type="number" class="form-control" id="filter-min-price" placeholder="от">
+                </div>
+                <div class="col-md-3">
+                    <label>Цена до:</label>
+                    <input type="number" class="form-control" id="filter-max-price" placeholder="до">
+                </div>
+                <div class="col-md-2">
+                    <label>Площадь от:</label>
+                    <input type="number" class="form-control" id="filter-min-area" placeholder="м²">
+                </div>
+                <div class="col-md-2">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-primary w-100" onclick="applyFilters()">
+                        <i class="fas fa-search"></i> Найти
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Listings -->
+        <div id="listings-container">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p class="mt-3">Загрузка объявлений...</p>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        <nav id="pagination-container" style="display: none;">
+            <ul class="pagination justify-content-center" id="pagination">
+            </ul>
+        </nav>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentPage = 1;
+        let currentFilters = {};
+        
+        // Load statistics
+        async function loadStats() {
+            try {
+                const response = await fetch('/listings/api/stats');
+                const data = await response.json();
+                
+                document.getElementById('stat-total').textContent = 
+                    data.overall.total_listings.toLocaleString();
+                document.getElementById('stat-active').textContent = 
+                    data.overall.active_listings.toLocaleString();
+                
+                // Calculate average price from by_rooms
+                if (data.by_rooms && data.by_rooms.length > 0) {
+                    const totalPrice = data.by_rooms.reduce((sum, r) => sum + parseFloat(r.avg_price || 0), 0);
+                    const avgPrice = totalPrice / data.by_rooms.length;
+                    document.getElementById('stat-avg-price').textContent = 
+                        (avgPrice / 1000000).toFixed(1) + ' млн ₽';
+                }
+                
+                if (data.overall.last_scrape) {
+                    const date = new Date(data.overall.last_scrape);
+                    document.getElementById('stat-last-update').textContent = 
+                        date.toLocaleString('ru-RU', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'});
+                }
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+        
+        // Load listings
+        async function loadListings(page = 1) {
+            currentPage = page;
+            
+            // Show loading
+            document.getElementById('listings-container').innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p class="mt-3">Загрузка объявлений...</p>
+                </div>
+            `;
+            
+            // Build query params
+            const params = new URLSearchParams({
+                page: page,
+                per_page: 20,
+                ...currentFilters
+            });
+            
+            try {
+                const response = await fetch(\`/listings/api/list?\${params}\`);
+                const data = await response.json();
+                
+                // Render listings
+                renderListings(data.listings);
+                renderPagination(data.page, data.pages);
+                
+            } catch (error) {
+                console.error('Failed to load listings:', error);
+                document.getElementById('listings-container').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Ошибка загрузки данных: \${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        // Render listings
+        function renderListings(listings) {
+            if (listings.length === 0) {
+                document.getElementById('listings-container').innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        Объявления не найдены. Попробуйте изменить фильтры.
+                    </div>
+                `;
+                return;
+            }
+            
+            const html = listings.map(listing => \`
+                <div class="listing-card">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="listing-title">
+                                \${listing.rooms || '?'}-комн квартира, \${listing.area_total ? parseFloat(listing.area_total).toFixed(1) : '?'} м²
+                            </div>
+                            <div class="listing-address">
+                                <i class="fas fa-map-marker-alt"></i> \${listing.address || 'Адрес не указан'}
+                            </div>
+                            <div class="listing-details mt-2">
+                                <span class="me-3"><i class="fas fa-layer-group"></i> Этаж: \${listing.floor || '?'}</span>
+                                <span class="me-3"><i class="fas fa-user"></i> \${listing.seller_type || 'Не указан'}</span>
+                                <span><i class="fas fa-clock"></i> \${new Date(listing.last_seen).toLocaleDateString('ru-RU')}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="listing-price">
+                                \${(parseFloat(listing.price) / 1000000).toFixed(2)} млн ₽
+                            </div>
+                            <div class="text-muted">
+                                \${listing.price_per_sqm ? parseFloat(listing.price_per_sqm).toLocaleString('ru-RU') + ' ₽/м²' : ''}
+                            </div>
+                            <a href="\${listing.url}" target="_blank" class="btn btn-primary mt-2">
+                                <i class="fas fa-external-link-alt"></i> Открыть на CIAN
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            \`).join('');
+            
+            document.getElementById('listings-container').innerHTML = html;
+        }
+        
+        // Render pagination
+        function renderPagination(currentPage, totalPages) {
+            if (totalPages <= 1) {
+                document.getElementById('pagination-container').style.display = 'none';
+                return;
+            }
+            
+            document.getElementById('pagination-container').style.display = 'block';
+            
+            let html = '';
+            
+            // Previous
+            html += \`
+                <li class="page-item \${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="loadListings(\${currentPage - 1}); return false;">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+            \`;
+            
+            // Pages
+            const maxButtons = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+            let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+            
+            if (endPage - startPage < maxButtons - 1) {
+                startPage = Math.max(1, endPage - maxButtons + 1);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                html += \`
+                    <li class="page-item \${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="loadListings(\${i}); return false;">\${i}</a>
+                    </li>
+                \`;
+            }
+            
+            // Next
+            html += \`
+                <li class="page-item \${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="loadListings(\${currentPage + 1}); return false;">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            \`;
+            
+            document.getElementById('pagination').innerHTML = html;
+        }
+        
+        // Apply filters
+        function applyFilters() {
+            currentFilters = {};
+            
+            const rooms = document.getElementById('filter-rooms').value;
+            if (rooms) currentFilters.rooms = rooms;
+            
+            const minPrice = document.getElementById('filter-min-price').value;
+            if (minPrice) currentFilters.min_price = minPrice;
+            
+            const maxPrice = document.getElementById('filter-max-price').value;
+            if (maxPrice) currentFilters.max_price = maxPrice;
+            
+            const minArea = document.getElementById('filter-min-area').value;
+            if (minArea) currentFilters.min_area = minArea;
+            
+            loadListings(1);
+        }
+        
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStats();
+            loadListings(1);
+        });
+    </script>
+</body>
+</html>
+

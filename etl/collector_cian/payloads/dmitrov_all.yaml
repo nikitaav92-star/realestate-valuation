@@ -1,0 +1,42 @@
+# Дмитровский район МО - ВТОРИЧКА (все квартиры)
+# Гео-фильтр: круг 35км от центра Дмитрова (56.34, 37.52)
+# Покрывает: Дмитров, Яхрома, Икша, Некрасовский, Деденево и окрестности
+jsonQuery:
+  # Московская область
+  region:
+    type: terms
+    value: [4593]
+  engine_version:
+    type: term
+    value: 2
+  deal_type:
+    type: term
+    value: sale
+  offer_type:
+    type: term
+    value: flat
+  # Гео-фильтр: круг от центра Дмитрова
+  geo:
+    type: geo
+    value:
+      type: distance
+      center:
+        lat: 56.34
+        lng: 37.52
+      distance: 35000  # 35 км радиус
+  # Только вторичка
+  building_status:
+    type: term
+    value: secondary
+  # Все комнаты
+  room:
+    type: terms
+    value: [0, 1, 2, 3, 4, 5, 6]
+  # Не показывать доли
+  is_share:
+    type: term
+    value: false
+limit: 50
+sort:
+  type: term
+  value: creation_date_desc

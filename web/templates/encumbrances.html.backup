@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление объявлениями - Real Estate Parser</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f7fa;
+            color: #2c3e50;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card .label {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .stat-card.warning .value {
+            color: #e67e22;
+        }
+        
+        .stat-card.danger .value {
+            color: #e74c3c;
+        }
+        
+        .stat-card.success .value {
+            color: #27ae60;
+        }
+        
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .filters h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid #3498db;
+            background: white;
+            color: #3498db;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn:hover {
+            background: #e8f4fd;
+        }
+        
+        .filter-btn.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        .listings {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .listing-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .listing-card.has-error {
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .listing-card.has-encumbrance {
+            border-left: 5px solid #e67e22;
+        }
+        
+        .listing-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+        
+        .listing-id {
+            font-size: 12px;
+            color: #7f8c8d;
+            font-family: monospace;
+        }
+        
+        .listing-badges {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .badge {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-error {
+            background: #fee;
+            color: #e74c3c;
+        }
+        
+        .badge-encumbrance {
+            background: #fff3e0;
+            color: #e67e22;
+        }
+        
+        .listing-address {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .listing-description {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            max-height: 100px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .listing-description:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 30px;
+            background: linear-gradient(to bottom, transparent, white);
+        }
+        
+        .listing-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .listing-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .encumbrance-details {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .encumbrance-details h4 {
+            color: #e67e22;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .encumbrance-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .encumbrance-list li {
+            padding: 5px 0;
+            color: #7f8c8d;
+            font-size: 13px;
+        }
+        
+        .error-details {
+            background: #fee;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .error-details h4 {
+            color: #e74c3c;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .error-details p {
+            color: #7f8c8d;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+        
+        .listing-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .modal-content h3 {
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ecf0f1;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏠 Real Estate Parser - Управление объявлениями</h1>
+            <p class="subtitle">Анализ обременений и контроль качества парсинга</p>
+        </header>
+        
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="label">Всего объявлений</div>
+                <div class="value" id="stat-total">-</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="label">С обременениями</div>
+                <div class="value" id="stat-encumbrances">-</div>
+            </div>
+            <div class="stat-card danger">
+                <div class="label">Помечено ошибками</div>
+                <div class="value" id="stat-errors">-</div>
+            </div>
+            <div class="stat-card success">
+                <div class="label">С полными адресами</div>
+                <div class="value" id="stat-addresses">-</div>
+            </div>
+            <div class="stat-card success">
+                <div class="label">С описаниями</div>
+                <div class="value" id="stat-descriptions">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Всего фото</div>
+                <div class="value" id="stat-photos">-</div>
+            </div>
+        </div>
+        
+        <div class="filters">
+            <h3>Фильтры</h3>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">Все объявления</button>
+                <button class="filter-btn" data-filter="encumbrances">С обременениями</button>
+                <button class="filter-btn" data-filter="errors">Помечено ошибками</button>
+                <button class="filter-btn" data-filter="clean">Чистые объявления</button>
+            </div>
+        </div>
+        
+        <div class="listings" id="listings">
+            <div class="loading">Загрузка...</div>
+        </div>
+    </div>
+    
+    <!-- Modal для пометки ошибок -->
+    <div class="modal" id="errorModal">
+        <div class="modal-content">
+            <h3>Пометить объявление как ошибку</h3>
+            <form id="errorForm">
+                <input type="hidden" id="errorListingId">
+                <div class="form-group">
+                    <label for="errorReason">Причина ошибки:</label>
+                    <select id="errorReason" required>
+                        <option value="">Выберите причину</option>
+                        <option value="wrong_property_type">Неправильный тип недвижимости</option>
+                        <option value="parsing_error">Ошибка парсинга</option>
+                        <option value="duplicate">Дубликат</option>
+                        <option value="incomplete_data">Неполные данные</option>
+                        <option value="other">Другое</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="errorComment">Комментарий (для будущих правок):</label>
+                    <textarea id="errorComment" placeholder="Опишите проблему и как её можно исправить..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-primary" onclick="closeErrorModal()">Отмена</button>
+                    <button type="submit" class="btn btn-danger">Пометить ошибкой</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        let currentFilter = 'all';
+        
+        // Загрузка статистики
+        async function loadStats() {
+            try {
+                const response = await fetch('/encumbrances/api/stats');
+                const data = await response.json();
+                
+                document.getElementById('stat-total').textContent = data.overview.active_listings;
+                document.getElementById('stat-encumbrances').textContent = data.overview.with_encumbrances;
+                document.getElementById('stat-errors').textContent = data.overview.marked_as_error;
+                document.getElementById('stat-addresses').textContent = data.overview.with_full_address;
+                document.getElementById('stat-descriptions').textContent = data.overview.with_description;
+                document.getElementById('stat-photos').textContent = data.overview.total_photos;
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+        
+        // Загрузка объявлений
+        async function loadListings() {
+            const params = new URLSearchParams();
+            
+            if (currentFilter === 'encumbrances') {
+                params.set('has_encumbrances', 'true');
+            } else if (currentFilter === 'errors') {
+                params.set('is_error', 'true');
+            } else if (currentFilter === 'clean') {
+                params.set('has_encumbrances', 'false');
+                params.set('is_error', 'false');
+            }
+            
+            try {
+                const response = await fetch(`/api/listings?${params}`);
+                const data = await response.json();
+                
+                renderListings(data.listings);
+            } catch (error) {
+                console.error('Failed to load listings:', error);
+                document.getElementById('listings').innerHTML = '<div class="loading">Ошибка загрузки данных</div>';
+            }
+        }
+        
+        // Рендер объявлений
+        function renderListings(listings) {
+            const container = document.getElementById('listings');
+            
+            if (listings.length === 0) {
+                container.innerHTML = '<div class="loading">Объявления не найдены</div>';
+                return;
+            }
+            
+            container.innerHTML = listings.map(listing => {
+                const classes = ['listing-card'];
+                if (listing.is_error) classes.push('has-error');
+                if (listing.has_encumbrances) classes.push('has-encumbrance');
+                
+                return `
+                    <div class="${classes.join(' ')}">
+                        <div class="listing-header">
+                            <div class="listing-id">ID: ${listing.id}</div>
+                            <div class="listing-badges">
+                                ${listing.is_error ? '<span class="badge badge-error">ОШИБКА</span>' : ''}
+                                ${listing.has_encumbrances ? '<span class="badge badge-encumbrance">ОБРЕМЕНЕНИЕ</span>' : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="listing-address">${listing.address_full || listing.address || 'Адрес не указан'}</div>
+                        
+                        ${listing.description ? `
+                            <div class="listing-description">${listing.description.substring(0, 200)}...</div>
+                        ` : ''}
+                        
+                        <div class="listing-meta">
+                            <span>💰 ${listing.price_current ? `${Number(listing.price_current).toLocaleString()} ₽` : 'Цена не указана'}</span>
+                            <span>📐 ${listing.area_total || '-'} м²</span>
+                            <span>🚪 ${listing.rooms || '-'} комн.</span>
+                            <span>📸 ${listing.photos_count} фото</span>
+                        </div>
+                        
+                        ${listing.has_encumbrances ? `
+                            <div class="encumbrance-details">
+                                <h4>⚠️ Обнаружены обременения (${Math.round(listing.encumbrance_confidence * 100)}%):</h4>
+                                <ul class="encumbrance-list">
+                                    ${(listing.encumbrance_types || []).map(type => {
+                                        const names = {
+                                            'registered_people': 'Зарегистрированные люди',
+                                            'mortgage_on_property': 'Залог/ипотека на объекте',
+                                            'eviction_required': 'Требуется выселение',
+                                            'tenants_living': 'Живут арендаторы',
+                                            'legal_issues': 'Юридические проблемы'
+                                        };
+                                        return `<li>• ${names[type] || type}</li>`;
+                                    }).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
+                        
+                        ${listing.is_error ? `
+                            <div class="error-details">
+                                <h4>❌ Помечено как ошибка</h4>
+                                <p><strong>Причина:</strong> ${listing.error_reason || 'Не указана'}</p>
+                                ${listing.error_comment ? `<p><strong>Комментарий:</strong> ${listing.error_comment}</p>` : ''}
+                                <p><strong>Отметил:</strong> ${listing.marked_by || 'auto'} (${listing.marked_at ? new Date(listing.marked_at).toLocaleString('ru-RU') : '-'})</p>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="listing-actions">
+                            <button class="btn btn-primary" onclick="window.open('${listing.url}', '_blank')">🔗 Открыть на CIAN</button>
+                            ${!listing.is_error ? `
+                                <button class="btn btn-danger" onclick="openErrorModal(${listing.id})">❌ Пометить ошибкой</button>
+                            ` : `
+                                <button class="btn btn-success" onclick="unmarkError(${listing.id})">✅ Снять пометку</button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Фильтры
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                loadListings();
+            });
+        });
+        
+        // Модальное окно
+        function openErrorModal(listingId) {
+            document.getElementById('errorListingId').value = listingId;
+            document.getElementById('errorModal').classList.add('active');
+        }
+        
+        function closeErrorModal() {
+            document.getElementById('errorModal').classList.remove('active');
+            document.getElementById('errorForm').reset();
+        }
+        
+        // Отправка формы
+        document.getElementById('errorForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const listingId = document.getElementById('errorListingId').value;
+            const errorReason = document.getElementById('errorReason').value;
+            const errorComment = document.getElementById('errorComment').value;
+            
+            try {
+                const response = await fetch(`/api/listings/${listingId}/mark_error`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        error_reason: errorReason,
+                        error_comment: errorComment,
+                    }),
+                });
+                
+                if (response.ok) {
+                    alert('Объявление помечено как ошибка');
+                    closeErrorModal();
+                    loadStats();
+                    loadListings();
+                } else {
+                    alert('Ошибка при пометке объявления');
+                }
+            } catch (error) {
+                console.error('Failed to mark error:', error);
+                alert('Ошибка при пометке объявления');
+            }
+        });
+        
+        // Снятие пометки
+        async function unmarkError(listingId) {
+            if (!confirm('Снять пометку ошибки с этого объявления?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/listings/${listingId}/unmark_error`, {
+                    method: 'POST',
+                });
+                
+                if (response.ok) {
+                    alert('Пометка ошибки снята');
+                    loadStats();
+                    loadListings();
+                } else {
+                    alert('Ошибка при снятии пометки');
+                }
+            } catch (error) {
+                console.error('Failed to unmark error:', error);
+                alert('Ошибка при снятии пометки');
+            }
+        }
+        
+        // Закрытие модального окна по клику вне его
+        document.getElementById('errorModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeErrorModal();
+            }
+        });
+        
+        // Инициализация
+        loadStats();
+        loadListings();
+        
+        // Обновление каждые 30 секунд
+        setInterval(loadStats, 30000);
+    </script>
+</body>
+</html>
+

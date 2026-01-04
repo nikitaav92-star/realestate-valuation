@@ -1,0 +1,46 @@
+# 2кк: вторичка, без апартаментов, без долей, не первый этаж, до 30 млн, до 100 м²
+jsonQuery:
+  region:
+    type: terms
+    value: [1]
+  engine_version:
+    type: term
+    value: 2
+  deal_type:
+    type: term
+    value: sale
+  offer_type:
+    type: term
+    value: flat
+  building_status:
+    type: term
+    value: secondary
+  object_type:
+    type: terms
+    value: [1]
+  is_apartments:
+    type: term
+    value: 0
+  is_share:
+    type: term
+    value: false
+  is_first_floor:
+    type: term
+    value: false
+  price:
+    type: range
+    value:
+      gte: 1000000
+      lte: 30000000
+  total_area:
+    type: range
+    value:
+      gte: 10
+      lte: 100
+  room:
+    type: terms
+    value: [2]
+limit: 28
+sort:
+  type: term
+  value: creation_date_desc

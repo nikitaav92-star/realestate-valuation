@@ -1,0 +1,53 @@
+# Оптимальный payload по твоим фильтрам:
+# - Москва
+# - Вторичка
+# - Квартиры (без апартаментов)
+# - Без долей
+# - Не первый этаж
+# - До 30 млн
+
+jsonQuery:
+  region:
+    type: terms
+    value: [1]        # Москва
+  engine_version:
+    type: term
+    value: 2
+  deal_type:
+    type: term
+    value: sale
+  offer_type:
+    type: term
+    value: flat
+  # Вторичка
+  building_status:
+    type: term
+    value: secondary
+  # Только квартиры (без апартаментов)
+  object_type:
+    type: terms
+    value: [1]
+  is_apartments:
+    type: term
+    value: 0
+  # Без долей
+  is_share:
+    type: term
+    value: false
+  # Не первый этаж
+  is_first_floor:
+    type: term
+    value: false
+  # Цена до 30 млн
+  price:
+    type: range
+    value:
+      gte: 1000000
+      lte: 30000000
+  room:
+    type: terms
+    value: [1, 2, 3, 4, 5, 6]
+limit: 28
+sort:
+  type: term
+  value: creation_date_desc

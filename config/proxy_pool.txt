@@ -1,0 +1,15 @@
+# NodeMaven Proxy Pool (10 proxies)
+# Generated: 2026-01-02 20:35:42
+# Format: http://username:password@host:port
+# Country: RU | TTL: 24h | Filter: medium
+
+http://nikita_a_v_92_gmail_com-country-ru-sid-5j9hkmygnetm-ttl-24h-filter-medium:coss4q1h2r@gate.nodemaven.com:8080
+http://nikita_a_v_92_gmail_com-country-ru-sid-atq2o7n2i91w-ttl-24h-filter-medium:coss4q1h2r@gate.nodemaven.com:8080
+http://nikita_a_v_92_gmail_com-country-ru-sid-s78kxb17g16i-ttl-24h-filter-medium:coss4q1h2r@gate.nodemaven.com:8080
+http://nikita_a_v_92_gmail_com-country-ru-sid-o3ewrswnxk8s-ttl-24h-filter-medium:coss4q1h2r@gate.nodemaven.com:8080
+http://nikita_a_v_92_gmail_com-country-ru-sid-e4a2puq82o5q-ttl-24h-filter-medium:coss4q1h2r@gate.nodemaven.com:8080
+http://nikita_a_v_92_gmail_com-country-ru-sid-sayovl2syfzm-ttl-24h-filter-medium:coss4q1h2r@gate.nodemaven.com:8080
+http://nikita_a_v_92_gmail_com-country-ru-sid-8kns91wcrygh-ttl-24h-filter-medium:coss4q1h2r@gate.nodemaven.com:8080
+http://nikita_a_v_92_gmail_com-country-ru-sid-zk6w25ghlezh-ttl-24h-filter-medium:coss4q1h2r@gate.nodemaven.com:8080
+http://nikita_a_v_92_gmail_com-country-ru-sid-1zio8x5d0zr6-ttl-24h-filter-medium:coss4q1h2r@gate.nodemaven.com:8080
+http://nikita_a_v_92_gmail_com-country-ru-sid-lya3jv2agdfz-ttl-24h-filter-medium:coss4q1h2r@gate.nodemaven.com:8080

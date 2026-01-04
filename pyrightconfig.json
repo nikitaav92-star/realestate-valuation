@@ -1,0 +1,20 @@
+{
+  "venvPath": "/home/ubuntu/realestate",
+  "venv": "venv",
+  "pythonVersion": "3.13",
+  "pythonPlatform": "Linux",
+  "typeCheckingMode": "basic",
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": false,
+  "executionEnvironments": [
+    {
+      "root": "/home/ubuntu/realestate",
+      "pythonVersion": "3.13",
+      "pythonPlatform": "Linux",
+      "extraPaths": [
+        "/home/ubuntu/realestate/venv/lib/python3.13/site-packages"
+      ]
+    }
+  ]
+}
+

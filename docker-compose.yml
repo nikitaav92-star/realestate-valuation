@@ -1,0 +1,112 @@
+services:
+  # Main database for listings (CIAN data)
+  postgres:
+    image: postgis/postgis:16-3.4
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - "./db/data:/var/lib/postgresql/data"
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"${POSTGRES_USER}\" -d \"${POSTGRES_DB}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - services-net
+
+  # SEPARATE database for auctions (FSSP, bankruptcy, bank pledges, DGI)
+  # Isolated to avoid price contamination with main listings
+  postgres-auctions:
+    image: postgis/postgis:16-3.4
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${AUCTIONS_POSTGRES_DB:-auctionsdb}
+      POSTGRES_USER: ${AUCTIONS_POSTGRES_USER:-realuser}
+      POSTGRES_PASSWORD: ${AUCTIONS_POSTGRES_PASSWORD:-strongpass123}
+    volumes:
+      - "./db/data-auctions:/var/lib/postgresql/data"
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"${AUCTIONS_POSTGRES_USER:-realuser}\" -d \"${AUCTIONS_POSTGRES_DB:-auctionsdb}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - services-net
+
+  metabase:
+    image: metabase/metabase:latest
+    env_file: .env
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_CONNECTION_URI: ${PG_DSN_INTERNAL}
+    volumes:
+      - "./metabase-data:/metabase-data"
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:3000/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - services-net
+
+  prefect:
+    image: prefecthq/prefect:3-latest
+    env_file: .env
+    command: prefect server start --host 0.0.0.0
+    environment:
+      PREFECT_API_URL: http://0.0.0.0:4200/api
+      PREFECT_SERVER_HOST: ${PREFECT_SERVER_HOST}
+    ports:
+      - "4200:4200"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python - <<'PY'\nimport sys, urllib.request\ntry:\n    with urllib.request.urlopen('http://localhost:4200/api/health') as resp:\n        sys.exit(0 if resp.status == 200 else 1)\nexcept Exception:\n    sys.exit(1)\nPY"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_started
+    networks:
+      - services-net
+
+  api:
+    build: ./api
+    env_file: .env
+    environment:
+      PG_DSN: ${PG_DSN_INTERNAL}
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - services-net
+
+networks:
+  services-net:
+    driver: bridge

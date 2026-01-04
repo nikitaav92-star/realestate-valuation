@@ -1,0 +1,80 @@
+2025-10-11 08:44:15,224 [INFO] __main__: 🚀 Starting CIAN Anti-bot Bypass Tests
+2025-10-11 08:44:15,224 [INFO] __main__: ================================================================================
+2025-10-11 08:44:15,226 [INFO] __main__: Testing HTTP direct request...
+2025-10-11 08:44:15,227 [DEBUG] __main__: Headers: {'User-Agent': 'Mozilla/5.0 (Linux; Android 13; SM-S901B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36', 'Accept': 'application/json', 'Content-Type': 'application/json', 'Referer': 'https://www.cian.ru/', 'Origin': 'https://www.cian.ru'}
+2025-10-11 08:44:15,338 [DEBUG] httpcore.connection: connect_tcp.started host='www.cian.ru' port=443 local_address=None timeout=30.0 socket_options=None
+2025-10-11 08:44:15,430 [DEBUG] httpcore.connection: connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7b68fac211c0>
+2025-10-11 08:44:15,431 [DEBUG] httpcore.connection: start_tls.started ssl_context=<ssl.SSLContext object at 0x7b68fa0626d0> server_hostname='www.cian.ru' timeout=30.0
+2025-10-11 08:44:15,491 [DEBUG] httpcore.connection: start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7b68fa527410>
+2025-10-11 08:44:15,492 [DEBUG] httpcore.http11: send_request_headers.started request=<Request [b'POST']>
+2025-10-11 08:44:15,492 [DEBUG] httpcore.http11: send_request_headers.complete
+2025-10-11 08:44:15,493 [DEBUG] httpcore.http11: send_request_body.started request=<Request [b'POST']>
+2025-10-11 08:44:15,494 [DEBUG] httpcore.http11: send_request_body.complete
+2025-10-11 08:44:15,494 [DEBUG] httpcore.http11: receive_response_headers.started request=<Request [b'POST']>
+2025-10-11 08:44:16,163 [DEBUG] httpcore.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 404, b'Not Found', [(b'server', b'ycalb'), (b'date', b'Sat, 11 Oct 2025 08:44:16 GMT'), (b'content-type', b'text/html; charset=utf-8'), (b'vary', b'Accept-Encoding'), (b'set-cookie', b'_CIAN_GK=f30ff5a2-fa09-46e7-a9d0-3ae1376bdd38; Expires=Thu, 11 Oct 2035 11:44:15 GMT; Max-Age=315543600; Domain=cian.ru; Path=/; Secure; SameSite=None'), (b'set-cookie', b'_CIAN_GK=821b61a4-9f55-4e1e-a24e-c8b003cc7174; Expires=Thu, 11 Oct 2035 11:44:15 GMT; Max-Age=315543600; Domain=cian.ru; Path=/; Secure; SameSite=None'), (b'set-cookie', b'_CIAN_GK=04089416-e92f-41f7-8b81-723ecf02074d; Expires=Thu, 11 Oct 2035 11:44:16 GMT; Max-Age=315543600; Domain=cian.ru; Path=/; Secure; SameSite=None'), (b'etag', b'W/"68e6501e-4f9f"'), (b'content-encoding', b'gzip'), (b'set-cookie', b'_yasc=73muN6yKfn2hpxFIp0gxWP9mxxSWKoGf2ho4nSZNx397lh7Kh8zFAG4hF84ucqY=; domain=.cian.ru; path=/; expires=Tue, 09 Oct 2035 08:44:15 GMT; secure'), (b'transfer-encoding', b'chunked')])
+2025-10-11 08:44:16,164 [INFO] httpx: HTTP Request: POST https://www.cian.ru/site/v1/offers/search/grouped/ "HTTP/1.1 404 Not Found"
+2025-10-11 08:44:16,166 [DEBUG] httpcore.http11: receive_response_body.started request=<Request [b'POST']>
+2025-10-11 08:44:16,166 [DEBUG] httpcore.http11: receive_response_body.complete
+2025-10-11 08:44:16,167 [DEBUG] httpcore.http11: response_closed.started
+2025-10-11 08:44:16,167 [DEBUG] httpcore.http11: response_closed.complete
+2025-10-11 08:44:16,168 [DEBUG] httpcore.connection: close.started
+2025-10-11 08:44:16,169 [DEBUG] httpcore.connection: close.complete
+2025-10-11 08:44:16,169 [INFO] __main__: ================================================================================
+2025-10-11 08:44:16,170 [INFO] __main__: ❌ FAILED: HTTP Direct (no proxy)
+2025-10-11 08:44:16,170 [INFO] __main__: Duration: 0.94s
+2025-10-11 08:44:16,170 [INFO] __main__: Status Code: 404
+2025-10-11 08:44:16,170 [INFO] __main__: Response Size: 20383 bytes
+2025-10-11 08:44:16,171 [WARNING] __main__: 🚫 BLOCKED by anti-bot
+2025-10-11 08:44:16,171 [ERROR] __main__: Error: Blocked with status 404
+2025-10-11 08:44:16,171 [DEBUG] __main__: Response Headers:
+2025-10-11 08:44:16,171 [DEBUG] __main__:   server: ycalb
+2025-10-11 08:44:16,172 [DEBUG] __main__:   date: Sat, 11 Oct 2025 08:44:16 GMT
+2025-10-11 08:44:16,172 [DEBUG] __main__:   content-type: text/html; charset=utf-8
+2025-10-11 08:44:16,172 [DEBUG] __main__:   vary: Accept-Encoding
+2025-10-11 08:44:16,172 [DEBUG] __main__:   set-cookie: _CIAN_GK=f30ff5a2-fa09-46e7-a9d0-3ae1376bdd38; Expires=Thu, 11 Oct 2035 11:44:15 GMT; Max-Age=315543600; Domain=cian.ru; Path=/; Secure; SameSite=None, _CIAN_GK=821b61a4-9f55-4e1e-a24e-c8b003cc7174; Expires=Thu, 11 Oct 2035 11:44:15 GMT; Max-Age=315543600; Domain=cian.ru; Path=/; Secure; SameSite=None, _CIAN_GK=04089416-e92f-41f7-8b81-723ecf02074d; Expires=Thu, 11 Oct 2035 11:44:16 GMT; Max-Age=315543600; Domain=cian.ru; Path=/; Secure; SameSite=None, _yasc=73muN6yKfn2hpxFIp0gxWP9mxxSWKoGf2ho4nSZNx397lh7Kh8zFAG4hF84ucqY=; domain=.cian.ru; path=/; expires=Tue, 09 Oct 2035 08:44:15 GMT; secure
+2025-10-11 08:44:16,172 [DEBUG] __main__:   etag: W/"68e6501e-4f9f"
+2025-10-11 08:44:16,172 [DEBUG] __main__:   content-encoding: gzip
+2025-10-11 08:44:16,172 [DEBUG] __main__:   transfer-encoding: chunked
+2025-10-11 08:44:16,172 [DEBUG] __main__: Response Preview (first 500 chars):
+<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="stylesheet" href="//cdn.cian.site/frontend/common-css/l/common.min.css" /><title>&#x41E;&#x448;&#x438;&#x431;&#x43A;&#x430; 404 - &#x426;&#x438;&#x430;&#x43D;</title><style>.button,.title{font-weight:700}body{height:100vh}.logo-image{width:386px;margin-bottom:52px}.container{height:auto;padding:80px;-ms-flex-positive:1;flex-grow:1;-ms-flex-negative:0;fle
+2025-10-11 08:44:16,172 [INFO] __main__: ================================================================================
+2025-10-11 08:44:18,173 [INFO] __main__: ================================================================================
+2025-10-11 08:44:18,173 [INFO] __main__: ❌ FAILED: HTTP with Residential Proxy (NodeMaven)
+2025-10-11 08:44:18,174 [INFO] __main__: Duration: 0.00s
+2025-10-11 08:44:18,174 [ERROR] __main__: Error: No proxy configured (set NODEMAVEN_PROXY_URL)
+2025-10-11 08:44:18,174 [INFO] __main__: ================================================================================
+2025-10-11 08:44:20,174 [INFO] __main__: Testing Playwright with fingerprint painting...
+2025-10-11 08:44:20,175 [DEBUG] asyncio: Using selector: EpollSelector
+2025-10-11 08:44:21,629 [INFO] __main__: Navigating to: https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1
+2025-10-11 08:44:31,088 [INFO] __main__: Screenshot saved: /opt/realestate/logs/playwright_test.png
+2025-10-11 08:44:31,359 [INFO] __main__: Found 28 offer elements on page
+2025-10-11 08:44:31,489 [INFO] __main__: ================================================================================
+2025-10-11 08:44:31,489 [INFO] __main__: ✅ SUCCESS: Playwright with Stealth Fingerprint
+2025-10-11 08:44:31,489 [INFO] __main__: Duration: 11.31s
+2025-10-11 08:44:31,489 [INFO] __main__: Status Code: 200
+2025-10-11 08:44:31,489 [INFO] __main__: Response Size: 1816971 bytes
+2025-10-11 08:44:31,489 [WARNING] __main__: 🚫 BLOCKED by anti-bot
+2025-10-11 08:44:31,489 [ERROR] __main__: Error: Blocking detected: 'blocked' found in page
+2025-10-11 08:44:31,489 [DEBUG] __main__: Response Preview (first 500 chars):
+<!DOCTYPE html><html lang="ru" class="_25d45facb5--disabled-scroll--H27p1"><head><script type="text/javascript" async="" src="https://cdn.uxfeedback.ru/widget.js"></script><script async="" src="https://static.cdn-cian.ru/frontend/staging/frontend-sdk/analytics/ca.v1.js?8" data-analytics-api-url="//sopr-api.cian.ru/collect/" data-ab-use-base-url="https://api.cian.ru/ab-use/" data-ebc-analytics-base-url="https://api.cian.ru/ebc-analytics/" data-profile-session-key="7BABD884-A67E-11F0-90DE-DCC1C970
+2025-10-11 08:44:31,489 [INFO] __main__: ================================================================================
+2025-10-11 08:44:33,489 [INFO] __main__: ================================================================================
+2025-10-11 08:44:33,490 [INFO] __main__: ❌ FAILED: Playwright with Storage State
+2025-10-11 08:44:33,491 [INFO] __main__: Duration: 0.00s
+2025-10-11 08:44:33,492 [ERROR] __main__: Error: No storage state configured (set CIAN_STORAGE_STATE)
+2025-10-11 08:44:33,492 [INFO] __main__: ================================================================================
+2025-10-11 08:44:33,492 [INFO] __main__: 
+================================================================================
+2025-10-11 08:44:33,492 [INFO] __main__: 📊 TEST SUMMARY
+2025-10-11 08:44:33,492 [INFO] __main__: ================================================================================
+2025-10-11 08:44:33,492 [INFO] __main__: ❌ HTTP Direct (no proxy)                             🚫 BLOCKED 
+2025-10-11 08:44:33,492 [INFO] __main__:    Error: Blocked with status 404
+2025-10-11 08:44:33,492 [INFO] __main__: ❌ HTTP with Residential Proxy (NodeMaven)             
+2025-10-11 08:44:33,492 [INFO] __main__:    Error: No proxy configured (set NODEMAVEN_PROXY_URL)
+2025-10-11 08:44:33,492 [INFO] __main__: ✅ Playwright with Stealth Fingerprint                🚫 BLOCKED 
+2025-10-11 08:44:33,492 [INFO] __main__:    Error: Blocking detected: 'blocked' found in page
+2025-10-11 08:44:33,492 [INFO] __main__: ❌ Playwright with Storage State                       
+2025-10-11 08:44:33,492 [INFO] __main__:    Error: No storage state configured (set CIAN_STORAGE_STATE)
+2025-10-11 08:44:33,492 [INFO] __main__: ================================================================================
+2025-10-11 08:44:33,493 [INFO] __main__: Success Rate: 1/4 (25.0%)
+2025-10-11 08:44:33,494 [INFO] __main__: Results saved to: /opt/realestate/logs/antibot_test_results.json

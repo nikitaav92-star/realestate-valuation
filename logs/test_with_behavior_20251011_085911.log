@@ -1,0 +1,26 @@
+2025-10-11 08:59:11,693 [INFO] __main__: ================================================================================
+2025-10-11 08:59:11,693 [INFO] __main__: Testing with 'normal' behavior preset
+2025-10-11 08:59:11,693 [INFO] __main__: ================================================================================
+2025-10-11 08:59:11,693 [INFO] __main__: Using proxy: http://gate.nodemaven.com:8080
+2025-10-11 08:59:12,583 [INFO] __main__: Navigating to: https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1
+2025-10-11 08:59:22,094 [INFO] __main__: Page loaded: 200
+2025-10-11 08:59:22,095 [INFO] __main__: Starting human behavior simulation...
+2025-10-11 08:59:22,095 [INFO] etl.antibot.behavior: Starting human-like interaction sequence
+2025-10-11 09:00:22,482 [INFO] etl.antibot.behavior: Interaction sequence completed
+2025-10-11 09:00:22,766 [INFO] __main__: Screenshot saved: /opt/realestate/logs/cian_with_behavior_normal.png
+2025-10-11 09:00:22,877 [INFO] __main__: Found 56 offers
+2025-10-11 09:00:22,877 [INFO] __main__: Simulating hover on offer 1
+2025-10-11 09:00:24,622 [INFO] __main__: Simulating hover on offer 2
+2025-10-11 09:00:24,638 [WARNING] etl.antibot.behavior: Element not found: [data-name='LinkArea']:nth-child(2)
+2025-10-11 09:00:25,198 [INFO] __main__: Simulating hover on offer 3
+2025-10-11 09:00:25,208 [WARNING] etl.antibot.behavior: Element not found: [data-name='LinkArea']:nth-child(3)
+2025-10-11 09:00:25,732 [INFO] __main__: Scrolling to see more offers...
+2025-10-11 09:00:29,038 [INFO] __main__: Total offers visible: 56
+2025-10-11 09:00:29,320 [INFO] __main__: ================================================================================
+2025-10-11 09:00:29,320 [INFO] __main__: ✅ TEST COMPLETED SUCCESSFULLY
+2025-10-11 09:00:29,320 [INFO] __main__: ================================================================================
+2025-10-11 09:00:29,320 [INFO] __main__: Behavior Preset: normal
+2025-10-11 09:00:29,320 [INFO] __main__: Duration: 77.63s
+2025-10-11 09:00:29,320 [INFO] __main__: Offers Found: 56
+2025-10-11 09:00:29,320 [INFO] __main__: Proxy Used: http://gate.nodemaven.com:8080
+2025-10-11 09:00:29,320 [INFO] __main__: ================================================================================

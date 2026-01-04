@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "name": "cian-analytics",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "env": {
+    "PG_USER": "@pg_user",
+    "PG_PASS": "@pg_pass",
+    "PG_HOST": "@pg_host",
+    "PG_PORT": "@pg_port",
+    "PG_DB": "@pg_db"
+  }
+}
+

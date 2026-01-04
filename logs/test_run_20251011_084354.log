@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/opt/realestate/scripts/test_antibot_cian.py", line 24, in <module>
+    from etl.antibot import (
+ImportError: cannot import name 'create_stealth_context' from 'etl.antibot' (/opt/realestate/etl/antibot/__init__.py)

@@ -1,0 +1,34 @@
+jsonQuery:
+  region:
+    type: terms
+    value: [1]
+  engine_version:
+    type: term
+    value: 2
+  deal_type:
+    type: term
+    value: sale
+  offer_type:
+    type: term
+    value: flat
+  building_status:
+    type: term
+    value: secondary
+  is_apartments:
+    type: term
+    value: 0
+  is_share:
+    type: term
+    value: false
+  price:
+    type: range
+    value:
+      gte: 10000000
+      lte: 20000000
+  room:
+    type: terms
+    value: [3]
+limit: 28
+sort:
+  type: term
+  value: creation_date_desc

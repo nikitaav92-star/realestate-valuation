@@ -1,0 +1,45 @@
+jsonQuery:
+  region:
+    type: terms
+    value: [1]
+  engine_version:
+    type: term
+    value: 2
+  deal_type:
+    type: term
+    value: sale
+  offer_type:
+    type: term
+    value: flat
+  building_status:
+    type: term
+    value: secondary
+  object_type:
+    type: terms
+    value: [3]
+  is_apartments:
+    type: term
+    value: 0
+  is_share:
+    type: term
+    value: false
+  is_first_floor:
+    type: term
+    value: false
+  price:
+    type: range
+    value:
+      gte: 7000000
+      lte: 8000000
+  total_area:
+    type: range
+    value:
+      gte: 10
+      lte: 200
+  room:
+    type: terms
+    value: [3]
+limit: 28
+sort:
+  type: term
+  value: price_object_order_asc

@@ -1,0 +1,36 @@
+jsonQuery:
+  region:
+    type: terms
+    value: [1]        # Москва
+  engine_version:
+    type: term
+    value: 2
+  deal_type:
+    type: term
+    value: sale
+  offer_type:
+    type: term
+    value: flat
+  building_status:
+    type: term
+    value: secondary   # вторичка
+  # Без апартаментов
+  is_apartments:
+    type: term
+    value: 0
+  # Не показывать доли
+  is_share:
+    type: term
+    value: false
+  price:
+    type: range
+    value:
+      gte: 1000000
+      lte: 10000000
+  room:
+    type: terms
+    value: [1, 2, 3]
+limit: 28
+sort:
+  type: term
+  value: creation_date_desc

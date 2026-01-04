@@ -1,0 +1,56 @@
+2025-10-11 09:21:04,391 [INFO] ================================================================================
+2025-10-11 09:21:04,391 [INFO] 🚀 CAPTCHA-SOLVING STRATEGY TEST
+2025-10-11 09:21:04,391 [INFO] ================================================================================
+2025-10-11 09:21:04,391 [INFO] Target Pages: 10
+2025-10-11 09:21:04,391 [INFO] Proxy Strategy: First page only
+2025-10-11 09:21:04,391 [INFO] ================================================================================
+2025-10-11 09:21:04,391 [INFO] Loaded 10 proxies from pool
+2025-10-11 09:21:04,391 [INFO] Proxy pool: 10 proxies available
+2025-10-11 09:21:04,391 [INFO] ✅ Captcha solver enabled
+2025-10-11 09:21:05,046 [INFO] Using proxy: http://gate.nodemaven.com:8080
+2025-10-11 09:21:05,046 [INFO] 📡 Page 1: WITH PROXY
+2025-10-11 09:21:05,206 [INFO] Scraping page 1...
+2025-10-11 09:21:12,974 [INFO] ✅ Page 1: 28 offers | Total: 28 | Captchas: 0 | Cost: $0.0000 | Time: 7.9s
+2025-10-11 09:21:13,512 [INFO] Scraping page 2...
+2025-10-11 09:21:16,840 [INFO] ✅ Page 2: 28 offers | Total: 56 | Captchas: 0 | Cost: $0.0000 | Time: 3.3s
+2025-10-11 09:21:17,737 [INFO] Scraping page 3...
+2025-10-11 09:21:21,377 [INFO] ✅ Page 3: 28 offers | Total: 84 | Captchas: 0 | Cost: $0.0000 | Time: 3.6s
+2025-10-11 09:21:21,987 [INFO] Scraping page 4...
+2025-10-11 09:21:25,059 [INFO] ✅ Page 4: 28 offers | Total: 112 | Captchas: 0 | Cost: $0.0000 | Time: 3.1s
+2025-10-11 09:21:26,013 [INFO] Scraping page 5...
+2025-10-11 09:21:29,492 [INFO] ✅ Page 5: 28 offers | Total: 140 | Captchas: 0 | Cost: $0.0000 | Time: 3.5s
+2025-10-11 09:21:30,454 [INFO] Scraping page 6...
+2025-10-11 09:21:33,674 [INFO] ✅ Page 6: 28 offers | Total: 168 | Captchas: 0 | Cost: $0.0000 | Time: 3.2s
+2025-10-11 09:21:34,477 [INFO] Scraping page 7...
+2025-10-11 09:21:37,631 [INFO] ✅ Page 7: 28 offers | Total: 196 | Captchas: 0 | Cost: $0.0000 | Time: 3.2s
+2025-10-11 09:21:38,359 [INFO] Scraping page 8...
+2025-10-11 09:21:42,570 [INFO] ✅ Page 8: 28 offers | Total: 224 | Captchas: 0 | Cost: $0.0000 | Time: 4.2s
+2025-10-11 09:21:43,399 [INFO] Scraping page 9...
+2025-10-11 09:21:47,313 [INFO] ✅ Page 9: 28 offers | Total: 252 | Captchas: 0 | Cost: $0.0000 | Time: 3.9s
+2025-10-11 09:21:48,033 [INFO] Scraping page 10...
+2025-10-11 09:21:51,199 [INFO] ✅ Page 10: 28 offers | Total: 280 | Captchas: 0 | Cost: $0.0000 | Time: 3.2s
+2025-10-11 09:21:52,108 [INFO] 
+================================================================================
+2025-10-11 09:21:52,108 [INFO] 📊 FINAL RESULTS
+2025-10-11 09:21:52,108 [INFO] ================================================================================
+2025-10-11 09:21:52,108 [INFO] Pages Scraped: 10/10
+2025-10-11 09:21:52,109 [INFO] Offers Collected: 280
+2025-10-11 09:21:52,109 [INFO] Captchas Solved: 0
+2025-10-11 09:21:52,110 [INFO] Captcha Cost: $0.0000
+2025-10-11 09:21:52,110 [INFO] Proxy Used: 1 pages
+2025-10-11 09:21:52,110 [INFO] No Proxy: 0 pages
+2025-10-11 09:21:52,110 [INFO] Cookie Refreshes: 10
+2025-10-11 09:21:52,110 [INFO] Blocks: 0
+2025-10-11 09:21:52,110 [INFO] Total Time: 48s (0.8 min)
+2025-10-11 09:21:52,110 [INFO] Speed: 352 offers/min
+2025-10-11 09:21:52,110 [INFO] Avg Cost/Page: $0.0000
+2025-10-11 09:21:52,110 [INFO] ================================================================================
+2025-10-11 09:21:52,110 [INFO] 📈 PROJECTIONS FOR 100,000 OFFERS
+2025-10-11 09:21:52,110 [INFO] ================================================================================
+2025-10-11 09:21:52,110 [INFO] Estimated Pages: 3571
+2025-10-11 09:21:52,110 [INFO] Estimated Time: 284 minutes (4.7 hours)
+2025-10-11 09:21:52,110 [INFO] Estimated Captcha Cost: $0.00
+2025-10-11 09:21:52,110 [INFO] Proxy Cost (if used): $320.87
+2025-10-11 09:21:52,110 [INFO] Savings: $320.87 (100.0%)
+2025-10-11 09:21:52,110 [INFO] ================================================================================
+2025-10-11 09:21:52,111 [INFO] Metrics saved to: /opt/realestate/logs/captcha_strategy_metrics.json

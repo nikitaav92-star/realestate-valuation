@@ -1,0 +1,332 @@
+# Context7 MCP Configuration for Real Estate Platform
+# https://github.com/upstash/context7
+# Last updated: 2024-12-24
+
+# Project metadata
+project:
+  name: realestate-platform
+  description: |
+    Multi-source data platform for real estate analytics with:
+    - CIAN.ru scraper with anti-bot protection
+    - Property valuation API (KNN + Grid hybrid)
+    - Investment calculator & PDF reports
+    - Encumbrance analysis
+    - Interactive map interface
+    - Telegram bot integration
+  version: 2.0.0
+  language: python
+  frameworks:
+    - fastapi
+    - flask
+    - playwright
+    - nextjs
+
+# Indexing rules
+index:
+  # Include these directories
+  include:
+    - etl/
+    - api/
+    - web/
+    - db/
+    - tests/
+    - scripts/
+    - telegram_bot/
+    - frontend/
+    - infra/
+    - docs/
+    - config/
+    - .speckit/
+
+  # Exclude these patterns
+  exclude:
+    - "**/__pycache__"
+    - "**/*.pyc"
+    - "**/venv"
+    - "**/node_modules"
+    - "**/.git"
+    - "**/logs"
+    - "**/config/cian_browser_state.json"
+    - "**/config/proxy_pool.txt"
+    - "**/db/data"
+    - "**/.pytest_cache"
+    - "**/vendor"
+    - "**/reports"
+    - "**/.next"
+
+  # File types to index
+  extensions:
+    - .py
+    - .sql
+    - .md
+    - .yaml
+    - .yml
+    - .json
+    - .sh
+    - .conf
+    - .dockerfile
+    - .tsx
+    - .ts
+    - .html
+
+# Code documentation preferences
+documentation:
+  # Key entry points for AI to understand
+  entry_points:
+    # CIAN Scraper
+    - etl/collector_cian/cli.py
+    - etl/collector_cian/browser_fetcher.py
+    - etl/collector_cian/mapper.py
+    # Valuation API
+    - api/v1/valuation.py
+    - api/v1/investment_calculator.py
+    - api/v1/report_generator.py
+    # Web interfaces
+    - web/app.py
+    - web/routes/listings.py
+    - web/routes/local_valuation.py
+    # Telegram Bot
+    - telegram_bot/bot.py
+    # ETL Modules
+    - etl/upsert.py
+    - etl/geocoder.py
+    - etl/encumbrance_analyzer.py
+
+  # Critical files to always include in context
+  always_include:
+    - .speckit/constitution/project-constitution.md
+    - README.md
+    - QUICKSTART.md
+    - db/schema.sql
+    - docker-compose.yml
+    - requirements.txt
+
+  # Architecture documentation
+  architecture:
+    style: layered
+    layers:
+      - name: API Layer
+        description: FastAPI & Flask endpoints
+        files:
+          - api/v1/valuation.py
+          - api/v1/investment_calculator.py
+          - api/v1/report_generator.py
+          - api/v1/geocode_helper.py
+          - web/app.py
+          - web/routes/*.py
+      - name: ETL Layer
+        description: Data collection & transformation
+        files:
+          - etl/collector_cian/*.py
+          - etl/product_scraper/*.py
+          - etl/upsert.py
+          - etl/geocoder.py
+          - etl/encumbrance_analyzer.py
+      - name: Valuation Engine
+        description: Property price estimation
+        files:
+          - etl/valuation/knn_searcher.py
+          - etl/valuation/grid_estimator.py
+          - etl/valuation/hybrid_engine.py
+          - etl/valuation/combined_engine.py
+      - name: Anti-bot Layer
+        description: Bot protection bypass
+        files:
+          - etl/antibot/captcha.py
+          - etl/antibot/proxy.py
+          - etl/antibot/fingerprint.py
+          - etl/antibot/retry.py
+          - etl/antibot/storage.py
+      - name: Persistence Layer
+        description: Database operations
+        files:
+          - etl/upsert.py
+          - db/schema.sql
+          - db/schema_products.sql
+      - name: Frontend
+        description: Next.js web application
+        files:
+          - frontend/app/*.tsx
+          - frontend/components/*.tsx
+
+# Search optimization
+search:
+  # When AI asks about these topics, prioritize these files
+  topic_mapping:
+    # Core scraping
+    parsing:
+      - etl/collector_cian/browser_fetcher.py
+      - etl/collector_cian/mapper.py
+      - etl/collector_cian/mapper_v2.py
+
+    scraping:
+      - etl/collector_cian/cli.py
+      - etl/collector_cian/browser_fetcher.py
+      - etl/product_scraper/
+
+    antibot:
+      - etl/antibot/
+      - etl/collector_cian/proxy_manager.py
+      - etl/collector_cian/captcha_solver.py
+
+    # Valuation system
+    valuation:
+      - api/v1/valuation.py
+      - etl/valuation/knn_searcher.py
+      - etl/valuation/grid_estimator.py
+      - etl/valuation/hybrid_engine.py
+      - etl/valuation/combined_engine.py
+
+    estimation:
+      - api/v1/valuation.py
+      - api/v1/investment_calculator.py
+      - scripts/estimate_price.py
+
+    investment:
+      - api/v1/investment_calculator.py
+      - api/v1/report_generator.py
+
+    reports:
+      - api/v1/report_generator.py
+      - api/v1/html_report_generator.py
+
+    # Data & Database
+    database:
+      - db/schema.sql
+      - db/schema_products.sql
+      - etl/upsert.py
+
+    geocoding:
+      - etl/geocoder.py
+      - api/v1/geocode_helper.py
+      - scripts/geocode_all_listings.py
+      - scripts/normalize_fias.py
+
+    address:
+      - etl/address_parser.py
+      - etl/geocoder.py
+      - scripts/normalize_fias.py
+
+    encumbrance:
+      - etl/encumbrance_analyzer.py
+      - web/routes/encumbrances.py
+      - scripts/alert_new_encumbrances.py
+
+    # Web interfaces
+    web:
+      - web/app.py
+      - web/routes/
+      - web/templates/
+      - web/api.py
+      - web/api_map.py
+
+    api:
+      - api/v1/valuation.py
+      - api/v1/investment_calculator.py
+      - web/api.py
+
+    map:
+      - web/api_map.py
+      - web/routes/listings.py
+      - web/templates/listings/
+
+    frontend:
+      - frontend/
+      - frontend/app/
+      - frontend/components/
+
+    # Telegram
+    telegram:
+      - telegram_bot/bot.py
+      - telegram_bot/egrn_parser.py
+      - telegram_bot/smart_params.py
+
+    bot:
+      - telegram_bot/
+
+    # Testing & QA
+    testing:
+      - tests/
+      - scripts/test_*.py
+
+    # Infrastructure
+    deployment:
+      - docker-compose.yml
+      - infra/
+      - infra/systemd/
+      - infra/nginx/
+
+    infrastructure:
+      - infra/
+      - docker-compose.yml
+
+    # SpecKit
+    bugs:
+      - .speckit/bugs/
+
+    tasks:
+      - .speckit/tasks/
+
+    architecture:
+      - .speckit/constitution/
+      - .speckit/PROJECT-MAP.md
+      - README.md
+
+    # Scripts & utilities
+    scripts:
+      - scripts/
+      - scripts/run_aggregation.py
+      - scripts/geocode_all_listings.py
+
+# AI prompt enhancement
+ai_context:
+  # System context to prepend
+  system_prompt: |
+    This is a comprehensive real estate analytics platform with the following components:
+
+    1. **CIAN Scraper** - Collects property listings from CIAN.ru
+       - Anti-bot protection (proxies, captcha solving, fingerprinting)
+       - SCD Type 2 data model for price history tracking
+
+    2. **Valuation API** - Estimates property prices
+       - Hybrid KNN + Grid search algorithm
+       - Investment calculator with ROI metrics
+       - PDF/HTML report generation
+
+    3. **Web Interface** - Flask-based dashboard
+       - Interactive map with Leaflet
+       - Property listings with filters
+       - Encumbrance analysis
+
+    4. **Telegram Bot** - Notifications and EGRN parsing
+
+    5. **Frontend** - Next.js application (in development)
+
+    Tech stack: Python 3.13, FastAPI, Flask, Playwright, PostgreSQL + PostGIS, Next.js
+
+  # Code style guidelines
+  style_guide:
+    - Follow PEP 8
+    - Use type hints (Python 3.10+ syntax)
+    - Prefer async/await for I/O operations
+    - Log all HTTP requests with timing
+    - Validate data before DB insert
+    - Use Pydantic models for API schemas
+    - Keep functions focused and under 50 lines
+
+# Performance
+cache:
+  ttl: 3600  # Cache indexed content for 1 hour
+  max_size: 150MB
+
+# Integration
+integrations:
+  github:
+    repo: nikitaav92-star/realestate
+    branch: fix1
+
+  speckit:
+    enabled: true
+    constitution: .speckit/constitution/project-constitution.md
+    tasks_dir: .speckit/tasks/
+    bugs_dir: .speckit/bugs/

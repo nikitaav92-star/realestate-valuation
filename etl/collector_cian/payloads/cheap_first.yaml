@@ -1,0 +1,73 @@
+# Парсинг от самых дешёвых квартир (по цене за м²)
+
+jsonQuery:
+  # Регион: Москва
+  region:
+    type: terms
+    value: [1]
+  
+  engine_version:
+    type: term
+    value: 2
+  
+  # Тип сделки: продажа
+  deal_type:
+    type: term
+    value: sale
+  
+  # Категория: Квартиры
+  offer_type:
+    type: term
+    value: flat
+  
+  # Тип жилья: вторичка (исключаем новостройки)
+  building_status:
+    type: term
+    value: secondary
+  
+  # Дополнительно исключаем новостройки через category
+  # category: flatSale - только вторичный рынок (не новостройки)
+  category:
+    type: term
+    value: flatSale
+  
+  # Цена: до 30 000 000 ₽
+  price:
+    type: range
+    value:
+      lte: 30000000
+  
+  # Площадь: минимум 20 м² (исключает доли квартир)
+  area:
+    type: range
+    value:
+      gte: 20
+  
+  # Этаж: от 2 (не первый этаж)
+  floor:
+    type: range
+    value:
+      gte: 2
+  
+  # Количество комнат: студия, 1-к, 2-к, 3-к
+  room:
+    type: terms
+    value: [0, 1, 2, 3]
+  
+  # Категория: только квартиры (исключаем доли, апартаменты)
+  category:
+    type: term
+    value: flatSale
+  
+  # Исключить доли квартир через минус-слова
+  keywords:
+    type: terms
+    value: ["-доля", "-доли", "-долевая", "-share", "-аукцион", "-торги"]
+
+# Лимит объявлений на страницу
+limit: 28
+
+# СОРТИРОВКА: по цене за м² (от дешёвых к дорогим)
+sort:
+  type: term
+  value: price_object_order_asc

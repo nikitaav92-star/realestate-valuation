@@ -1,0 +1,68 @@
+# Mass collection payload - optimized for comprehensive data gathering
+# Collects all secondary market apartments in Moscow up to 30M rubles
+
+jsonQuery:
+  # Region: Moscow
+  region:
+    type: terms
+    value: [1]
+
+  engine_version:
+    type: term
+    value: 2
+
+  # Deal type: sale
+  deal_type:
+    type: term
+    value: sale
+
+  # Category: Apartments (excluding rooms, apartments-style housing)
+  offer_type:
+    type: term
+    value: flat
+
+  # Housing type: secondary market (excluding new buildings)
+  building_status:
+    type: term
+    value: secondary
+
+  # Additional filter: only flats, not apartments
+  category:
+    type: term
+    value: flatSale
+
+  # Price: up to 30,000,000 RUB
+  price:
+    type: range
+    value:
+      lte: 30000000
+
+  # Area: minimum 15 m² (excludes shares)
+  area:
+    type: range
+    value:
+      gte: 15
+
+  # Floor: from 2nd (not ground floor)
+  floor:
+    type: range
+    value:
+      gte: 2
+
+  # Rooms: studio, 1-room, 2-room, 3-room
+  room:
+    type: terms
+    value: [0, 1, 2, 3]
+
+  # Exclude shares, auctions via keywords
+  keywords:
+    type: terms
+    value: ["-доля", "-доли", "-долевая", "-аукцион", "-торги", "-банкротство"]
+
+# Items per page (CIAN max is 28)
+limit: 28
+
+# Sort by price per m² ascending - starts with cheapest deals
+sort:
+  type: term
+  value: price_object_order_asc

@@ -1,0 +1,13 @@
+{
+  "start_time": 1764705155.897629,
+  "pages_scraped": 0,
+  "offers_collected": 0,
+  "blocks_encountered": 0,
+  "captchas_encountered": 0,
+  "cookie_refreshes": 0,
+  "errors": [
+    "No proxy configured"
+  ],
+  "elapsed_time": 0.0014832019805908203,
+  "offers_per_minute": 0.0
+}

@@ -1,0 +1,421 @@
+{
+  "cookies": [
+    {
+      "name": "_CIAN_GK",
+      "value": "7b715316-8921-47b7-ae6d-e197913d8081",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1794734468.490148,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_yasc",
+      "value": "+8P7dxmmFWCB/nFtOmQT7HrdmWfitAZHiXuBmFT6/Jh2iXafUMOnR4UfLRC6RBo=",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1794734468.490418,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_gcl_au",
+      "value": "1.1.935480347.1760174472",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1767950472,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "number_banner_appearances",
+      "value": "1",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1760433672,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "tmr_lvid",
+      "value": "9b7a70c3848bc34629f678bd1bc5e3d3",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1788945706,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "tmr_lvidTS",
+      "value": "1760174473052",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1788945706,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "i",
+      "value": "luO2Ne5d9IoWjOvH5PakbhugtZHlcHmiN051h13YYdMbzIbauotkj/3wT0PxKXf7pzoBd5yd69DURHufipnw6N+cnBE=",
+      "domain": ".yandex.ru",
+      "path": "/",
+      "expires": 1794734473.299803,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "yandexuid",
+      "value": "6258342111760174473",
+      "domain": ".yandex.ru",
+      "path": "/",
+      "expires": 1794734478.359776,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "yashr",
+      "value": "4263625751760174473",
+      "domain": ".yandex.ru",
+      "path": "/",
+      "expires": 1791710473,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None",
+      "partitionKey": "https://cian.ru",
+      "_crHasCrossSiteAncestor": true
+    },
+    {
+      "name": "__ai_fp_uuid",
+      "value": "b625b64953932e31%3A1",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1791710474,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "ma_id",
+      "value": "2832985731760174474419",
+      "domain": ".mts.ru",
+      "path": "/",
+      "expires": 1794734474.453002,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "domain_sid",
+      "value": "BJGdX91JVrNXD6rcYQGRS%3A1760174474474",
+      "domain": "spb.cian.ru",
+      "path": "/",
+      "expires": 1760779274.47679,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__upin",
+      "value": "ulw3VyhKHEbvUNGRC3eyAQ",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1794734474.675031,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ma_last_sync",
+      "value": "1760174474742",
+      "domain": ".mts.ru",
+      "path": "/",
+      "expires": 1794734474.775994,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "ma_id",
+      "value": "2832985731760174474419",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1760779274.781529,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "yuidss",
+      "value": "6258342111760174473",
+      "domain": ".yandex.ru",
+      "path": "/",
+      "expires": 1794734478.359905,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_ga",
+      "value": "GA1.1.1812061659.1760174475",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1794734509.743847,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "domain_sid",
+      "value": "BRdeS_xahHwxovud0mjkQ%3A1760174476731",
+      "domain": "www.cian.ru",
+      "path": "/",
+      "expires": 1760779276.734013,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "sopr_utm",
+      "value": "%7B%22utm_source%22%3A+%22direct%22%2C+%22utm_medium%22%3A+%22None%22%7D",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1761384077.878728,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "sopr_session",
+      "value": "d629195910904d79",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1760176290.59003,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ym_uid",
+      "value": "1760174478962963681",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1791710477,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_ym_d",
+      "value": "1760174478",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1791710477,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "uxfb_usertype",
+      "value": "searcher",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1794734478.008884,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "remixlang",
+      "value": "0",
+      "domain": ".vk.com",
+      "path": "/",
+      "expires": 1791532230.331273,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "remixstlid",
+      "value": "9084822334102067131_3ILzUBSy6ENa6ZjJoNKg4WST0cOpkcVjAeuUl7PPD2o",
+      "domain": ".vk.com",
+      "path": "/",
+      "expires": 1791710478.331298,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "yabs-sid",
+      "value": "1081437741760174478",
+      "domain": "mc.yandex.ru",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "ymex",
+      "value": "2075534478.yrts.1760174478",
+      "domain": ".yandex.ru",
+      "path": "/",
+      "expires": 1791710478,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_ym_isad",
+      "value": "2",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1760246478,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "mpid",
+      "value": "NjhlYTIxOGUwOTQyYTY1ZA==",
+      "domain": ".otm-r.com",
+      "path": "/",
+      "expires": 1791710490.980611,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "mpid",
+      "value": "NjhlYTIxOGUwOTQyYTY1ZA==",
+      "domain": ".otm-r.com",
+      "path": "/",
+      "expires": 1791710490.980667,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None",
+      "partitionKey": "https://cian.ru",
+      "_crHasCrossSiteAncestor": true
+    },
+    {
+      "name": "_ym_visorc",
+      "value": "b",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1760176291,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "AFFICHE_W",
+      "value": "Xg4HeatC0Pde45",
+      "domain": ".weborama-tech.ru",
+      "path": "/",
+      "expires": 1794129678.698695,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "uxs_uid",
+      "value": "a5030310-a683-11f0-bccb-97a85a634252",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1794734478,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "vid",
+      "value": "c63f9f5118426f091141",
+      "domain": ".hybrid.ai",
+      "path": "/",
+      "expires": 1791710734.760738,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_spx",
+      "value": "eyJpZCI6IjEzNjdiMTE3LWI0Y2YtNDRkMy1hNzI4LTFhZTcyNWNkMDk0MyIsInNvdXJjZSI6IiIsImZpeGVkIjp7InN0YWNrIjpbMTI3MzU3MDI2NiwxMjczNTcwMjY5XX19",
+      "domain": "www.cian.ru",
+      "path": "/",
+      "expires": 1760178091.069473,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "bh",
+      "value": "EkIiQ2hyb21pdW0iO3Y9IjE0MCIsICJOb3Q9QT9CcmFuZCI7dj0iMjQiLCAiSGVhZGxlc3NDaHJvbWUiO3Y9IjE0MCIaA2FybSINMTQwLjAuNzMzOS4xNioCPzE6CSJBbmRyb2lkIkICMTNKAjY0UloiQ2hyb21pdW0iO3Y9IjE0MC4wLjczMzkuMTYiLCJOb3Q9QT9CcmFuZCI7dj0iMjQuMC4wLjAiLCJIZWFkbGVzc0Nocm9tZSI7dj0iMTQwLjAuNzMzOS4xNiJgm8OoxwZqHtzKpewGz5+AyAj/o+7rA/y5r/8H3/3vxwzltc2HCA==",
+      "domain": ".yandex.ru",
+      "path": "/",
+      "expires": 1794734491.172892,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "lastSearchLink",
+      "value": "https%3A%2F%2Fwww.cian.ru%2Fcat.php%3Fdeal_type%3Dsale%26engine_version%3D2%26offer_type%3Dflat%26region%3D1%26p%3D9",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "tmr_detect",
+      "value": "0%7C1760174509703",
+      "domain": "www.cian.ru",
+      "path": "/",
+      "expires": 1760260909,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_3369S417EL",
+      "value": "GS2.1.s1760174475$o1$g1$t1760174509$j26$l0$h0",
+      "domain": ".cian.ru",
+      "path": "/",
+      "expires": 1794734509.743143,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "PVID",
+      "value": "2Ekvjn3h2noZ00002r1hPKYZ:::0-0-0-e047a49-0-e047a6d:CAASEOl8ePWidHSgBeTrPMwuXOwaYJ7xNxJHkdM7PM1vIJd68MoyRPxp9_wjUdhcx8-kC0GN3Q5qJZVC0bwOULuodwZeYt5NPJJY4rF7qNjt8IE_93p6A7APfLadCenGooIX9COSd-rt59mRHVdxWXfQE_bfcw",
+      "domain": "top-fwz1.mail.ru",
+      "path": "/",
+      "expires": 1791796909.84495,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None",
+      "partitionKey": "https://cian.ru",
+      "_crHasCrossSiteAncestor": true
+    },
+    {
+      "name": "VID",
+      "value": "2Ekvjn3h2noZ00002r1hPKYZ:::0-0-0-e047a49-0-e047a6d:CAASEOl8ePWidHSgBeTrPMwuXOwaYJ7xNxJHkdM7PM1vIJd68MoyRPxp9_wjUdhcx8-kC0GN3Q5qJZVC0bwOULuodwZeYt5NPJJY4rF7qNjt8IE_93p6A7APfLadCenGooIX9COSd-rt59mRHVdxWXfQE_bfcw",
+      "domain": ".mail.ru",
+      "path": "/",
+      "expires": 1791796909.844981,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    }
+  ],
+  "origins": []
+}

@@ -1,0 +1,62 @@
+2025-10-11 09:10:20,508 [INFO] Using proxy: http://gate.nodemaven.com:8080
+2025-10-11 09:10:21,684 [INFO] ================================================================================
+2025-10-11 09:10:21,685 [INFO] 🚀 Starting mass scraping
+2025-10-11 09:10:21,685 [INFO] Target: 3,000 offers
+2025-10-11 09:10:21,685 [INFO] Max pages: 60
+2025-10-11 09:10:21,685 [INFO] Cookie refresh: every 20 pages
+2025-10-11 09:10:21,685 [INFO] ================================================================================
+2025-10-11 09:10:35,703 [WARNING] 🤖 Captcha at page 1
+2025-10-11 09:11:10,710 [ERROR] Error scraping page 1: Page.goto: Timeout 30000ms exceeded.
+Call log:
+  - navigating to "https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1", waiting until "domcontentloaded"
+
+2025-10-11 09:11:10,710 [WARNING] 🚫 Blocked at page 1: Page.goto: Timeout 30000ms exceeded.
+Call log:
+  - navigating to "https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1", waiting until "domcontentloaded"
+
+2025-10-11 09:11:20,559 [ERROR] Error scraping page 1: Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1
+Call log:
+  - navigating to "https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1", waiting until "domcontentloaded"
+
+2025-10-11 09:11:20,560 [WARNING] 🚫 Blocked at page 1: Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1
+Call log:
+  - navigating to "https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1", waiting until "domcontentloaded"
+
+2025-10-11 09:11:35,842 [ERROR] Error scraping page 1: Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1
+Call log:
+  - navigating to "https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1", waiting until "domcontentloaded"
+
+2025-10-11 09:11:35,842 [WARNING] 🚫 Blocked at page 1: Page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1
+Call log:
+  - navigating to "https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&offer_type=flat&region=1", waiting until "domcontentloaded"
+
+2025-10-11 09:11:35,842 [ERROR] Too many consecutive blocks, stopping
+2025-10-11 09:11:35,957 [INFO] 
+================================================================================
+2025-10-11 09:11:35,957 [INFO] 📊 FINAL RESULTS
+2025-10-11 09:11:35,958 [INFO] ================================================================================
+2025-10-11 09:11:35,958 [INFO] Pages Scraped: 0
+2025-10-11 09:11:35,958 [INFO] Offers Collected: 0/3,000
+2025-10-11 09:11:35,958 [INFO] Success Rate: -3/0 pages
+2025-10-11 09:11:35,958 [INFO] Blocks Encountered: 3
+2025-10-11 09:11:35,958 [INFO] Captchas Encountered: 1
+2025-10-11 09:11:35,958 [INFO] Cookie Refreshes: 0
+2025-10-11 09:11:35,959 [INFO] Total Time: 75s (1.3 min)
+2025-10-11 09:11:35,959 [INFO] Avg Speed: 0 offers/min
+2025-10-11 09:11:35,959 [INFO] ================================================================================
+2025-10-11 09:11:35,960 [INFO] Metrics saved to: /opt/realestate/logs/mass_scraping_metrics.json
+2025-12-02 19:52:35,897 [ERROR] No proxy configured!
+2025-12-02 19:52:35,897 [INFO] 
+================================================================================
+2025-12-02 19:52:35,898 [INFO] 📊 FINAL RESULTS
+2025-12-02 19:52:35,898 [INFO] ================================================================================
+2025-12-02 19:52:35,898 [INFO] Pages Scraped: 0
+2025-12-02 19:52:35,898 [INFO] Offers Collected: 0/100,000
+2025-12-02 19:52:35,898 [INFO] Success Rate: 0/0 pages
+2025-12-02 19:52:35,898 [INFO] Blocks Encountered: 0
+2025-12-02 19:52:35,898 [INFO] Captchas Encountered: 0
+2025-12-02 19:52:35,898 [INFO] Cookie Refreshes: 0
+2025-12-02 19:52:35,898 [INFO] Total Time: 0s (0.0 min)
+2025-12-02 19:52:35,898 [INFO] Avg Speed: 0 offers/min
+2025-12-02 19:52:35,898 [INFO] ================================================================================
+2025-12-02 19:52:35,899 [INFO] Metrics saved to: /home/ubuntu/realestate/logs/mass_scraping_metrics.json
