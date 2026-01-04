@@ -270,57 +270,33 @@ def check_proxy_connections() -> dict:
 
 
 def get_nodemaven_traffic() -> dict:
-    """Get NodeMaven traffic usage from API.
+    """Get NodeMaven proxy status with connection test.
 
-    Requires NODEMAVEN_API_KEY in environment.
-    NodeMaven API: https://api.nodemaven.com/v1/account/usage
+    Tests proxy connectivity and returns IP/response time.
+    Note: Traffic remaining requires dashboard.nodemaven.com (API unavailable).
     """
-    import httpx
-
-    api_key = os.getenv('NODEMAVEN_API_KEY')
-    if not api_key:
-        return {
-            'error': 'NODEMAVEN_API_KEY не настроен',
-            'configured': False
-        }
-
     try:
-        # NodeMaven API endpoint for usage
-        response = httpx.get(
-            'https://api.nodemaven.com/v1/account/usage',
-            headers={'Authorization': f'Bearer {api_key}'},
-            timeout=10
+        from etl.collector_cian.nodemaven_proxy import (
+            PROXY_USER, PROXY_HOST, test_proxy
         )
 
-        if response.status_code == 200:
-            data = response.json()
-            # Typical response format:
-            # {
-            #   "data_used_gb": 6.56,
-            #   "data_limit_gb": 10.0,
-            #   "data_remaining_gb": 3.44,
-            #   "requests_count": 12345,
-            #   "period_start": "2025-01-01",
-            #   "period_end": "2025-01-31"
-            # }
-            return {
-                'configured': True,
-                'used_gb': data.get('data_used_gb', 0),
-                'limit_gb': data.get('data_limit_gb', 0),
-                'remaining_gb': data.get('data_remaining_gb', 0),
-                'requests': data.get('requests_count', 0),
-                'period_start': data.get('period_start'),
-                'period_end': data.get('period_end'),
-            }
-        elif response.status_code == 401:
-            return {'error': 'Неверный API ключ', 'configured': True}
-        else:
-            return {'error': f'API error: {response.status_code}', 'configured': True}
+        # Test proxy connection
+        test_result = test_proxy("ru", timeout=15)
 
-    except httpx.TimeoutException:
-        return {'error': 'API timeout', 'configured': True}
+        return {
+            'configured': True,
+            'user': PROXY_USER.split('_')[0],  # nikita
+            'host': PROXY_HOST,
+            'test_ok': test_result.get('ok', False),
+            'proxy_ip': test_result.get('ip'),
+            'response_time': test_result.get('response_time'),
+            'error': test_result.get('error'),
+        }
+
+    except ImportError as e:
+        return {'configured': False, 'error': f'Модуль не найден: {e}'}
     except Exception as e:
-        return {'error': str(e), 'configured': True}
+        return {'configured': False, 'error': str(e)}
 
 
 def format_status_message() -> str:
@@ -808,17 +784,17 @@ def format_compact_status() -> str:
         }
         parser_lines.append(f"  {icon} <b>{short_names[name]}</b>: {info}")
 
-    # Traffic bar
-    if not traffic.get('error'):
-        used = traffic.get('used_gb', 0)
-        limit = traffic.get('limit_gb', 10)
-        percent = (used / limit * 100) if limit > 0 else 0
-        bar_filled = int(percent / 10)
-        bar_empty = 10 - bar_filled
-        traffic_bar = '█' * bar_filled + '░' * bar_empty
-        traffic_line = f"{traffic_bar} {used:.1f}/{limit:.0f} GB ({percent:.0f}%)"
+    # Proxy test result
+    if traffic.get('test_ok'):
+        proxy_ip = traffic.get('proxy_ip', 'unknown')
+        response_time = traffic.get('response_time', 0)
+        traffic_line = f"✅ OK ({proxy_ip}, {response_time}с)"
+    elif traffic.get('error'):
+        traffic_line = f"❌ {traffic.get('error')}"
+    elif not traffic.get('configured'):
+        traffic_line = "⚠️ Не настроен"
     else:
-        traffic_line = f"⚠️ {traffic.get('error', 'N/A')}"
+        traffic_line = "⚠️ Не отвечает"
 
     # Cookies status
     if cookies['exists']:
@@ -848,7 +824,7 @@ def format_compact_status() -> str:
 {chr(10).join(parser_lines)}
 
 <b>🔒 ПРОКСИ:</b> {proxy_icon} {proxy_status}
-   Трафик: {traffic_line}
+   Тест: {traffic_line}
    Cookies: {cookies_line}
 
 <b>💻 СЕРВЕР:</b>
