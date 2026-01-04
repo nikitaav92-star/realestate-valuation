@@ -22,14 +22,28 @@ def get_auctions_db():
     """
     Get database connection for AUCTIONS database.
     SEPARATE from main realestate DB!
+
+    Raises:
+        ValueError: If AUCTIONS database credentials are not configured.
     """
-    dsn = os.getenv("AUCTIONS_DATABASE_URL") or os.getenv("AUCTIONS_PG_DSN") or (
-        f"postgresql://{os.getenv('PG_USER', 'realuser')}:"
-        f"{os.getenv('PG_PASS', 'strongpass123')}@"
-        f"{os.getenv('PG_HOST', 'localhost')}:"
-        f"{os.getenv('AUCTIONS_PG_PORT', '5433')}/"  # Different port!
-        f"{os.getenv('AUCTIONS_PG_DB', 'auctionsdb')}"
-    )
+    dsn = os.getenv("AUCTIONS_DATABASE_URL") or os.getenv("AUCTIONS_PG_DSN")
+
+    if not dsn:
+        # Try building from components
+        user = os.getenv("PG_USER")
+        password = os.getenv("PG_PASS")
+        host = os.getenv("PG_HOST", "localhost")
+        port = os.getenv("AUCTIONS_PG_PORT", "5433")  # Different port!
+        database = os.getenv("AUCTIONS_PG_DB")
+
+        if not all([user, password, database]):
+            raise ValueError(
+                "Auctions database credentials not configured. "
+                "Set AUCTIONS_DATABASE_URL or (PG_USER, PG_PASS, AUCTIONS_PG_DB) in .env file."
+            )
+
+        dsn = f"postgresql://{user}:{password}@{host}:{port}/{database}"
+
     return psycopg2.connect(dsn)
 
 

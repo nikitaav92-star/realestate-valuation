@@ -7,15 +7,10 @@ from flask import Blueprint, jsonify, request
 import psycopg2
 import psycopg2.extras
 import json
-import os
+
+from web.utils.db import get_db
 
 map_bp = Blueprint('map', __name__, url_prefix='/api/map')
-
-
-def get_db():
-    """Get database connection."""
-    dsn = os.getenv("PG_DSN", "postgresql://realuser:strongpass123@localhost:5432/realdb")
-    return psycopg2.connect(dsn)
 
 
 @map_bp.route('/districts', methods=['GET'])

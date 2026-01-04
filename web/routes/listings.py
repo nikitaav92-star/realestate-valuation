@@ -2,21 +2,10 @@
 from flask import Blueprint, render_template, jsonify, request
 import psycopg2
 from psycopg2.extras import DictCursor
-import os
+
+from web.utils.db import get_db_connection
 
 bp = Blueprint('listings', __name__, url_prefix='/listings')
-
-
-def get_db_connection():
-    """Get database connection."""
-    dsn = os.getenv("PG_DSN") or (
-        f"postgresql://{os.getenv('PG_USER', 'realuser')}:"
-        f"{os.getenv('PG_PASS', 'strongpass')}@"
-        f"{os.getenv('PG_HOST', 'localhost')}:"
-        f"{os.getenv('PG_PORT', '5432')}/"
-        f"{os.getenv('PG_DB', 'realdb')}"
-    )
-    return psycopg2.connect(dsn)
 
 
 @bp.route('/')

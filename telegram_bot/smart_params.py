@@ -14,7 +14,24 @@ import os
 from dataclasses import dataclass
 
 
-DB_DSN = os.getenv("PG_DSN", "postgresql://realuser:strongpass123@localhost:5432/realdb")
+def _get_db_dsn():
+    """Get database DSN from environment."""
+    dsn = os.getenv("PG_DSN")
+    if not dsn:
+        user = os.getenv("PG_USER")
+        password = os.getenv("PG_PASS")
+        host = os.getenv("PG_HOST", "localhost")
+        port = os.getenv("PG_PORT", "5432")
+        database = os.getenv("PG_DB")
+
+        if not all([user, password, database]):
+            raise ValueError(
+                "Database credentials not configured. "
+                "Set PG_DSN or (PG_USER, PG_PASS, PG_DB) in .env file."
+            )
+
+        dsn = f"postgresql://{user}:{password}@{host}:{port}/{database}"
+    return dsn
 
 
 @dataclass
@@ -29,7 +46,7 @@ class BuildingTypeStats:
 
 def get_db_connection():
     """Get database connection."""
-    return psycopg2.connect(DB_DSN, cursor_factory=RealDictCursor)
+    return psycopg2.connect(_get_db_dsn(), cursor_factory=RealDictCursor)
 
 
 def get_building_type_statistics() -> Dict[str, BuildingTypeStats]:

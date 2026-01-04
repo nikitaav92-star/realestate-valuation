@@ -24,12 +24,33 @@ def is_admin(user_id: int) -> bool:
 
 
 def get_db():
-    """Get database connection."""
+    """Get database connection.
+
+    Raises:
+        ValueError: If database credentials are not configured.
+    """
+    # Try DSN first
+    dsn = os.getenv("PG_DSN")
+    if dsn:
+        return psycopg2.connect(dsn)
+
+    # Fall back to individual components
+    host = os.getenv('DB_HOST') or os.getenv('PG_HOST', 'localhost')
+    database = os.getenv('DB_NAME') or os.getenv('PG_DB')
+    user = os.getenv('DB_USER') or os.getenv('PG_USER')
+    password = os.getenv('DB_PASSWORD') or os.getenv('PG_PASS')
+
+    if not all([database, user, password]):
+        raise ValueError(
+            "Database credentials not configured. "
+            "Set PG_DSN or (PG_USER, PG_PASS, PG_DB) in .env file."
+        )
+
     return psycopg2.connect(
-        host=os.getenv('DB_HOST', 'localhost'),
-        database=os.getenv('DB_NAME', 'realdb'),
-        user=os.getenv('DB_USER', 'realuser'),
-        password=os.getenv('DB_PASSWORD', 'strongpass123')
+        host=host,
+        database=database,
+        user=user,
+        password=password
     )
 
 
@@ -166,7 +187,7 @@ def restart_parsers() -> str:
             if 'collector_cian' in cmdline or 'enrich_details' in cmdline:
                 proc.kill()
                 killed += 1
-        except:
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
 
     results.append(f"Убито процессов: {killed}")
@@ -191,7 +212,7 @@ def stop_parsers() -> str:
         try:
             subprocess.run(['sudo', 'systemctl', 'stop', f'{timer}.timer'], check=True)
             subprocess.run(['sudo', 'systemctl', 'stop', f'{timer}.service'], check=True, timeout=5)
-        except:
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
             pass
         results.append(f"⏹ {timer} остановлен")
 
@@ -203,7 +224,7 @@ def stop_parsers() -> str:
             if 'collector_cian' in cmdline or 'enrich_details' in cmdline:
                 proc.kill()
                 killed += 1
-        except:
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
 
     results.append(f"Убито процессов: {killed}")
@@ -553,14 +574,14 @@ def stop_service(service: str) -> str:
         # Остановить таймер
         subprocess.run(['sudo', 'systemctl', 'stop', f'{systemd_name}.timer'], check=True)
         results.append(f"⏹ {systemd_name}.timer остановлен")
-    except:
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
         pass
 
     try:
         # Остановить сервис
         subprocess.run(['sudo', 'systemctl', 'stop', f'{systemd_name}.service'], check=True, timeout=10)
         results.append(f"⏹ {systemd_name}.service остановлен")
-    except:
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
         pass
 
     # Убить процессы если остались
@@ -579,7 +600,7 @@ def stop_service(service: str) -> str:
             if should_kill:
                 proc.kill()
                 killed += 1
-        except:
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
 
     if killed:

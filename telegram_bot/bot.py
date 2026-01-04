@@ -374,7 +374,7 @@ async def handle_area_input(update: Update, context: ContextTypes.DEFAULT_TYPE) 
                 if data.get('results'):
                     lat = data['results'][0]['lat']
                     lon = data['results'][0]['lon']
-        except:
+        except (requests.RequestException, KeyError, TypeError, ValueError):
             pass
     
     # Estimate rooms with smart algorithm

@@ -7,21 +7,10 @@ This module provides endpoints for viewing and managing listings with encumbranc
 from flask import Blueprint, render_template, jsonify, request
 import psycopg2
 import psycopg2.extras
-import os
+
+from web.utils.db import get_db
 
 bp = Blueprint('encumbrances', __name__, url_prefix='/encumbrances')
-
-
-def get_db():
-    """Get database connection."""
-    dsn = os.getenv("PG_DSN") or (
-        f"postgresql://{os.getenv('PG_USER', 'realuser')}:"
-        f"{os.getenv('PG_PASS', 'strongpass123')}@"
-        f"{os.getenv('PG_HOST', 'localhost')}:"
-        f"{os.getenv('PG_PORT', '5432')}/"
-        f"{os.getenv('PG_DB', 'realdb')}"
-    )
-    return psycopg2.connect(dsn)
 
 
 @bp.route('/')

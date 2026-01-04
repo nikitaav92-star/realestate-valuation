@@ -4,16 +4,12 @@ API для управления объявлениями, обременения
 from flask import Flask, jsonify, request, render_template
 import psycopg2
 import psycopg2.extras
-import os
 from datetime import datetime
 from typing import Optional, Dict, List
 
-app = Flask(__name__)
+from web.utils.db import get_db
 
-def get_db():
-    """Получить подключение к БД."""
-    dsn = os.getenv("PG_DSN", "postgresql://realuser:strongpass123@localhost:5432/realdb")
-    return psycopg2.connect(dsn)
+app = Flask(__name__)
 
 
 @app.route('/')
