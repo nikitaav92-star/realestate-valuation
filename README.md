@@ -1,6 +1,6 @@
 # Real Estate Valuation Platform
 
-Платформа оценки стоимости недвижимости с гибридным алгоритмом KNN + Grid.
+Платформа для оценки недвижимости в Санкт-Петербурге с автоматическим парсингом CIAN, обнаружением обременений и Telegram-ботом для мониторинга.
 
 ---
 
@@ -9,27 +9,30 @@
 | Функция | Описание |
 |---------|----------|
 | **Оценка недвижимости** | Гибридный KNN + Grid алгоритм с точностью ±3-5% |
-| **Инвестиционный калькулятор** | 4 типа проектов: своё жильё, партнёрский, flip, bank flip |
-| **Telegram бот** | EGRN парсинг, уведомления об оценках |
-| **Интерактивная карта** | Leaflet + PostGIS кластеризация |
-| **Отчёты** | PDF и HTML генерация отчётов об оценке |
+| **Парсинг CIAN** | Автономный сбор 100K+ объявлений с anti-captcha |
+| **Обнаружение обременений** | AI-анализ описаний через Claude API |
+| **Telegram бот** | Оценка, алерты, управление парсерами |
+| **Автомониторинг** | Автоматические действия при проблемах |
 
 ---
 
 ## Быстрый старт
 
-### 1. Установка зависимостей
+### Требования
+
+- Python 3.11+
+- PostgreSQL 16+ с PostGIS 3.4
+- Docker (опционально)
+- Node.js 18+ (для Playwright)
+
+### 1. Установка
 
 ```bash
-# Клонировать репозиторий
-git clone https://github.com/USERNAME/realestate-valuation.git
-cd realestate-valuation
+git clone https://github.com/USERNAME/realestate-platform.git
+cd realestate-platform
 
-# Создать виртуальное окружение
 python -m venv venv
 source venv/bin/activate
-
-# Установить зависимости
 pip install -r requirements.txt
 playwright install chromium
 ```
@@ -37,46 +40,31 @@ playwright install chromium
 ### 2. База данных
 
 ```bash
-# Запустить PostgreSQL + PostGIS
+# Docker (рекомендуется)
 docker-compose up -d
 
-# Применить схему
+# Или локальный PostgreSQL
 psql -h localhost -U realuser -d realdb -f db/schema.sql
 ```
 
-### 3. Настройка окружения
+### 3. Конфигурация
 
 ```bash
 cp .env.example .env
-# Отредактировать .env с вашими значениями
+# Заполнить переменные (см. раздел Конфигурация)
 ```
 
-### 4. Запуск сервисов
+### 4. Запуск
 
 ```bash
-# Valuation API (FastAPI, порт 8000)
+# API (FastAPI :8000)
 bash START.sh
 
-# Web интерфейс (Flask, порт 5001)
+# Web интерфейс (Flask :5001)
 python web_viewer.py
 
 # Telegram бот
-cd telegram_bot && bash START_BOT.sh
-```
-
-### 5. Тестирование API
-
-```bash
-curl -X POST http://localhost:8000/estimate \
-  -H "Content-Type: application/json" \
-  -d '{
-    "lat": 55.75,
-    "lon": 37.62,
-    "area_total": 65,
-    "rooms": 2,
-    "floor": 5,
-    "total_floors": 12
-  }'
+python telegram_bot/bot.py
 ```
 
 ---
@@ -84,31 +72,205 @@ curl -X POST http://localhost:8000/estimate \
 ## Архитектура
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                      Web Interface                          │
-│              (Flask :5001 / static/index.html)              │
-└────────────────────────┬────────────────────────────────────┘
-                         │
-┌────────────────────────▼────────────────────────────────────┐
-│                    Valuation API                            │
-│                    (FastAPI :8000)                          │
-├─────────────────────────────────────────────────────────────┤
-│  /estimate           │  /investment/calculate               │
-│  /estimate/comparables│  /report/generate                   │
-└────────────────────────┬────────────────────────────────────┘
-                         │
-┌────────────────────────▼────────────────────────────────────┐
-│                  Valuation Engine                           │
-├─────────────────────────────────────────────────────────────┤
-│  KNN Searcher   │  Grid Estimator  │  Hybrid Engine        │
-│  (похожие       │  (агрегаты по    │  (комбинация          │
-│   объекты)      │   сегментам)     │   методов)            │
-└────────────────────────┬────────────────────────────────────┘
-                         │
-┌────────────────────────▼────────────────────────────────────┐
-│               PostgreSQL + PostGIS                          │
-│            (listings, valuations, segments)                 │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                        TELEGRAM BOT                              │
+│   Оценка | Алерты | Admin панель | Управление парсерами         │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+┌──────────────────────────▼──────────────────────────────────────┐
+│                      VALUATION API                               │
+│                     (FastAPI :8000)                              │
+├──────────────────────────────────────────────────────────────────┤
+│  /estimate  │  /investment/calculate  │  /report/generate        │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+┌──────────────────────────▼──────────────────────────────────────┐
+│                    VALUATION ENGINE                              │
+├──────────────────────────────────────────────────────────────────┤
+│  KNN Searcher  │  Grid Estimator  │  Hybrid Engine               │
+│  (аналоги)     │  (сегменты)      │  (комбинация)                │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+┌──────────────────────────▼──────────────────────────────────────┐
+│                   ETL PIPELINE                                   │
+├──────────────────────────────────────────────────────────────────┤
+│  CIAN Parser  │  Enricher  │  Geocoder  │  Encumbrance Detector  │
+│  (Playwright) │  (детали)  │  (DaData)  │  (Claude AI)           │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+┌──────────────────────────▼──────────────────────────────────────┐
+│                  PostgreSQL + PostGIS                            │
+│           listings | valuations | segments | photos              │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### Технологии
+
+| Компонент | Технология |
+|-----------|------------|
+| Backend API | FastAPI, Pydantic |
+| Web Interface | Flask, Jinja2, Leaflet |
+| Frontend | Next.js (новая архитектура) |
+| Telegram | python-telegram-bot, APScheduler |
+| Парсинг | Playwright, AntiCaptcha |
+| База данных | PostgreSQL 16 + PostGIS 3.4 |
+| AI | Claude API (Anthropic) |
+| Геокодинг | DaData API |
+| Прокси | NodeMaven (только для cookies) |
+
+---
+
+## Компоненты
+
+### 1. ETL Pipeline
+
+**Парсеры запускаются через systemd таймеры:**
+
+| Сервис | Расписание | Описание |
+|--------|-----------|----------|
+| `cian-scraper` | каждые 90 мин | Основной сбор объявлений |
+| `cian-fast-scan` | каждые 30 мин | Быстрый поиск срочных |
+| `cian-enrich` | каждые 60 мин | Загрузка описаний |
+| `cian-alerts` | каждые 10 мин | Проверка обременений |
+| `fias-normalizer` | 4 раза в день | Геокодинг адресов |
+
+**Управление:**
+
+```bash
+# Статус всех парсеров
+sudo systemctl list-timers 'cian-*'
+
+# Запустить вручную
+sudo systemctl start cian-scraper.service
+
+# Логи
+journalctl -u cian-scraper -f
+```
+
+### 2. Telegram Bot (@NevskyDeals_bot)
+
+**Команды пользователя:**
+
+| Команда | Описание |
+|---------|----------|
+| `/start` | Начать диалог |
+| `/eval` | Оценить объект (ввод адреса и площади) |
+| `/status` | Статус системы |
+
+**Admin команды:**
+
+| Команда | Описание |
+|---------|----------|
+| `/manage` | Панель управления парсерами |
+| `/proxy` | Статус прокси и cookies |
+| `/logs [service]` | Просмотр логов сервиса |
+| `/restart [service]` | Перезапуск сервиса |
+
+**Автоматические алерты:**
+
+| Алерт | Условие | Действие |
+|-------|---------|----------|
+| Зависший процесс | >1 день | Auto-kill + restart |
+| Долгий процесс | >4 часа | Auto-kill + restart |
+| Устаревшие cookies | >24ч | Auto-refresh |
+| Критично мало трафика | <0.1 GB | Stop parsers |
+| Прокси для парсинга | >2 conn | Kill processes |
+
+### 3. API
+
+**Valuation API (FastAPI :8000):**
+
+```bash
+# Оценка объекта
+curl -X POST http://localhost:8000/estimate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "lat": 59.93,
+    "lon": 30.31,
+    "area_total": 65,
+    "rooms": 2,
+    "floor": 5,
+    "total_floors": 12
+  }'
+
+# Инвестиционный расчёт
+curl -X POST http://localhost:8000/investment/calculate \
+  -d '{"purchase_price": 8000000, "project_type": "partner_flip"}'
+```
+
+---
+
+## Конфигурация
+
+### Переменные окружения (.env)
+
+```bash
+# === База данных ===
+PG_DSN=postgresql://realuser:password@localhost:5432/realdb
+
+# === Telegram ===
+TELEGRAM_BOT_TOKEN=your_bot_token
+TELEGRAM_ADMIN_CHAT_ID=your_admin_id
+TELEGRAM_CHAT_ID=your_channel_id
+
+# === API ключи ===
+DADATA_API_KEY=your_dadata_key
+DADATA_SECRET_KEY=your_dadata_secret
+ANTHROPIC_API_KEY=your_claude_key
+
+# === Прокси (только для cookies!) ===
+# Credentials в etl/collector_cian/nodemaven_proxy.py
+# NODEMAVEN_API_KEY=your_api_key  # для мониторинга трафика
+```
+
+### Прокси
+
+**КРИТИЧЕСКИ ВАЖНО:** Прокси используется ТОЛЬКО для получения cookies, НИКОГДА для парсинга!
+
+- Парсеры идут напрямую к CIAN без прокси
+- Прокси используется только в `get_cookies_with_proxy.py`
+- Это экономит трафик NodeMaven
+
+**Конфигурация прокси:**
+
+```python
+# etl/collector_cian/nodemaven_proxy.py
+PROXY_USER = "nikita_a_v_92_gmail_com"
+PROXY_HOST = "gate.nodemaven.com"
+PROXY_PORT = 8080
+```
+
+---
+
+## Мониторинг
+
+### Health Checks
+
+Бот проверяет систему каждые 5 минут:
+
+1. **Процессы** - время работы, зависания
+2. **Cookies** - возраст файла (живут 24ч)
+3. **Прокси** - тест соединения, время отклика
+4. **Трафик** - остаток на подписке
+
+### Автодействия
+
+При обнаружении проблем бот автоматически:
+
+- Убивает зависшие процессы (>4ч)
+- Перезапускает соответствующие таймеры
+- Обновляет cookies при истечении
+- Останавливает парсеры при критическом трафике
+- Отправляет отчёт админу
+
+### Просмотр статуса
+
+```bash
+# Telegram
+/status
+
+# CLI
+python scripts/health_check.py
 ```
 
 ---
@@ -117,66 +279,22 @@ curl -X POST http://localhost:8000/estimate \
 
 ### BOTTOM-3 Strategy
 
-1. **Поиск аналогов** - KNN поиск похожих объектов в радиусе 2 км
-2. **Фильтрация** - IQR фильтр выбросов (±1.5 IQR от медианы)
+1. **Поиск аналогов** - KNN в радиусе 2 км, похожие параметры
+2. **IQR фильтрация** - удаление выбросов (±1.5 IQR)
 3. **Коррекции:**
    - Площадь: ±0.1% за каждый м² разницы
-   - Возраст объявления: -1% за каждые 30 дней
-   - Этаж: -2% последний этаж, -5% первый этаж
-4. **Расчёт** - среднее по 3 самым дешёвым аналогам
+   - Возраст: -1% за каждые 30 дней на рынке
+   - Этаж: -2% последний, -5% первый
+4. **Расчёт** - среднее по 3 самым дешёвым
 5. **Торг** - автоматическая скидка 7%
 
 ### Confidence Score
 
-| Confidence | Диапазон цен | Условие |
-|------------|--------------|---------|
+| Score | Диапазон | Условие |
+|-------|----------|---------|
 | ≥70% | ±5% | Много качественных аналогов |
-| 50-69% | ±10% | Среднее количество аналогов |
-| <50% | ±15% | Мало аналогов, низкое качество |
-
----
-
-## Инвестиционный калькулятор
-
-### Типы проектов
-
-| Тип | Описание | Целевая доходность |
-|-----|----------|-------------------|
-| `own` | Покупка для себя | — |
-| `partner` | Партнёрский проект | Делится пополам |
-| `partner_flip` | Партнёрский flip | 24% годовых |
-| `bank_flip` | Flip с ипотекой | 24% + проценты банка |
-
-### Учитываемые расходы
-
-- Риэлторская комиссия (3%)
-- Налог на покупку
-- Ремонт (ROI 1.8x)
-- ЖКУ за период владения
-- Ипотечные платежи (для bank_flip)
-
----
-
-## API Endpoints
-
-### Valuation API (FastAPI :8000)
-
-| Endpoint | Method | Описание |
-|----------|--------|----------|
-| `/estimate` | POST | Оценка стоимости объекта |
-| `/estimate/comparables` | POST | Получить аналоги |
-| `/investment/calculate` | POST | Расчёт инвестиционных метрик |
-| `/report/generate` | POST | Генерация PDF отчёта |
-| `/health` | GET | Health check |
-
-### Web API (Flask :5001)
-
-| Endpoint | Method | Описание |
-|----------|--------|----------|
-| `/` | GET | Главная страница (оценка) |
-| `/listings` | GET | Список объявлений |
-| `/api/map/clusters` | GET | Кластеры для карты |
-| `/api/valuations/history` | GET | История оценок |
+| 50-69% | ±10% | Среднее количество |
+| <50% | ±15% | Мало аналогов |
 
 ---
 
@@ -184,76 +302,39 @@ curl -X POST http://localhost:8000/estimate \
 
 ```
 realestate/
-├── api/                          # FastAPI Backend
-│   └── v1/
-│       ├── valuation.py          # Оценка недвижимости
-│       ├── investment_calculator.py  # Инвест. калькулятор
-│       ├── report_generator.py   # PDF отчёты
-│       └── claude_parser.py      # AI парсер
+├── api/                      # FastAPI Backend
+│   ├── valuation.py          # Оценка
+│   ├── investment_calculator.py
+│   └── report_generator.py
 │
-├── etl/                          # ETL Pipeline
-│   ├── collector_cian/           # CIAN парсер
-│   ├── valuation/                # Алгоритмы оценки
-│   │   ├── knn_searcher.py       # KNN поиск
-│   │   ├── grid_estimator.py     # Grid оценка
-│   │   ├── hybrid_engine.py      # Гибридный движок
-│   │   └── rosreestr_searcher.py # Данные Росреестра
-│   ├── geocoder.py               # DaData геокодинг
-│   └── upsert.py                 # Работа с БД
+├── etl/                      # ETL Pipeline
+│   ├── collector_cian/       # CIAN парсер
+│   │   ├── cli.py            # Точка входа
+│   │   ├── nodemaven_proxy.py # Прокси модуль
+│   │   └── antibot/          # Anti-captcha
+│   ├── valuation/            # Алгоритмы оценки
+│   └── ai_evaluator/         # AI анализ
 │
-├── web/                          # Flask Web App
-│   ├── app.py                    # Flask entry point
-│   └── routes/                   # Роуты
+├── telegram_bot/             # Telegram бот
+│   ├── bot.py                # Основная логика
+│   ├── admin_commands.py     # Admin функции
+│   └── egrn_parser.py        # EGRN парсер
 │
-├── telegram_bot/                 # Telegram бот
-│   ├── bot.py                    # Основная логика
-│   └── egrn_parser.py            # EGRN парсер
+├── web/                      # Flask Web App
+├── frontend/                 # Next.js (новая архитектура)
+├── db/                       # Схемы PostgreSQL
 │
-├── static/                       # Статика для web
-│   └── index.html                # SPA интерфейс
+├── .speckit/                 # SpecKit документация
+│   ├── PROJECT-MAP.md        # Карта проекта
+│   ├── CLAUDE-CONTEXT.md     # Контекст для Claude Code
+│   ├── specifications/       # Спецификации
+│   └── tasks/                # Задачи
 │
-├── db/                           # Схемы БД
-│   └── schema.sql
+├── config/                   # Конфигурация
+│   ├── cian_browser_state.json  # Cookies (автообновление)
+│   └── get_cookies_with_proxy.py
 │
-├── .speckit/                     # SpecKit документация
-│   ├── PROJECT-MAP.md            # Карта проекта
-│   ├── specifications/           # Спецификации
-│   ├── bugs/                     # Баг-репорты
-│   └── ideas/                    # Бэклог идей
-│
-├── docker-compose.yml            # Docker stack
-├── requirements.txt              # Python зависимости
-├── START.sh                      # Запуск API
-└── .env.example                  # Пример конфига
-```
-
----
-
-## Переменные окружения
-
-```bash
-# База данных
-DATABASE_URL=postgresql://realuser:password@localhost:5432/realdb
-
-# Или отдельные переменные
-PG_HOST=localhost
-PG_PORT=5432
-PG_USER=realuser
-PG_PASS=password
-PG_DB=realdb
-
-# DaData (геокодинг)
-DADATA_API_KEY=your_api_key
-DADATA_SECRET_KEY=your_secret_key
-
-# Telegram бот
-TELEGRAM_BOT_TOKEN=your_bot_token
-
-# Anti-captcha (для парсера CIAN)
-ANTICAPTCHA_KEY=your_key
-
-# Прокси (опционально)
-NODEMAVEN_PROXY_URL=http://user:pass@proxy:8080
+└── logs/                     # Логи парсеров
 ```
 
 ---
@@ -263,65 +344,42 @@ NODEMAVEN_PROXY_URL=http://user:pass@proxy:8080
 ### Systemd сервисы
 
 ```bash
-# Valuation API
-sudo cp deployment/realestate-api.service /etc/systemd/system/
-sudo systemctl enable realestate-api
-sudo systemctl start realestate-api
+# Бот
+sudo systemctl enable realestate-bot
+sudo systemctl start realestate-bot
 
-# Web интерфейс
-sudo cp deployment/realestate-web.service /etc/systemd/system/
-sudo systemctl enable realestate-web
-sudo systemctl start realestate-web
+# Таймеры парсеров
+sudo systemctl enable cian-scraper.timer
+sudo systemctl enable cian-enrich.timer
+sudo systemctl enable cian-fast-scan.timer
+sudo systemctl start cian-scraper.timer
 ```
 
-### Nginx
+### Docker
 
 ```bash
-sudo cp infra/nginx/realestate.conf /etc/nginx/sites-available/
-sudo ln -s /etc/nginx/sites-available/realestate.conf /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl reload nginx
+docker-compose up -d
 ```
 
 ---
 
-## Тестирование
+## Разработка
+
+### Тестирование
 
 ```bash
-# Unit тесты
 pytest tests/
-
-# Тест валюации
 python scripts/test_valuation.py
-
-# Тест API
-bash TEST_API.sh
 ```
 
----
+### SpecKit документация
 
-## Недавние улучшения
+Проект использует SpecKit для стратегической документации:
 
-### Январь 2025
-
-- **IQR фильтрация** - удаление выбросов из аналогов
-- **Aging discount** - учёт возраста объявлений (-1% за 30 дней)
-- **Confidence-based range** - диапазон цен зависит от уверенности
-- **Дисконт последнего этажа** - снижен с 5% до 2%
-- **Кнопка "Переоценить"** - в истории оценок
-
-### Декабрь 2024
-
-- **Инвестиционный калькулятор** - 4 типа проектов
-- **Telegram отчёты** - отправка PDF в бот
-- **Интерактивная карта** - PostGIS кластеризация
-
----
-
-## Документация
-
-- [QUICKSTART.md](QUICKSTART.md) - Быстрый старт
-- [.speckit/PROJECT-MAP.md](.speckit/PROJECT-MAP.md) - Карта проекта
-- [.speckit/specifications/](.speckit/specifications/) - Спецификации
+- `.speckit/PROJECT-MAP.md` - карта проекта
+- `.speckit/CLAUDE-CONTEXT.md` - контекст для Claude Code
+- `.speckit/specifications/` - спецификации фич
+- `.speckit/tasks/` - текущие задачи
 
 ---
 
@@ -331,5 +389,5 @@ bash TEST_API.sh
 
 ---
 
-**Версия:** 2.1.0
-**Последнее обновление:** Январь 2025
+**Версия:** 2.2.0
+**Последнее обновление:** Январь 2026
