@@ -118,10 +118,20 @@ def normalize_batch(
                     postal_code=fias_data.get("postal_code"),
                     quality_code=fias_data.get("quality_code"),
                 )
+                # Also save coordinates if available (bonus from DaData Suggest)
+                lat = fias_data.get("lat")
+                lon = fias_data.get("lon")
+                if lat is not None and lon is not None:
+                    with conn.cursor() as cur:
+                        cur.execute(
+                            "UPDATE listings SET lat = %s, lon = %s WHERE id = %s AND lat IS NULL",
+                            (lat, lon, listing_id),
+                        )
                 conn.commit()
                 success += 1
                 consecutive_errors = 0
-                LOGGER.info(f"  ✅ [{listing_id}] Normalized: {fias_data.get('fias_address', '')[:50]}")
+                coords_info = f", coords: ({lat:.4f}, {lon:.4f})" if lat and lon else ""
+                LOGGER.info(f"  ✅ [{listing_id}] Normalized: {fias_data.get('fias_address', '')[:50]}{coords_info}")
             else:
                 # Mark as attempted (set empty fias_address to avoid re-processing)
                 with conn.cursor() as cur:

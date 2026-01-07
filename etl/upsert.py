@@ -238,7 +238,8 @@ def update_listing_details(
                 has_encumbrances = COALESCE(%(has_encumbrances)s, has_encumbrances),
                 encumbrance_types = COALESCE(%(encumbrance_types)s, encumbrance_types),
                 encumbrance_details = COALESCE(%(encumbrance_details)s, encumbrance_details),
-                encumbrance_confidence = COALESCE(%(encumbrance_confidence)s, encumbrance_confidence)
+                encumbrance_confidence = COALESCE(%(encumbrance_confidence)s, encumbrance_confidence),
+                description_hash = COALESCE(%(description_hash)s, description_hash)
             WHERE id = %(listing_id)s;
             """,
             {
@@ -271,6 +272,7 @@ def update_listing_details(
                 "encumbrance_types": details.get("encumbrance_types"),
                 "encumbrance_details": json.dumps(details.get("encumbrance_details")) if details.get("encumbrance_details") else None,
                 "encumbrance_confidence": details.get("encumbrance_confidence"),
+                "description_hash": details.get("description_hash"),
             },
         )
 

@@ -6,12 +6,32 @@ Investment Calculator Module
 1. Собственный (own) - 100% прибыли наша, 4%/мес
 2. Партнерский (partner) - 50/50, мин 4%/мес или 1 млн
 3. Партнерский Флип (partner_flip) - 50/50 + ремонт 4%/мес
-4. Банковский Флип (bank_flip) - ипотека 2%/мес, 50/50, мин 1 млн
+4. Банковский Флип (bank_flip) - ипотека (ЦБ+5.5%)/год, 50/50, мин 1 млн
 """
 
 from typing import Dict, Optional, Literal
 from pydantic import BaseModel, Field
 from enum import Enum
+
+# Импорт модуля ставки ЦБ
+try:
+    from .cbr_rate import get_bank_rate, get_key_rate
+    CBR_AVAILABLE = True
+except ImportError:
+    CBR_AVAILABLE = False
+    def get_bank_rate():
+        return 26.5  # Fallback: 21% + 5.5%
+    def get_key_rate():
+        return 21.0
+
+
+# Константы для расчёта дохода на ремонт
+RENOVATION_PERIOD_MONTHS = 4   # Фиксированный срок ремонта - 4 месяца
+RENOVATION_RATE = 0.04         # Ставка дохода на ремонт - 4% в месяц
+RENOVATION_MULTIPLIER = 1.6    # Коэффициент прибавки к цене от ремонта
+
+# Фиксированные обязательные расходы
+SERBSKY_CERTIFICATION = 27000  # Освидетельствование в Сербского (фикс)
 
 
 class ProjectType(str, Enum):
@@ -44,7 +64,7 @@ class InvestmentParams(BaseModel):
     mortgage_rate: float = Field(default=0.02, description="Ипотечная ставка в месяц (2%)")
     mortgage_issue_fee: float = Field(default=0.0075, description="Комиссия за выдачу кредита (0.75%)")
     mortgage_prepay_months: int = Field(default=3, description="Месяцев % по ипотеке вперед")
-    ltv: float = Field(default=0.8, description="LTV - доля кредита от цены (80%)")
+    ltv: float = Field(default=1.0, description="LTV - доля кредита от цены (100%)")
 
     # Налог (всегда учитывается)
     tax_rate: float = Field(default=0.06, description="Налог на прибыль (6%)")
@@ -57,7 +77,7 @@ class InvestmentParams(BaseModel):
     state_fee: float = Field(default=4000, description="Госпошлина")
 
     include_pip: bool = Field(default=False, description="Включить ПИП")
-    pip_per_sqm: float = Field(default=1500, description="ПИП (план) за м²")
+    pip_fee: float = Field(default=1000, description="ПИП фиксированный")
 
     include_agency: bool = Field(default=False, description="Включить агентские")
     agency_fee: float = Field(default=200000, description="Агентские")
@@ -70,7 +90,7 @@ class InvestmentParams(BaseModel):
     eviction_cost: float = Field(default=150000, description="Выселение")
 
     include_renovation: bool = Field(default=False, description="Включить расходы на ремонт")
-    renovation_per_sqm: float = Field(default=50000, description="Ремонт за м²")
+    renovation_per_sqm: float = Field(default=60000, description="Ремонт за м² (дефолт 60000)")
 
     include_foreman: bool = Field(default=False, description="Включить прораба")
     foreman_fee: float = Field(default=100000, description="Прораб")
@@ -86,6 +106,10 @@ class InvestmentParams(BaseModel):
 
     include_contur_registration: bool = Field(default=False, description="Регистрация Контур")
     contur_registration_fee: float = Field(default=4000, description="Регистрация в Контур")
+
+    # Обязательные расходы (всегда включены)
+    include_serbsky: bool = Field(default=True, description="Освидетельствование в Сербского (всегда)")
+    serbsky_fee: float = Field(default=27000, description="Освидетельствование в Сербского")
 
 
 class InterestPriceResult(BaseModel):
@@ -132,7 +156,18 @@ class InterestPriceResult(BaseModel):
     mortgage_total_interest: Optional[float] = Field(None, description="Всего % по ипотеке")
     mortgage_prepayment: Optional[float] = Field(None, description="Предоплата % партнером")
     mortgage_issue_cost: Optional[float] = Field(None, description="Комиссия за выдачу")
-    renovation_profit: Optional[float] = Field(None, description="Доход на ремонт (4%/мес)")
+    renovation_profit: Optional[float] = Field(None, description="Профит от ремонта (прибавка - затраты)")
+    renovation_income: Optional[float] = Field(None, description="Доход на ремонт (4%/мес × 4 мес)")
+    investment_income: Optional[float] = Field(None, description="Доход на инвестиции (цена × 4%/мес × срок)")
+
+    # Гарантированный минимум
+    min_guaranteed: Optional[float] = Field(None, description="Гарантированный минимум дохода")
+    min_guaranteed_source: Optional[str] = Field(None, description="Источник минимума: 2% или 1млн")
+
+    # Ставки (для банковского флипа)
+    cbr_key_rate: Optional[float] = Field(None, description="Ключевая ставка ЦБ (%)")
+    bank_rate_yearly: Optional[float] = Field(None, description="Банковская ставка годовая (%)")
+    bank_rate_monthly: Optional[float] = Field(None, description="Банковская ставка месячная (%)")
 
     # Период
     project_months: int = Field(description="Срок проекта в месяцах")
@@ -160,9 +195,8 @@ def _calculate_fixed_costs(params: InvestmentParams, area_total: float, interest
         fixed_costs += params.state_fee
         breakdown["Госпошлина"] = params.state_fee
     if params.include_pip:
-        pip_cost = params.pip_per_sqm * area_total
-        fixed_costs += pip_cost
-        breakdown["ПИП"] = pip_cost
+        fixed_costs += params.pip_fee
+        breakdown["ПИП"] = params.pip_fee
     if params.include_agency:
         fixed_costs += params.agency_fee
         breakdown["Агентские"] = params.agency_fee
@@ -187,6 +221,12 @@ def _calculate_fixed_costs(params: InvestmentParams, area_total: float, interest
     if params.include_contur_registration:
         fixed_costs += params.contur_registration_fee
         breakdown["Регистрация Контур"] = params.contur_registration_fee
+
+    # Обязательные расходы (всегда включены)
+    if params.include_serbsky:
+        fixed_costs += params.serbsky_fee
+        breakdown["Освидетельствование Сербского"] = params.serbsky_fee
+
     if params.include_financing and interest_price > 0:
         financing = interest_price * params.financing_rate / (1 - params.financing_rate)
         fixed_costs += financing
@@ -244,7 +284,7 @@ def calculate_own(market_price: float, area_total: float, params: InvestmentPara
 
     if params.include_renovation:
         renovation_cost = params.renovation_per_sqm * area_total
-        renovation_bonus = renovation_cost * 1.8  # Увеличение цены от ремонта (×1.8)
+        renovation_bonus = renovation_cost * RENOVATION_MULTIPLIER  # Увеличение цены от ремонта (×1.8)
         final_sale_price = base_sale_price + renovation_bonus
         total_fixed_costs += renovation_cost
         breakdown["Ремонт"] = renovation_cost
@@ -281,6 +321,7 @@ def calculate_own(market_price: float, area_total: float, params: InvestmentPara
         variable_costs=tax_amount,
         renovation_cost=renovation_cost,
         renovation_profit=renovation_profit,
+        renovation_income=None,  # Для собственного проекта не применяется
         expected_profit=expected_profit,
         our_profit=expected_profit,
         partner_profit=None,
@@ -356,7 +397,7 @@ def calculate_partner(market_price: float, area_total: float, params: Investment
 
     if params.include_renovation:
         renovation_cost = params.renovation_per_sqm * area_total
-        renovation_bonus = renovation_cost * 1.8  # Увеличение цены от ремонта (×1.8)
+        renovation_bonus = renovation_cost * RENOVATION_MULTIPLIER  # Увеличение цены от ремонта (×1.8)
         final_sale_price = base_sale_price + renovation_bonus
         total_fixed_costs += renovation_cost
         breakdown["Ремонт"] = renovation_cost
@@ -410,6 +451,7 @@ def calculate_partner(market_price: float, area_total: float, params: Investment
         variable_costs=tax_amount,
         renovation_cost=renovation_cost,
         renovation_profit=renovation_profit,
+        renovation_income=None,  # Для партнёрского 50/50 не применяется
         expected_profit=expected_profit,
         our_profit=our_profit,
         partner_profit=partner_profit,
@@ -426,7 +468,8 @@ def calculate_partner_flip(market_price: float, area_total: float, params: Inves
     Тип 3: ПАРТНЕРСКИЙ ФЛИП
     - Партнерский + ремонт
     - Цена интереса НЕ зависит от ремонта
-    - Наша доля не менее 4%/мес, партнёр получает остаток
+    - Доход на ремонт: 4%/мес × 4 мес = 16% от стоимости ремонта (идёт НАМ)
+    - Гарантированный минимум: max(2% от вложенных, 1 млн ₽)
     - Цена продажи увеличивается на стоимость ремонта × 1.8
     """
     market_price_per_sqm = market_price / area_total
@@ -464,17 +507,21 @@ def calculate_partner_flip(market_price: float, area_total: float, params: Inves
     renovation_cost = None
     renovation_bonus = None
     renovation_profit = None
+    renovation_income = None
     final_sale_price = base_sale_price
     total_fixed_costs = fixed_costs_no_reno
 
     if params.include_renovation:
         renovation_cost = params.renovation_per_sqm * area_total
-        renovation_bonus = renovation_cost * 1.8  # Увеличение цены от ремонта (×1.8)
+        renovation_bonus = renovation_cost * RENOVATION_MULTIPLIER  # Увеличение цены от ремонта (×1.8)
         final_sale_price = base_sale_price + renovation_bonus
         total_fixed_costs += renovation_cost
         breakdown["Ремонт"] = renovation_cost
         # Профит от ремонта = бонус - затраты
         renovation_profit = renovation_bonus - renovation_cost
+        # Доход на ремонт = 4%/мес × 4 мес от стоимости ремонта (идёт НАМ)
+        renovation_income = renovation_cost * RENOVATION_RATE * RENOVATION_PERIOD_MONTHS
+        breakdown["Доход на ремонт (4%×4мес)"] = renovation_income
         if params.include_foreman:
             total_fixed_costs += params.foreman_fee
             breakdown["Прораб"] = params.foreman_fee
@@ -487,17 +534,32 @@ def calculate_partner_flip(market_price: float, area_total: float, params: Inves
 
     total_investment = interest_price + total_fixed_costs
 
-    # Наша минимальная доля = 4%/мес от вложений
-    our_min_profit = total_investment * params.monthly_rate * params.project_period_months
+    # ДОХОД НА ИНВЕСТИЦИИ: вся цена покупки × 4%/мес × срок проекта
+    # 50/50 = распределение ПРИБЫЛИ, не инвестиций
+    # При цене 10 млн, 4% начисляется на ВСЕ 10 млн (идёт 100% нам)
+    investment_income = interest_price * RENOVATION_RATE * params.project_period_months
+    breakdown["Доход на инвестиции (4%×мес)"] = investment_income
 
-    # Расчёт долей: 50/50, НО наша доля не менее 4%/мес
-    fifty_fifty_share = expected_profit * (1 - params.partner_split)
+    # Гарантированный минимум = max(2% от вложенных, 1 млн ₽)
+    min_from_percent = total_investment * 0.02  # 2% от вложений
+    min_from_amount = 1_000_000  # 1 млн рублей
+    min_guaranteed = max(min_from_percent, min_from_amount)
+    min_guaranteed_source = "2% от вложений" if min_from_percent >= min_from_amount else "1 млн ₽"
 
-    if fifty_fifty_share >= our_min_profit:
-        our_profit = fifty_fifty_share
-        partner_profit = expected_profit * params.partner_split
-    else:
-        our_profit = our_min_profit
+    # Прибыль без дохода на ремонт и инвестиции (делится 50/50)
+    profit_to_split = expected_profit - (renovation_income or 0) - investment_income
+
+    # Расчёт долей: 50/50 от прибыли БЕЗ дохода на ремонт и инвестиции
+    fifty_fifty_share = profit_to_split * (1 - params.partner_split)  # 50%
+    partner_share = profit_to_split * params.partner_split  # 50%
+
+    # Наша прибыль = 50% от делимой прибыли + доход на ремонт + доход на инвестиции
+    our_profit = fifty_fifty_share + (renovation_income or 0) + investment_income
+    partner_profit = partner_share
+
+    # Проверка гарантированного минимума
+    if our_profit < min_guaranteed:
+        our_profit = min_guaranteed
         partner_profit = max(0, expected_profit - our_profit)
 
     actual_profit_rate = expected_profit / total_investment if total_investment > 0 else 0
@@ -520,13 +582,17 @@ def calculate_partner_flip(market_price: float, area_total: float, params: Inves
         fixed_costs=total_fixed_costs,
         variable_costs=tax_amount,
         renovation_cost=renovation_cost,
+        renovation_profit=renovation_profit,
+        renovation_income=renovation_income,
+        investment_income=investment_income,
         expected_profit=expected_profit,
         our_profit=our_profit,
         partner_profit=partner_profit,
         profit_rate=actual_profit_rate,
         monthly_profit_rate=monthly_profit_rate,
         our_monthly_rate=our_monthly_rate,
-        renovation_profit=renovation_profit,
+        min_guaranteed=min_guaranteed,
+        min_guaranteed_source=min_guaranteed_source,
         project_months=params.project_period_months,
         cost_breakdown=breakdown
     )
@@ -535,13 +601,19 @@ def calculate_partner_flip(market_price: float, area_total: float, params: Inves
 def calculate_bank_flip(market_price: float, area_total: float, params: InvestmentParams) -> InterestPriceResult:
     """
     Тип 4: БАНКОВСКИЙ ФЛИП
-    - Ипотека: 2%/мес (затраты по проекту)
+    - Ипотека: ставка ЦБ + 5.5% годовых
     - Прибыль после ипотеки делится 50/50
+    - Доход на ремонт: 4%/мес × 4 мес = 16% от стоимости ремонта (идёт НАМ)
+    - Гарантированный минимум: max(2% от вложенных, 1 млн ₽)
     - Цена интереса НЕ зависит от ремонта
-    - Ремонт влияет только на цену продажи и прибыль
     """
     market_price_per_sqm = market_price / area_total
     base_sale_price = market_price * (1 - params.bargain_discount)
+
+    # Получаем ставки ЦБ
+    cbr_key_rate = get_key_rate()  # Ключевая ставка ЦБ (например, 21%)
+    bank_rate_yearly = get_bank_rate()  # Банковская ставка = ЦБ + 5.5%
+    bank_rate_monthly = bank_rate_yearly / 12 / 100  # Месячная ставка в долях (например, 0.0221)
 
     # ВАЖНО: Расчет цены интереса БЕЗ учёта ремонта
     params_clean = params.model_copy()
@@ -553,7 +625,8 @@ def calculate_bank_flip(market_price: float, area_total: float, params: Investme
     after_tax_rate = 1 - params.tax_rate
 
     # Цена интереса БЕЗ ремонта (для ипотечных расчетов)
-    initial_target = 0.24  # 24% целевая
+    # Динамическая целевая доходность: 4%/мес × срок проекта
+    initial_target = params.monthly_rate * params.project_period_months
     divisor = after_tax_rate + initial_target
     interest_price = (base_sale_price * after_tax_rate - fixed_costs_no_reno * (1 + initial_target)) / divisor
 
@@ -562,8 +635,9 @@ def calculate_bank_flip(market_price: float, area_total: float, params: Investme
         raise ValueError(f"Расходы слишком высоки для целевой доходности. Цена интереса: {interest_price:,.0f} ₽")
 
     # Ипотечные расчеты (на основе цены интереса без ремонта)
+    # Используем динамическую ставку ЦБ + 5.5%
     mortgage_amount = interest_price * params.ltv
-    mortgage_monthly = mortgage_amount * params.mortgage_rate
+    mortgage_monthly = mortgage_amount * bank_rate_monthly
     mortgage_total_interest = mortgage_monthly * params.project_period_months
     mortgage_prepayment = mortgage_monthly * params.mortgage_prepay_months
     mortgage_issue = mortgage_amount * params.mortgage_issue_fee
@@ -580,17 +654,21 @@ def calculate_bank_flip(market_price: float, area_total: float, params: Investme
     renovation_cost = None
     renovation_bonus = None
     renovation_profit = None
+    renovation_income = None
     final_sale_price = base_sale_price
     total_fixed_costs = fixed_costs_no_reno
 
     if params.include_renovation:
         renovation_cost = params.renovation_per_sqm * area_total
-        renovation_bonus = renovation_cost * 1.8  # Увеличение цены от ремонта (×1.8)
+        renovation_bonus = renovation_cost * RENOVATION_MULTIPLIER  # Увеличение цены от ремонта (×1.8)
         final_sale_price = base_sale_price + renovation_bonus
         total_fixed_costs += renovation_cost
         breakdown["Ремонт"] = renovation_cost
         # Профит от ремонта = бонус - затраты
         renovation_profit = renovation_bonus - renovation_cost
+        # Доход на ремонт = 4%/мес × 4 мес от стоимости ремонта (идёт НАМ)
+        renovation_income = renovation_cost * RENOVATION_RATE * RENOVATION_PERIOD_MONTHS
+        breakdown["Доход на ремонт (4%×4мес)"] = renovation_income
         if params.include_foreman:
             total_fixed_costs += params.foreman_fee
             breakdown["Прораб"] = params.foreman_fee
@@ -603,29 +681,27 @@ def calculate_bank_flip(market_price: float, area_total: float, params: Investme
 
     total_investment = interest_price + total_fixed_costs
 
-    # Наша минимальная доля = 4%/мес от вложений (ипотека: 2%/мес)
-    our_min_profit = total_investment * params.mortgage_rate * params.project_period_months
+    # Гарантированный минимум = max(2% от вложенных, 1 млн ₽)
+    min_from_percent = total_investment * 0.02  # 2% от вложений
+    min_from_amount = 1_000_000  # 1 млн рублей
+    min_guaranteed = max(min_from_percent, min_from_amount)
+    min_guaranteed_source = "2% от вложений" if min_from_percent >= min_from_amount else "1 млн ₽"
 
-    # Делёжка прибыли: 50/50, НО наша доля не менее 2%/мес
-    if renovation_profit:
-        profit_to_split = expected_profit - renovation_profit
-        fifty_fifty_share = profit_to_split * (1 - params.partner_split)
+    # Прибыль без дохода на ремонт (делится 50/50)
+    profit_to_split = expected_profit - (renovation_income or 0)
 
-        if fifty_fifty_share + renovation_profit >= our_min_profit:
-            partner_profit = profit_to_split * params.partner_split
-            our_profit = fifty_fifty_share + renovation_profit
-        else:
-            our_profit = our_min_profit
-            partner_profit = max(0, expected_profit - our_profit)
-    else:
-        fifty_fifty_share = expected_profit * (1 - params.partner_split)
+    # Расчёт долей: 50/50 от прибыли БЕЗ дохода на ремонт
+    fifty_fifty_share = profit_to_split * (1 - params.partner_split)  # 50%
+    partner_share = profit_to_split * params.partner_split  # 50%
 
-        if fifty_fifty_share >= our_min_profit:
-            our_profit = fifty_fifty_share
-            partner_profit = expected_profit * params.partner_split
-        else:
-            our_profit = our_min_profit
-            partner_profit = max(0, expected_profit - our_profit)
+    # Наша прибыль = 50% от делимой прибыли + доход на ремонт
+    our_profit = fifty_fifty_share + (renovation_income or 0)
+    partner_profit = partner_share
+
+    # Проверка гарантированного минимума
+    if our_profit < min_guaranteed:
+        our_profit = min_guaranteed
+        partner_profit = max(0, expected_profit - our_profit)
 
     actual_profit_rate = expected_profit / total_investment if total_investment > 0 else 0
     monthly_profit_rate = actual_profit_rate / params.project_period_months
@@ -647,6 +723,8 @@ def calculate_bank_flip(market_price: float, area_total: float, params: Investme
         fixed_costs=total_fixed_costs,
         variable_costs=tax_amount,
         renovation_cost=renovation_cost,
+        renovation_profit=renovation_profit,
+        renovation_income=renovation_income,
         expected_profit=expected_profit,
         our_profit=our_profit,
         partner_profit=partner_profit,
@@ -658,7 +736,11 @@ def calculate_bank_flip(market_price: float, area_total: float, params: Investme
         mortgage_total_interest=mortgage_total_interest,
         mortgage_prepayment=mortgage_prepayment,
         mortgage_issue_cost=mortgage_issue,
-        renovation_profit=renovation_profit,
+        min_guaranteed=min_guaranteed,
+        min_guaranteed_source=min_guaranteed_source,
+        cbr_key_rate=cbr_key_rate,
+        bank_rate_yearly=bank_rate_yearly,
+        bank_rate_monthly=bank_rate_monthly * 100,  # В процентах
         project_months=params.project_period_months,
         cost_breakdown=breakdown
     )

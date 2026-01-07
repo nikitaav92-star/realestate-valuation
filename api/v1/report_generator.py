@@ -17,6 +17,18 @@ import io
 import os
 
 
+# Регистрация шрифта с поддержкой Cyrillic (русский текст)
+try:
+    pdfmetrics.registerFont(TTFont('FreeSans', '/usr/share/fonts/truetype/freefont/FreeSans.ttf'))
+    pdfmetrics.registerFont(TTFont('FreeSansBold', '/usr/share/fonts/truetype/freefont/FreeSansBold.ttf'))
+    CYRILLIC_FONT = 'FreeSans'
+    CYRILLIC_FONT_BOLD = 'FreeSansBold'
+except Exception as e:
+    print(f"⚠️  Не удалось загрузить FreeSans шрифт: {e}. PDF будет без поддержки Cyrillic.")
+    CYRILLIC_FONT = 'Helvetica'
+    CYRILLIC_FONT_BOLD = 'Helvetica-Bold'
+
+
 class ReportGenerator:
     """Генератор PDF отчетов об оценке недвижимости."""
     
@@ -61,20 +73,30 @@ class ReportGenerator:
         
         story = []
         styles = getSampleStyleSheet()
-        
+
+        # Применить Cyrillic шрифт ко всем стилям
+        for style_name in styles.byName:
+            styles[style_name].fontName = CYRILLIC_FONT
+        styles['Title'].fontName = CYRILLIC_FONT_BOLD
+        styles['Heading1'].fontName = CYRILLIC_FONT_BOLD
+        styles['Heading2'].fontName = CYRILLIC_FONT_BOLD
+        styles['Heading3'].fontName = CYRILLIC_FONT_BOLD
+
         # Custom styles
         title_style = ParagraphStyle(
             'CustomTitle',
             parent=styles['Heading1'],
+            fontName=CYRILLIC_FONT_BOLD,
             fontSize=24,
             textColor=self.brand_color,
             spaceAfter=30,
             alignment=TA_CENTER
         )
-        
+
         heading_style = ParagraphStyle(
             'CustomHeading',
             parent=styles['Heading2'],
+            fontName=CYRILLIC_FONT_BOLD,
             fontSize=16,
             textColor=self.secondary_color,
             spaceAfter=12
@@ -119,6 +141,7 @@ class ReportGenerator:
         
         object_table = Table(object_data, colWidths=[50*mm, 110*mm])
         object_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), CYRILLIC_FONT),
             ('FONTSIZE', (0, 0), (-1, -1), 10),
             ('TEXTCOLOR', (0, 0), (0, -1), colors.grey),
             ('ALIGN', (0, 0), (0, -1), 'LEFT'),
@@ -148,8 +171,9 @@ class ReportGenerator:
         
         results_table = Table(results_data, colWidths=[60*mm, 60*mm, 40*mm])
         results_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), CYRILLIC_FONT),
             ('FONTSIZE', (0, 0), (-1, -1), 11),
-            ('FONTNAME', (1, 0), (1, -1), 'Helvetica-Bold'),
+            ('FONTNAME', (1, 0), (1, -1), CYRILLIC_FONT_BOLD),
             ('TEXTCOLOR', (1, 0), (1, 0), self.secondary_color),
             ('TEXTCOLOR', (1, 1), (1, 1), self.brand_color),
             ('ALIGN', (1, 0), (-1, -1), 'RIGHT'),
@@ -181,10 +205,11 @@ class ReportGenerator:
             
             comp_table = Table(comp_data, colWidths=[10*mm, 30*mm, 50*mm, 35*mm, 25*mm])
             comp_table.setStyle(TableStyle([
+                ('FONTNAME', (0, 0), (-1, -1), CYRILLIC_FONT),
                 ('BACKGROUND', (0, 0), (-1, 0), self.brand_color),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
                 ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTNAME', (0, 0), (-1, 0), CYRILLIC_FONT_BOLD),
                 ('FONTSIZE', (0, 0), (-1, 0), 10),
                 ('FONTSIZE', (0, 1), (-1, -1), 9),
                 ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
@@ -212,6 +237,7 @@ class ReportGenerator:
         footer_style = ParagraphStyle(
             'Footer',
             parent=styles['Normal'],
+            fontName=CYRILLIC_FONT,
             fontSize=9,
             textColor=colors.grey,
             alignment=TA_CENTER

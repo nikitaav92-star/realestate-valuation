@@ -29,7 +29,8 @@ try:
         find_rosreestr_deals_nearby,
         get_building_info_from_dadata,
         geocode_address,
-        parse_property_text
+        parse_property_text,
+        normalize_address_dadata
     )
 except ImportError:
     def find_district_by_coordinates(lat, lon):
@@ -48,6 +49,8 @@ except ImportError:
         return None
     def parse_property_text(text):
         return {'address': text}
+    def normalize_address_dadata(address):
+        return None
 
 # Import investment calculator
 try:
@@ -59,10 +62,23 @@ except ImportError:
     calculate_interest_price = None
     InvestmentParams = None
 
+# Import CBR rate module
+try:
+    from .cbr_rate import get_rate_info, get_key_rate, get_bank_rate
+except ImportError:
+    print("⚠️  CBR rate module not available")
+    def get_rate_info():
+        return {'key_rate': 21.0, 'bank_margin': 5.5, 'bank_rate': 26.5, 'cached': False, 'updated_at': None}
+    def get_key_rate():
+        return 21.0
+    def get_bank_rate():
+        return 26.5
+
 # Import Claude parser
 try:
     from .claude_parser import (
         parse_text, parse_image, parse_cian_url,
+        parse_avito_url, parse_yandex_realty_url,
         ParsedPropertyData, enhance_parsed_data
     )
     CLAUDE_PARSER_AVAILABLE = True
@@ -74,7 +90,10 @@ except ImportError as e:
 app = FastAPI(
     title="Real Estate Valuation API",
     description="KNN-first hybrid valuation system for Moscow real estate",
-    version="1.0.0"
+    version="1.0.0",
+    docs_url=None,      # Отключить /docs (Swagger UI)
+    redoc_url=None,     # Отключить /redoc
+    openapi_url=None    # Отключить /openapi.json
 )
 
 # Mount static files
@@ -202,6 +221,28 @@ def root():
 def health():
     """Health check."""
     return {"status": "healthy", "timestamp": datetime.now()}
+
+
+@app.get("/cbr-rate")
+def cbr_rate():
+    """
+    Получить текущую ключевую ставку ЦБ и банковскую ставку.
+
+    Returns:
+        key_rate: Ключевая ставка ЦБ (%)
+        bank_margin: Надбавка банка (5.5%)
+        bank_rate: Банковская ставка = ЦБ + надбавка (%)
+        bank_rate_monthly: Месячная ставка банка (%)
+    """
+    info = get_rate_info()
+    return {
+        "key_rate": info['key_rate'],
+        "bank_margin": info['bank_margin'],
+        "bank_rate": info['bank_rate'],
+        "bank_rate_monthly": round(info['bank_rate'] / 12, 2),
+        "cached": info.get('cached', False),
+        "updated_at": info.get('updated_at')
+    }
 
 
 class CombinedEstimateOutput(BaseModel):
@@ -713,6 +754,80 @@ def estimate_property(
         raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
 
 
+import re
+
+def _normalize_address_regex(address: str) -> str:
+    """
+    Fallback: нормализовать адрес с помощью regex (если DaData недоступен).
+
+    Удаляет:
+    - Префиксы: Москва, г., ул., улица, д., дом, корп., корпус, стр., строение
+    - Лишние пробелы
+    - Приводит к нижнему регистру
+    """
+    if not address:
+        return ""
+
+    addr = address.lower().strip()
+
+    # Удаляем "москва" и "россия"
+    addr = re.sub(r'\bроссия,?\s*', '', addr)
+    addr = re.sub(r'\bмосква,?\s*', '', addr)
+    addr = re.sub(r'\bг\.?\s*москва,?\s*', '', addr)
+
+    # Удаляем типовые сокращения
+    addr = re.sub(r'\bг\.?\s*', '', addr)  # г.
+    addr = re.sub(r'\bул\.?\s*', '', addr)  # ул.
+    addr = re.sub(r'\bулица\s+', '', addr)  # улица
+    addr = re.sub(r'\bпр-?т\.?\s*', '', addr)  # пр-т, прт (проспект)
+    addr = re.sub(r'\bпроспект\s+', '', addr)  # проспект
+    addr = re.sub(r'\bпр\.?\s+', '', addr)  # пр. (проспект)
+    addr = re.sub(r'\bпер\.?\s*', '', addr)  # пер. (переулок)
+    addr = re.sub(r'\bпереулок\s+', '', addr)  # переулок
+    addr = re.sub(r'\bбул\.?\s*', '', addr)  # бул. (бульвар)
+    addr = re.sub(r'\bбульвар\s+', '', addr)  # бульвар
+    addr = re.sub(r'\bш\.?\s+', '', addr)  # ш. (шоссе)
+    addr = re.sub(r'\bшоссе\s+', '', addr)  # шоссе
+    addr = re.sub(r'\bнаб\.?\s*', '', addr)  # наб. (набережная)
+    addr = re.sub(r'\bнабережная\s+', '', addr)  # набережная
+    addr = re.sub(r'\bд\.?\s*', '', addr)  # д.
+    addr = re.sub(r'\bдом\s+', '', addr)  # дом
+    addr = re.sub(r'\bкорп\.?\s*', ' к', addr)  # корп. -> к
+    addr = re.sub(r'\bкорпус\s+', ' к', addr)  # корпус -> к
+    addr = re.sub(r'\bстр\.?\s*', ' с', addr)  # стр. -> с
+    addr = re.sub(r'\bстроение\s+', ' с', addr)  # строение -> с
+    addr = re.sub(r'\bкв\.?\s*\d+', '', addr)  # кв. 123 - удаляем квартиру
+
+    # Нормализуем пробелы
+    addr = re.sub(r'\s+', ' ', addr).strip()
+
+    # Удаляем финальную запятую
+    addr = addr.rstrip(',').strip()
+
+    return addr
+
+
+def normalize_address(address: str) -> str:
+    """
+    Нормализовать адрес через DaData API с fallback на regex.
+
+    DaData возвращает стандартизированный адрес в формате ФИАС:
+    "г Москва, ул Тверская, д 1" -> "г Москва, ул Тверская, д 1"
+
+    Если DaData недоступен - используем regex-нормализацию.
+    """
+    if not address:
+        return ""
+
+    # Пробуем нормализовать через DaData
+    dadata_normalized = normalize_address_dadata(address)
+    if dadata_normalized:
+        return dadata_normalized
+
+    # Fallback на regex
+    return _normalize_address_regex(address)
+
+
 def _save_valuation_history(property_data: PropertyInput, valuation: ValuationOutput, building_type: str, building_type_source: str):
     """Save valuation to history database."""
     import psycopg2
@@ -723,11 +838,14 @@ def _save_valuation_history(property_data: PropertyInput, valuation: ValuationOu
         conn = psycopg2.connect(dsn)
         cur = conn.cursor()
         
-        # Insert valuation history (with interest price)
+        # Insert valuation history (with interest price and normalized address)
         import json
+        address = property_data.address or "Unknown"
+        address_normalized = normalize_address(address)
+
         cur.execute("""
             INSERT INTO valuation_history (
-                address, lat, lon, district_id,
+                address, address_normalized, lat, lon, district_id,
                 area_total, rooms, floor, total_floors,
                 building_type, building_type_source,
                 estimated_price, estimated_price_per_sqm,
@@ -738,7 +856,7 @@ def _save_valuation_history(property_data: PropertyInput, valuation: ValuationOu
                 expected_profit, profit_rate,
                 investment_breakdown
             ) VALUES (
-                %s, %s, %s, %s,
+                %s, %s, %s, %s, %s,
                 %s, %s, %s, %s,
                 %s, %s,
                 %s, %s,
@@ -750,7 +868,8 @@ def _save_valuation_history(property_data: PropertyInput, valuation: ValuationOu
                 %s
             ) RETURNING valuation_id
         """, (
-            property_data.address or "Unknown",
+            address,
+            address_normalized,
             property_data.lat, property_data.lon, property_data.district_id,
             property_data.area_total, property_data.rooms, property_data.floor, property_data.total_floors,
             building_type, building_type_source,
@@ -814,31 +933,33 @@ def get_history_streets(search: Optional[str] = Query(None, description="Search 
         conn = psycopg2.connect(dsn, cursor_factory=RealDictCursor)
         cur = conn.cursor()
 
-        # Get all addresses with valuations
+        # Get all addresses with valuations, grouped by normalized address to avoid duplicates
         if search:
             cur.execute("""
                 SELECT
-                    address,
+                    COALESCE(address_normalized, address) as address_key,
+                    MAX(address) as address,
                     COUNT(*) as valuation_count,
                     MAX(created_at) as last_valuation,
                     MAX(estimated_price) as max_price,
                     MIN(estimated_price) as min_price
                 FROM valuation_history
                 WHERE address ILIKE %s AND address != 'Unknown'
-                GROUP BY address
+                GROUP BY COALESCE(address_normalized, address)
                 ORDER BY last_valuation DESC
             """, (f'%{search}%',))
         else:
             cur.execute("""
                 SELECT
-                    address,
+                    COALESCE(address_normalized, address) as address_key,
+                    MAX(address) as address,
                     COUNT(*) as valuation_count,
                     MAX(created_at) as last_valuation,
                     MAX(estimated_price) as max_price,
                     MIN(estimated_price) as min_price
                 FROM valuation_history
                 WHERE address != 'Unknown'
-                GROUP BY address
+                GROUP BY COALESCE(address_normalized, address)
                 ORDER BY last_valuation DESC
             """)
 
@@ -1873,12 +1994,16 @@ def api_parse_text(data: ParseTextInput):
 
 @app.post("/parse/image", response_model=ParsedDataOutput)
 async def api_parse_image(
-    file: UploadFile = File(..., description="Image file (JPEG, PNG, etc.)")
+    file: UploadFile = File(..., description="Image or PDF file")
 ):
     """
-    Parse property data from image using Claude Vision.
+    Parse property data from image or PDF using Claude Vision.
 
-    Supported image types:
+    Supported file types:
+    - Images: JPEG, PNG, WebP, GIF
+    - PDF documents (first page will be converted to image)
+
+    Supported documents:
     - Screenshots of CIAN listings
     - EGRN extract (Выписка ЕГРН)
     - Purchase agreement (ДКП)
@@ -1888,11 +2013,11 @@ async def api_parse_image(
         raise HTTPException(status_code=501, detail="Claude parser not available")
 
     # Validate file type
-    allowed_types = ["image/jpeg", "image/png", "image/webp", "image/gif"]
+    allowed_types = ["image/jpeg", "image/png", "image/webp", "image/gif", "application/pdf"]
     if file.content_type not in allowed_types:
         raise HTTPException(
             status_code=400,
-            detail=f"Unsupported file type: {file.content_type}. Allowed: {allowed_types}"
+            detail=f"Unsupported file type: {file.content_type}. Allowed: JPEG, PNG, WebP, GIF, PDF"
         )
 
     # Check file size (max 10MB)
@@ -1900,8 +2025,33 @@ async def api_parse_image(
     if len(contents) > 10 * 1024 * 1024:
         raise HTTPException(status_code=400, detail="File too large. Maximum size: 10MB")
 
+    # Handle PDF files
+    mime_type = file.content_type
+    if file.content_type == "application/pdf":
+        try:
+            import fitz  # PyMuPDF
+            pdf_doc = fitz.open(stream=contents, filetype="pdf")
+            if pdf_doc.page_count == 0:
+                raise HTTPException(status_code=400, detail="PDF is empty")
+
+            # Convert first page to image
+            page = pdf_doc[0]
+            # Render at 2x resolution for better OCR
+            mat = fitz.Matrix(2.0, 2.0)
+            pix = page.get_pixmap(matrix=mat)
+            contents = pix.tobytes("jpeg")
+            mime_type = "image/jpeg"
+            pdf_doc.close()
+        except ImportError:
+            raise HTTPException(
+                status_code=501,
+                detail="PDF support not available. Install PyMuPDF: pip install pymupdf"
+            )
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Failed to process PDF: {str(e)}")
+
     try:
-        result = parse_image(contents, file.content_type)
+        result = parse_image(contents, mime_type)
 
         # Try to geocode if address found
         if result.address and not (result.lat and result.lon):
@@ -1917,19 +2067,46 @@ async def api_parse_image(
 
 
 @app.post("/parse/url", response_model=ParsedDataOutput)
-def api_parse_url(url: str = Query(..., description="CIAN listing URL")):
+def api_parse_url(url: str = Query(..., description="Property listing URL (CIAN, Avito, Yandex)")):
     """
-    Parse property data from CIAN URL.
+    Parse property data from listing URL.
 
-    First checks our database for the listing, then tries to extract from page.
+    Supported platforms:
+    - CIAN: cian.ru/flat/...
+    - Avito: avito.ru/.../kvartiry/...
+    - Yandex Realty: realty.yandex.ru/offer/..., realty.ya.ru/offer/...
+
+    For CIAN, first checks our database for the listing.
+    For Avito/Yandex, tries to fetch page and extract data with Claude.
     """
     if not CLAUDE_PARSER_AVAILABLE:
         raise HTTPException(status_code=501, detail="Claude parser not available")
 
     try:
-        result = parse_cian_url(url)
+        # Determine platform and use appropriate parser
+        if 'cian.ru' in url:
+            result = parse_cian_url(url)
+        elif 'avito.ru' in url:
+            result = parse_avito_url(url)
+        elif 'realty.yandex.ru' in url or 'realty.ya.ru' in url:
+            result = parse_yandex_realty_url(url)
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail="Unsupported URL. Supported platforms: cian.ru, avito.ru, realty.yandex.ru"
+            )
+
+        # Geocode address if coordinates are missing
+        if result.address and (result.lat is None or result.lon is None):
+            geo = geocode_address(result.address)
+            if geo:
+                result.lat = geo.get('lat')
+                result.lon = geo.get('lon')
+
         return ParsedDataOutput(**result.model_dump())
 
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Parse error: {str(e)}")
 
@@ -1967,7 +2144,18 @@ async def smart_estimate(
 
     # Parse from input source
     if url:
-        parsed_data = parse_cian_url(url)
+        # Определить платформу и использовать соответствующий парсер
+        if 'cian.ru' in url:
+            parsed_data = parse_cian_url(url)
+        elif 'avito.ru' in url:
+            parsed_data = parse_avito_url(url)
+        elif 'realty.yandex.ru' in url or 'realty.ya.ru' in url:
+            parsed_data = parse_yandex_realty_url(url)
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail="Неподдерживаемый URL. Поддерживаемые платформы: cian.ru, avito.ru, realty.yandex.ru"
+            )
     elif file:
         contents = await file.read()
         if len(contents) > 10 * 1024 * 1024:
@@ -2038,7 +2226,7 @@ async def smart_estimate(
                 search_pattern = f'%{addr}%'
 
             cur.execute("""
-                SELECT lat, lon, address FROM listings
+                SELECT lat, lon, address, total_floors, house_year, building_type FROM listings
                 WHERE address ILIKE %s AND lat IS NOT NULL AND lon IS NOT NULL
                 ORDER BY last_seen DESC
                 LIMIT 1
@@ -2049,7 +2237,7 @@ async def smart_estimate(
             # If not found, try just street name
             if not result and match:
                 cur.execute("""
-                    SELECT lat, lon, address FROM listings
+                    SELECT lat, lon, address, total_floors, house_year, building_type FROM listings
                     WHERE address ILIKE %s AND lat IS NOT NULL AND lon IS NOT NULL
                     ORDER BY last_seen DESC
                     LIMIT 1
@@ -2062,6 +2250,16 @@ async def smart_estimate(
             if result:
                 parsed_data.lat = result['lat']
                 parsed_data.lon = result['lon']
+                # ВАЖНО: Заполняем этажность и год постройки из базы если не были распознаны
+                if not parsed_data.total_floors and result.get('total_floors'):
+                    parsed_data.total_floors = result['total_floors']
+                    print(f"📊 Got total_floors from DB: {result['total_floors']}")
+                if not parsed_data.building_year and result.get('house_year'):
+                    parsed_data.building_year = result['house_year']
+                    print(f"📅 Got building_year from DB: {result['house_year']}")
+                if not parsed_data.building_type and result.get('building_type'):
+                    parsed_data.building_type = result['building_type']
+                    print(f"🏢 Got building_type from DB: {result['building_type']}")
                 print(f"📍 Found coordinates from DB: {result['address']}")
         except Exception as e:
             print(f"Address lookup error: {e}")

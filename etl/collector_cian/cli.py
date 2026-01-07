@@ -507,10 +507,36 @@ def _parse_listing_details(conn, listing_urls: list[tuple[int, str]]) -> tuple[i
                             # Update listing with details
                             update_listing_details(conn, listing_id, details)
                             details_count += 1
-                            
+
                             # Commit after each successful update to ensure data is saved
                             conn.commit()
-                            
+
+                            # Check for duplicates (reposts)
+                            try:
+                                from etl.duplicate_detector import DuplicateDetector
+                                detector = DuplicateDetector(conn)
+                                listing_data = {
+                                    'id': listing_id,
+                                    'address': address_full,
+                                    'address_full': address_full,
+                                    'fias_address': details.get('fias_address'),
+                                    'area_total': details.get('area_total'),
+                                    'rooms': details.get('rooms'),
+                                    'description_hash': details.get('description_hash'),
+                                    'first_seen': details.get('published_at'),
+                                }
+                                original = detector.detect_repost(listing_data)
+                                if original:
+                                    detector.link_duplicates(
+                                        listing_id=listing_id,
+                                        original_id=original['id'],
+                                        similarity=original.get('similarity_score', 1.0),
+                                        reason=original.get('match_reason', 'exact_match')
+                                    )
+                                    LOGGER.info(f"  🔄 Repost detected: original ID {original['id']}")
+                            except Exception as e:
+                                LOGGER.debug(f"  ⚠️ Duplicate check failed: {e}")
+
                             # Normalize address using FIAS if address_full is available
                             # FIAS is disabled by default (very slow ~2min/address)
                             # Set ENABLE_FIAS=1 to enable

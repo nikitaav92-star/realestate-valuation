@@ -600,8 +600,6 @@
         <!-- Tabs -->
         <div class="tabs">
             <button class="tab active" onclick="switchTab('smart')">✨ Умный ввод</button>
-            <button class="tab" onclick="switchTab('address')">📍 По адресу</button>
-            <button class="tab" onclick="switchTab('params')">⚙️ По координатам</button>
             <button class="tab" onclick="switchTab('history')">📜 История</button>
         </div>
 
@@ -638,7 +636,7 @@
                             </label>
                             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 12px 16px; background: #374151; border-radius: 8px; border: 2px solid transparent; transition: all 0.2s;" id="modeUrlLabel">
                                 <input type="radio" name="inputMode" value="url" onchange="switchInputMode('url')" style="width: auto;">
-                                <span>🔗 Ссылка ЦИАН</span>
+                                <span>🔗 Ссылка на объявление</span>
                             </label>
                         </div>
                     </div>
@@ -667,17 +665,17 @@
                                 </svg>
                             </div>
                             <p style="color: #9ca3af; margin-bottom: 8px;">Перетащите файл сюда или нажмите для выбора</p>
-                            <p style="color: #6b7280; font-size: 12px;">JPEG, PNG, WebP до 10 МБ</p>
+                            <p style="color: #6b7280; font-size: 12px;">JPEG, PNG, WebP, PDF до 10 МБ</p>
                         </div>
-                        <input type="file" id="imageFileInput" accept="image/jpeg,image/png,image/webp" style="display: none;">
+                        <input type="file" id="imageFileInput" accept="image/jpeg,image/png,image/webp,application/pdf" style="display: none;">
                         <div id="imagePreview" style="display: none; margin-top: 12px;"></div>
                     </div>
 
                     <!-- URL input -->
                     <div class="form-group" id="urlInputGroup" style="display: none;">
-                        <label>🔗 Ссылка на объявление ЦИАН</label>
-                        <input type="url" name="cianUrl" placeholder="https://www.cian.ru/sale/flat/12345678/">
-                        <div class="hint">Введите URL объявления с ЦИАН. Данные будут получены из нашей базы.</div>
+                        <label>🔗 Ссылка на объявление (ЦИАН, Авито, Яндекс)</label>
+                        <input type="url" name="cianUrl" placeholder="https://cian.ru/..., avito.ru/..., realty.yandex.ru/...">
+                        <div class="hint">Поддерживается: ЦИАН, Авито, Яндекс.Недвижимость</div>
                     </div>
 
                     <!-- Parsed data preview -->
@@ -719,119 +717,7 @@
                 </form>
             </div>
 
-            <!-- Tab 1: Address -->
-            <div id="tab-address" class="tab-content">
-                <div class="examples" id="recentQueries">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                        <h4 style="margin: 0;">🕐 Недавние запросы:</h4>
-                        <button type="button" onclick="clearRecentQueries()" style="padding: 2px 8px; font-size: 11px; background: #374151; border: 1px solid #4b5563; color: #9ca3af; border-radius: 4px; cursor: pointer;" title="Очистить историю">✕</button>
-                    </div>
-                    <div id="recentQueriesList" style="display: flex; flex-wrap: wrap; gap: 8px;">
-                        <span style="color: #6b7280; font-size: 13px;">Нет сохраненных запросов</span>
-                    </div>
-                </div>
-
-                <form id="addressForm">
-                    <div class="form-group">
-                        <label>📍 Адрес в Москве</label>
-                        <textarea name="address" placeholder="Например: Тверская улица, 12" required></textarea>
-                        <div class="hint">Введите название улицы и номер дома</div>
-                        <div class="alert info" id="addressInfo"></div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>📐 Площадь (м²) <span style="color: #ef4444;">*</span></label>
-                            <input type="number" step="0.1" name="area_total" placeholder="Например: 65" required>
-                        </div>
-                        <div class="form-group">
-                            <label>🏠 Количество комнат <span style="color: #ef4444;">*</span></label>
-                            <input type="number" name="rooms" placeholder="Например: 2" min="1" max="10" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>🏢 Этаж</label>
-                            <input type="number" name="floor" placeholder="5" min="1">
-                        </div>
-                        <div class="form-group">
-                            <label>🏢 Всего этажей</label>
-                            <input type="number" name="total_floors" placeholder="9" min="1">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>🏗️ Тип дома <span style="opacity: 0.6; font-size: 0.9em;">(автоопределение)</span></label>
-                        <select name="building_type">
-                            <option value="" selected>🤖 Определить автоматически</option>
-                            <option value="panel">Панель</option>
-                            <option value="brick">Кирпич</option>
-                            <option value="monolithic">Монолит</option>
-                            <option value="block">Блочный</option>
-                            <option value="wood">Дерево</option>
-                            <option value="other">Другое</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn-estimate">🔍 Оценить квартиру</button>
-                </form>
-            </div>
-
-            <!-- Tab 2: Params -->
-            <div id="tab-params" class="tab-content">
-                <form id="paramsForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>📍 Широта</label>
-                            <input type="number" step="0.0001" name="lat" value="55.7558" required>
-                        </div>
-                        <div class="form-group">
-                            <label>📍 Долгота</label>
-                            <input type="number" step="0.0001" name="lon" value="37.6173" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>📐 Площадь (м²) <span style="color: #ef4444;">*</span></label>
-                            <input type="number" step="0.1" name="area_total" placeholder="Например: 65" required>
-                        </div>
-                        <div class="form-group">
-                            <label>🏠 Количество комнат <span style="color: #ef4444;">*</span></label>
-                            <input type="number" name="rooms" placeholder="Например: 2" min="1" max="10" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>🏢 Этаж</label>
-                            <input type="number" name="floor" placeholder="5" min="1">
-                        </div>
-                        <div class="form-group">
-                            <label>🏢 Всего этажей</label>
-                            <input type="number" name="total_floors" placeholder="9" min="1">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>🏗️ Тип дома <span style="opacity: 0.6; font-size: 0.9em;">(автоопределение)</span></label>
-                        <select name="building_type">
-                            <option value="" selected>🤖 Определить автоматически</option>
-                            <option value="panel">Панель</option>
-                            <option value="brick">Кирпич</option>
-                            <option value="monolithic">Монолит</option>
-                            <option value="block">Блочный</option>
-                            <option value="wood">Дерево</option>
-                            <option value="other">Другое</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn-estimate">🔍 Оценить квартиру</button>
-                </form>
-            </div>
-
-            <!-- Tab 3: History -->
+            <!-- Tab 1: History -->
             <div id="tab-history" class="tab-content">
                 <div style="margin-bottom: 20px;">
                     <div class="form-group">
@@ -919,17 +805,17 @@
             <div id="priceSourceSelector" style="margin-top: 15px; padding: 15px; background: rgba(59, 130, 246, 0.08); border-radius: 10px; border: 1px solid rgba(59, 130, 246, 0.2); display: none;">
                 <div style="font-weight: 600; color: #3b82f6; font-size: 14px; margin-bottom: 12px;">📊 Источник цен</div>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <div id="ps_cian" onclick="updatePriceSource('cian')" style="cursor:pointer; padding:10px 14px; border-radius:8px; border:2px solid #22c55e; background:rgba(34,197,94,0.2);">
+                    <div id="ps_combined" onclick="updatePriceSource('combined')" style="cursor:pointer; padding:10px 14px; border-radius:8px; border:2px solid #8b5cf6; background:rgba(139,92,246,0.2);">
+                        <div style="font-weight:600; font-size:13px; color:#8b5cf6;">Комбинированная</div>
+                        <div style="font-size:10px; opacity:0.7;">40% ЦИАН + 60% Росреестр</div>
+                    </div>
+                    <div id="ps_cian" onclick="updatePriceSource('cian')" style="cursor:pointer; padding:10px 14px; border-radius:8px; border:2px solid transparent; background:rgba(0,0,0,0.2);">
                         <div style="font-weight:600; font-size:13px; color:#22c55e;">ЦИАН</div>
                         <div style="font-size:10px; opacity:0.7;">объявления -7%</div>
                     </div>
                     <div id="ps_rosreestr" onclick="updatePriceSource('rosreestr')" style="cursor:pointer; padding:10px 14px; border-radius:8px; border:2px solid transparent; background:rgba(0,0,0,0.2);">
                         <div style="font-weight:600; font-size:13px; color:#f59e0b;">Росреестр</div>
                         <div style="font-size:10px; opacity:0.7;">реальные сделки</div>
-                    </div>
-                    <div id="ps_combined" onclick="updatePriceSource('combined')" style="cursor:pointer; padding:10px 14px; border-radius:8px; border:2px solid transparent; background:rgba(0,0,0,0.2);">
-                        <div style="font-weight:600; font-size:13px; color:#8b5cf6;">Комбинированная</div>
-                        <div style="font-size:10px; opacity:0.7;">40% ЦИАН + 60% Росреестр</div>
                     </div>
                 </div>
             </div>
@@ -1061,11 +947,7 @@
             </button>
         </div>
 
-        <!-- Footer -->
-        <div class="footer-links">
-            <a href="/docs" target="_blank">📖 API Документация</a>
-            <a href="/redoc" target="_blank">📚 ReDoc</a>
-        </div>
+        <!-- Footer - API документация отключена для безопасности -->
     </div>
 
     <!-- Chart.js Library -->
@@ -1073,7 +955,23 @@
     
     <script>
         // Хранение состояния чекбоксов инвестиционного анализа
-        window.investmentCheckboxes = {};
+        // Дефолты для типа проекта 'own' (собственный)
+        window.investmentCheckboxes = {
+            param_state_fee: true,    // Госпошлина
+            param_agency: true,       // Агентские
+            param_pip: true,          // ПИП
+            param_utilities: true,    // ЖКХ
+            param_serbsky: true,      // Сербского
+            param_tax: true,          // Налог 6%
+            param_notary: false,
+            param_renovation: false,
+            param_foreman: false,
+            param_eviction: false,
+            param_registrators_transfer: false,
+            param_registrators_mortgage: false,
+            param_contur: false
+        };
+        window.currentProjectType = 'own';
 
         function getCheckboxState(id, defaultValue = false) {
             if (window.investmentCheckboxes.hasOwnProperty(id)) {
@@ -1086,7 +984,8 @@
             const checkboxIds = [
                 'param_notary', 'param_state_fee', 'param_pip', 'param_agency',
                 'param_renovation', 'param_foreman', 'param_eviction',
-                'param_registrators_transfer', 'param_registrators_mortgage', 'param_contur'
+                'param_registrators_transfer', 'param_registrators_mortgage', 'param_contur',
+                'param_utilities', 'param_serbsky', 'param_tax'
             ];
             checkboxIds.forEach(id => {
                 const checkbox = document.getElementById(id);
@@ -1096,11 +995,82 @@
             });
         }
 
+        // Установка дефолтов чекбоксов по типу проекта
+        function setProjectTypeDefaults(projectType) {
+            // Матрица дефолтов:
+            // | Расход              | own | partner | partner_flip | bank_flip |
+            // |---------------------|:---:|:-------:|:------------:|:---------:|
+            // | Госпошлина          | ✅  | ✅      | ✅           | ✅        |
+            // | Агентские 200K      | ✅  | ❌      | ❌           | ❌        |
+            // | ПИП (1K фикс)       | ✅  | ✅      | ❌           | ❌        |
+            // | ЖКХ 3мес            | ✅  | ✅      | ✅           | ✅        |
+            // | Сербского 27K       | ✅  | ✅      | ✅           | ✅        |
+            // | Налог 6%            | ✅  | ✅      | ✅           | ✅        |
+            // | Ремонт              | ❌  | ❌      | ✅           | ✅        |
+            // | Прораб              | ❌  | ❌      | ✅           | ✅        |
+
+            const defaults = {
+                'own': {
+                    param_state_fee: true, param_agency: true, param_pip: true,
+                    param_utilities: true, param_serbsky: true, param_tax: true,
+                    param_renovation: false, param_foreman: false
+                },
+                'partner': {
+                    param_state_fee: true, param_agency: false, param_pip: true,
+                    param_utilities: true, param_serbsky: true, param_tax: true,
+                    param_renovation: false, param_foreman: false
+                },
+                'partner_flip': {
+                    param_state_fee: true, param_agency: false, param_pip: false,
+                    param_utilities: true, param_serbsky: true, param_tax: true,
+                    param_renovation: true, param_foreman: true
+                },
+                'bank_flip': {
+                    param_state_fee: true, param_agency: false, param_pip: false,
+                    param_utilities: true, param_serbsky: true, param_tax: true,
+                    param_renovation: true, param_foreman: true
+                }
+            };
+
+            const typeDefaults = defaults[projectType] || defaults['own'];
+            Object.entries(typeDefaults).forEach(([id, value]) => {
+                window.investmentCheckboxes[id] = value;
+                const checkbox = document.getElementById(id);
+                if (checkbox) checkbox.checked = value;
+            });
+        }
+
+        // Обновление отображения при изменении срока проекта
+        function updateProjectPeriodDisplay() {
+            const period = window.projectPeriodMonths || 3;
+            const utilitiesLabel = document.getElementById('utilities_label');
+            if (utilitiesLabel) {
+                const utilitiesTotal = period * 11500;
+                utilitiesLabel.textContent = `🏠 ЖКХ (${period} мес × 11,500 ₽ = ${utilitiesTotal.toLocaleString('ru-RU')} ₽)`;
+            }
+        }
+
+        // Инициализация срока проекта
+        window.projectPeriodMonths = 3;
+
         function switchTab(tabName) {
+            // Убрать active со всех табов и контента
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById('tab-' + tabName).classList.add('active');
+
+            // Найти нужную кнопку таба и активировать
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(t => {
+                if (t.onclick && t.onclick.toString().includes(`'${tabName}'`)) {
+                    t.classList.add('active');
+                }
+            });
+
+            // Активировать контент таба
+            const tabContent = document.getElementById('tab-' + tabName);
+            if (tabContent) {
+                tabContent.classList.add('active');
+            }
 
             // Load history when switching to history tab
             if (tabName === 'history' && !historyData) {
@@ -1503,10 +1473,12 @@
             displayRecentQueries();
         }
 
+        // NOTE: Recent queries feature removed (was part of address tab)
         function displayRecentQueries() {
             const container = document.getElementById('recentQueriesList');
-            const queries = getRecentQueries();
+            if (!container) return; // Контейнер удалён вместе с вкладкой
 
+            const queries = getRecentQueries();
             if (queries.length === 0) {
                 container.innerHTML = '<span style="color: #6b7280; font-size: 13px;">Нет сохраненных запросов</span>';
                 return;
@@ -1514,34 +1486,18 @@
 
             let html = '';
             queries.forEach((q, idx) => {
-                // Shorten address for display
                 let shortAddr = q.address.replace(/^Москва,?\s*/i, '');
                 if (shortAddr.length > 25) shortAddr = shortAddr.substring(0, 25) + '...';
-
                 html += `<button class="example-btn" onclick="fillFromRecent(${idx})" title="${q.address} | ${q.area_total}м² | ${q.rooms} комн">
                     ${shortAddr} • ${q.area_total}м² • ${q.rooms}к
                 </button>`;
             });
-
             container.innerHTML = html;
         }
 
         function fillFromRecent(index) {
-            const queries = getRecentQueries();
-            const q = queries[index];
-            if (!q) return;
-
-            // Fill in all form fields
-            const form = document.getElementById('addressForm');
-            form.querySelector('textarea[name="address"]').value = q.address;
-            form.querySelector('input[name="area_total"]').value = q.area_total || '';
-            form.querySelector('input[name="rooms"]').value = q.rooms || '';
-            form.querySelector('input[name="floor"]').value = q.floor || '';
-            form.querySelector('input[name="total_floors"]').value = q.total_floors || '';
-            form.querySelector('select[name="building_type"]').value = q.building_type || '';
-
-            // Switch to address tab if not already there
-            switchTab('address');
+            // NOTE: Вкладка address удалена, функция больше не используется
+            console.log('fillFromRecent: address tab removed');
         }
 
         function clearRecentQueries() {
@@ -1551,7 +1507,6 @@
             }
         }
 
-        // Load recent queries on page load
         document.addEventListener('DOMContentLoaded', function() {
             displayRecentQueries();
         });
@@ -1665,98 +1620,11 @@
                 console.log('Yandex geocoding failed:', err);
             }
             
-            throw new Error('Адрес не найден ни в одном источнике. Попробуйте вкладку "По координатам" или измените адрес.');
+            throw new Error('Адрес не найден ни в одном источнике. Попробуйте изменить адрес или вставить текст объявления.');
         }
 
-        document.getElementById('addressForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const loader = document.getElementById('loader');
-            const resultSection = document.getElementById('resultSection');
-            const error = document.getElementById('error');
-            const warning = document.getElementById('warning');
-            
-            resultSection.classList.remove('show');
-            error.classList.remove('show');
-            warning.classList.remove('show');
-            loader.classList.add('show');
-
-            try {
-                const formData = new FormData(e.target);
-                const address = formData.get('address');
-                
-                loader.querySelector('p').textContent = 'Ищу адрес на карте...';
-                const coords = await geocodeAddress(address);
-                
-                if (coords.approximate && coords.source !== 'database') {
-                    warning.textContent = '⚠️ Точный дом не найден. Используются координаты улицы. Оценка может быть менее точной.';
-                    warning.classList.add('show');
-                } else if (coords.source === 'database') {
-                    warning.textContent = '✅ Адрес найден в нашей базе объявлений. Координаты точные!';
-                    warning.style.backgroundColor = 'rgba(34, 197, 94, 0.1)';
-                    warning.style.borderColor = '#22c55e';
-                    warning.classList.add('show');
-                }
-                
-                loader.querySelector('p').textContent = 'Анализирую рынок...';
-
-                const buildingType = formData.get('building_type');
-                const data = {
-                    address: address,
-                    lat: coords.lat,
-                    lon: coords.lon,
-                    area_total: parseFloat(formData.get('area_total')),
-                    rooms: parseInt(formData.get('rooms')) || null,
-                    floor: parseInt(formData.get('floor')) || null,
-                    total_floors: parseInt(formData.get('total_floors')) || null,
-                    building_type: buildingType || null
-                };
-
-                await estimateProperty(data);
-
-                // Save to recent queries on success
-                saveRecentQuery(data);
-
-            } catch (err) {
-                loader.classList.remove('show');
-                document.getElementById('addressInfo').classList.remove('show');
-                error.textContent = '❌ ' + err.message;
-                error.classList.add('show');
-            }
-        });
-
-        document.getElementById('paramsForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const loader = document.getElementById('loader');
-            const resultSection = document.getElementById('resultSection');
-            const error = document.getElementById('error');
-            const warning = document.getElementById('warning');
-            
-            resultSection.classList.remove('show');
-            error.classList.remove('show');
-            warning.classList.remove('show');
-            loader.classList.add('show');
-
-            try {
-                const formData = new FormData(e.target);
-                const buildingType = formData.get('building_type');
-                const data = {
-                    lat: parseFloat(formData.get('lat')),
-                    lon: parseFloat(formData.get('lon')),
-                    area_total: parseFloat(formData.get('area_total')),
-                    rooms: parseInt(formData.get('rooms')) || null,
-                    floor: parseInt(formData.get('floor')) || null,
-                    total_floors: parseInt(formData.get('total_floors')) || null,
-                    building_type: buildingType || null
-                };
-
-                await estimateProperty(data);
-                
-            } catch (err) {
-                loader.classList.remove('show');
-                error.textContent = '❌ Ошибка: ' + err.message;
-                error.classList.add('show');
-            }
-        });
+        // NOTE: addressForm и paramsForm вкладки удалены, обработчики закомментированы
+        // Функциональность перенесена в "Умный ввод"
 
         async function estimateProperty(data) {
             const loader = document.getElementById('loader');
@@ -1848,11 +1716,23 @@
                 }
             }
 
-            const priceInMillions = (displayPrice / 1000000).toFixed(2);
+            // По умолчанию используем комбинированную цену (если доступна), иначе ЦИАН
+            let finalDisplayPrice = displayPrice;
+            let finalDisplayPsm = displayPricePerSqm;
+            if (window.lastEstimate.combined_price && window.lastEstimate.combined_psm) {
+                finalDisplayPrice = window.lastEstimate.combined_price;
+                finalDisplayPsm = window.lastEstimate.combined_psm;
+                // Обновляем также bottom3_price и original для корректного пересчёта
+                window.lastEstimate.bottom3_price = finalDisplayPrice;
+                window.lastEstimate.bottom3_price_per_sqm = finalDisplayPsm;
+                window.lastEstimate.original_bottom3_price = finalDisplayPrice;
+            }
+
+            const priceInMillions = (finalDisplayPrice / 1000000).toFixed(2);
             document.getElementById('price').innerHTML =
-                `${priceInMillions} млн ₽<br><span style="font-size: 14px; opacity: 0.7; font-weight: normal;">${Math.round(displayPrice).toLocaleString('ru-RU')} ₽</span>`;
+                `${priceInMillions} млн ₽<br><span style="font-size: 14px; opacity: 0.7; font-weight: normal;">${Math.round(finalDisplayPrice).toLocaleString('ru-RU')} ₽</span>`;
             document.getElementById('pricePerSqm').textContent =
-                Math.round(displayPricePerSqm).toLocaleString('ru-RU') + ' ₽';
+                Math.round(finalDisplayPsm).toLocaleString('ru-RU') + ' ₽';
             
             // Display building type
             const typeNames = {
@@ -2063,6 +1943,7 @@
                                         <span class="comparable-rank">${i + 1}.</span>
                                         <span class="comparable-link" onclick="showListingModal(${comp.listing_id})" style="cursor: pointer;">ID ${idShort} 📁</span>
                                         ${comp.url ? `<a href="${comp.url}" target="_blank" style="color: #60a5fa; font-size: 12px; margin-left: 8px;">ЦИАН ↗</a>` : ''}
+                                        ${comp.listing_id ? `<a href="https://realestate.ourdocs.org/listing/${comp.listing_id}" target="_blank" style="color: #22c55e; font-size: 12px; margin-left: 8px;">Наша БД ↗</a>` : ''}
                                         ${isTop3 ? '<span class="badge-top3">ТОП-3</span>' : ''}
                                     </div>
                                     <div class="comparable-meta">
@@ -2724,8 +2605,10 @@
                         const idShort = comp.url.split('/').filter(s => s).pop();
                         html += `<span onclick="showListingModal(${comp.listing_id})" style="color: #60a5fa; cursor: pointer;">ID ${idShort} 📁</span>`;
                         html += ` <a href="${comp.url}" target="_blank" style="color: #60a5fa; font-size: 11px; margin-left: 4px;">ЦИАН ↗</a>`;
+                        if (comp.listing_id) html += ` <a href="https://realestate.ourdocs.org/listing/${comp.listing_id}" target="_blank" style="color: #22c55e; font-size: 11px; margin-left: 4px;">БД ↗</a>`;
                     } else {
                         html += `<span onclick="showListingModal(${comp.listing_id})" style="color: #60a5fa; cursor: pointer;">ID ${comp.listing_id} 📁</span>`;
+                        if (comp.listing_id) html += ` <a href="https://realestate.ourdocs.org/listing/${comp.listing_id}" target="_blank" style="color: #22c55e; font-size: 11px; margin-left: 4px;">БД ↗</a>`;
                     }
                     if (isTop3) html += ` <span style="background: #22c55e; color: white; font-size: 9px; padding: 2px 6px; border-radius: 8px; margin-left: 6px;">ТОП-3</span>`;
                     if (isExcluded) html += ` <span style="background: #ef4444; color: white; font-size: 9px; padding: 2px 6px; border-radius: 8px; margin-left: 6px;">ИСКЛЮЧЁН</span>`;
@@ -2950,10 +2833,10 @@
             html += '<div style="margin-top: 20px; padding: 20px; background: rgba(139, 92, 246, 0.1); border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.3);">';
             html += '<div style="font-weight: 600; color: #8b5cf6; font-size: 16px; margin-bottom: 15px;">Тип проекта</div>';
             html += '<div style="display: flex; gap: 8px; flex-wrap: wrap;">';
-            html += '<div id="pt_own" onclick="window.currentProjectType=\'own\'; recalculateInterestPrice()" style="cursor:pointer; padding:10px 14px; border-radius:8px; border:2px solid ' + (currentProjectType === 'own' ? '#22c55e' : 'transparent') + '; background:' + (currentProjectType === 'own' ? 'rgba(34,197,94,0.2)' : 'rgba(0,0,0,0.2)') + ';"><div style="font-weight:600; font-size:13px; color:#22c55e;">Собственный</div><div style="font-size:10px; opacity:0.7;">100% прибыли</div></div>';
-            html += '<div id="pt_partner" onclick="window.currentProjectType=\'partner\'; recalculateInterestPrice()" style="cursor:pointer; padding:10px 14px; border-radius:8px; border:2px solid ' + (currentProjectType === 'partner' ? '#3b82f6' : 'transparent') + '; background:' + (currentProjectType === 'partner' ? 'rgba(59,130,246,0.2)' : 'rgba(0,0,0,0.2)') + ';"><div style="font-weight:600; font-size:13px; color:#3b82f6;">Партнерский</div><div style="font-size:10px; opacity:0.7;">50/50</div></div>';
-            html += '<div id="pt_partner_flip" onclick="window.currentProjectType=\'partner_flip\'; recalculateInterestPrice()" style="cursor:pointer; padding:10px 14px; border-radius:8px; border:2px solid ' + (currentProjectType === 'partner_flip' ? '#f59e0b' : 'transparent') + '; background:' + (currentProjectType === 'partner_flip' ? 'rgba(245,158,11,0.2)' : 'rgba(0,0,0,0.2)') + ';"><div style="font-weight:600; font-size:13px; color:#f59e0b;">Парт. Флип</div><div style="font-size:10px; opacity:0.7;">50/50 + ремонт</div></div>';
-            html += '<div id="pt_bank_flip" onclick="window.currentProjectType=\'bank_flip\'; recalculateInterestPrice()" style="cursor:pointer; padding:10px 14px; border-radius:8px; border:2px solid ' + (currentProjectType === 'bank_flip' ? '#ef4444' : 'transparent') + '; background:' + (currentProjectType === 'bank_flip' ? 'rgba(239,68,68,0.2)' : 'rgba(0,0,0,0.2)') + ';"><div style="font-weight:600; font-size:13px; color:#ef4444;">Банк. Флип</div><div style="font-size:10px; opacity:0.7;">Ипотека 50/50</div></div>';
+            html += '<div id="pt_own" onclick="window.currentProjectType=\'own\'; setProjectTypeDefaults(\'own\'); recalculateInterestPrice()" style="cursor:pointer; padding:10px 14px; border-radius:8px; border:2px solid ' + (currentProjectType === 'own' ? '#22c55e' : 'transparent') + '; background:' + (currentProjectType === 'own' ? 'rgba(34,197,94,0.2)' : 'rgba(0,0,0,0.2)') + ';"><div style="font-weight:600; font-size:13px; color:#22c55e;">Собственный</div><div style="font-size:10px; opacity:0.7;">100% прибыли</div></div>';
+            html += '<div id="pt_partner" onclick="window.currentProjectType=\'partner\'; setProjectTypeDefaults(\'partner\'); recalculateInterestPrice()" style="cursor:pointer; padding:10px 14px; border-radius:8px; border:2px solid ' + (currentProjectType === 'partner' ? '#3b82f6' : 'transparent') + '; background:' + (currentProjectType === 'partner' ? 'rgba(59,130,246,0.2)' : 'rgba(0,0,0,0.2)') + ';"><div style="font-weight:600; font-size:13px; color:#3b82f6;">Партнерский</div><div style="font-size:10px; opacity:0.7;">50/50</div></div>';
+            html += '<div id="pt_partner_flip" onclick="window.currentProjectType=\'partner_flip\'; setProjectTypeDefaults(\'partner_flip\'); recalculateInterestPrice()" style="cursor:pointer; padding:10px 14px; border-radius:8px; border:2px solid ' + (currentProjectType === 'partner_flip' ? '#f59e0b' : 'transparent') + '; background:' + (currentProjectType === 'partner_flip' ? 'rgba(245,158,11,0.2)' : 'rgba(0,0,0,0.2)') + ';"><div style="font-weight:600; font-size:13px; color:#f59e0b;">Парт. Флип</div><div style="font-size:10px; opacity:0.7;">50/50 + ремонт</div></div>';
+            html += '<div id="pt_bank_flip" onclick="window.currentProjectType=\'bank_flip\'; setProjectTypeDefaults(\'bank_flip\'); recalculateInterestPrice()" style="cursor:pointer; padding:10px 14px; border-radius:8px; border:2px solid ' + (currentProjectType === 'bank_flip' ? '#ef4444' : 'transparent') + '; background:' + (currentProjectType === 'bank_flip' ? 'rgba(239,68,68,0.2)' : 'rgba(0,0,0,0.2)') + ';"><div style="font-weight:600; font-size:13px; color:#ef4444;">Банк. Флип</div><div style="font-size:10px; opacity:0.7;">Ипотека 50/50</div></div>';
             html += '</div>';
             html += '</div>';
 
@@ -2972,34 +2855,57 @@
             // Получаем сохранённое состояние чекбоксов
             const cb = window.investmentCheckboxes || {};
 
+            // Стили для обязательных расходов
+            const yellowStyle = 'background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3);';
+            const yellowHoverIn = "this.style.background='rgba(245,158,11,0.25)'";
+            const yellowHoverOut = "this.style.background='rgba(245,158,11,0.15)'";
+            const darkStyle = 'background: rgba(0,0,0,0.2);';
+            const darkHoverIn = "this.style.background='rgba(0,0,0,0.3)'";
+            const darkHoverOut = "this.style.background='rgba(0,0,0,0.2)'";
+
+            // Агентские - жёлтые только для Собственного
+            const isOwnProject = currentProjectType === 'own';
+            const agencyStyle = isOwnProject ? yellowStyle : darkStyle;
+            const agencyHoverIn = isOwnProject ? yellowHoverIn : darkHoverIn;
+            const agencyHoverOut = isOwnProject ? yellowHoverOut : darkHoverOut;
+
             // Основные расходы (чекбоксы)
-            html += `<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 6px; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.3)'" onmouseout="this.style.background='rgba(0,0,0,0.2)'">`;
+            html += `<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; ${darkStyle} border-radius: 6px; transition: all 0.2s;" onmouseover="${darkHoverIn}" onmouseout="${darkHoverOut}">`;
             html += `<input type="checkbox" id="param_notary" style="width: 18px; height: 18px; cursor: pointer;" ${cb.param_notary ? 'checked' : ''}>`;
             html += `<span>📝 Нотариус (50,000 ₽)</span>`;
             html += `</label>`;
 
-            html += `<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 6px; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.3)'" onmouseout="this.style.background='rgba(0,0,0,0.2)'">`;
+            // Госпошлина - ВСЕГДА жёлтая (обязательна для всех типов)
+            html += `<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; ${yellowStyle} border-radius: 6px; transition: all 0.2s;" onmouseover="${yellowHoverIn}" onmouseout="${yellowHoverOut}">`;
             html += `<input type="checkbox" id="param_state_fee" style="width: 18px; height: 18px; cursor: pointer;" ${cb.param_state_fee ? 'checked' : ''}>`;
             html += `<span>🏛️ Госпошлина (4,000 ₽)</span>`;
             html += `</label>`;
 
-            html += `<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 6px; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.3)'" onmouseout="this.style.background='rgba(0,0,0,0.2)'">`;
+            html += `<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; ${darkStyle} border-radius: 6px; transition: all 0.2s;" onmouseover="${darkHoverIn}" onmouseout="${darkHoverOut}">`;
             html += `<input type="checkbox" id="param_pip" style="width: 18px; height: 18px; cursor: pointer;" ${cb.param_pip ? 'checked' : ''}>`;
-            html += `<span>📐 ПИП (1,500 ₽/м²)</span>`;
+            html += `<span>📐 ПИП (1,000 ₽)</span>`;
             html += `</label>`;
 
-            html += `<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 6px; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.3)'" onmouseout="this.style.background='rgba(0,0,0,0.2)'">`;
+            // Агентские - жёлтые для Собственного
+            html += `<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; ${agencyStyle} border-radius: 6px; transition: all 0.2s;" onmouseover="${agencyHoverIn}" onmouseout="${agencyHoverOut}">`;
             html += `<input type="checkbox" id="param_agency" style="width: 18px; height: 18px; cursor: pointer;" ${cb.param_agency ? 'checked' : ''}>`;
             html += `<span>🤝 Агентские (200,000 ₽)</span>`;
             html += `</label>`;
 
-            // Дополнительные расходы
-            html += `<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 6px; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.3)'" onmouseout="this.style.background='rgba(0,0,0,0.2)'">`;
+            // Дополнительные расходы - для флипов выделяем жёлтым (обязательные)
+            const isFlipProject = currentProjectType === 'partner_flip' || currentProjectType === 'bank_flip';
+            const flipStyle = isFlipProject ? yellowStyle : darkStyle;
+            const flipHoverIn = isFlipProject ? yellowHoverIn : darkHoverIn;
+            const flipHoverOut = isFlipProject ? yellowHoverOut : darkHoverOut;
+
+            html += `<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; ${flipStyle} border-radius: 6px; transition: all 0.2s;" onmouseover="${flipHoverIn}" onmouseout="${flipHoverOut}">`;
             html += `<input type="checkbox" id="param_renovation" style="width: 18px; height: 18px; cursor: pointer;" ${cb.param_renovation ? 'checked' : ''}>`;
-            html += `<span>🏗️ Ремонт (50,000 ₽/м²)</span>`;
+            html += `<span>🏗️ Ремонт</span>`;
+            html += `<input type="number" id="renovation_rate" value="60000" min="10000" max="200000" step="5000" style="width: 90px; padding: 4px 8px; margin-left: auto; border-radius: 4px; border: 1px solid #374151; background: rgba(0,0,0,0.3); color: white; font-size: 12px;" onclick="event.stopPropagation()">`;
+            html += `<span style="font-size: 11px; color: #9ca3af;">₽/м²</span>`;
             html += `</label>`;
 
-            html += `<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 6px; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.3)'" onmouseout="this.style.background='rgba(0,0,0,0.2)'">`;
+            html += `<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; ${flipStyle} border-radius: 6px; transition: all 0.2s;" onmouseover="${flipHoverIn}" onmouseout="${flipHoverOut}">`;
             html += `<input type="checkbox" id="param_foreman" style="width: 18px; height: 18px; cursor: pointer;" ${cb.param_foreman ? 'checked' : ''}>`;
             html += `<span>👷 Прораб (100,000 ₽)</span>`;
             html += `</label>`;
@@ -3023,11 +2929,39 @@
             html += `<input type="checkbox" id="param_contur" style="width: 18px; height: 18px; cursor: pointer;" ${cb.param_contur ? 'checked' : ''}>`;
             html += `<span>📄 Регистрация Контур (4,000 ₽)</span>`;
             html += `</label>`;
-            
+
+            // Обязательные расходы (также с чекбоксами для гибкости)
+            // ЖКХ с динамическим сроком
+            const periodForDisplay = window.projectPeriodMonths || 3;
+            const utilitiesTotal = periodForDisplay * 11500;
+            html += `<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; background: rgba(245,158,11,0.15); border-radius: 6px; border: 1px solid rgba(245,158,11,0.3); transition: all 0.2s;" onmouseover="this.style.background='rgba(245,158,11,0.25)'" onmouseout="this.style.background='rgba(245,158,11,0.15)'">`;
+            html += `<input type="checkbox" id="param_utilities" style="width: 18px; height: 18px; cursor: pointer;" ${cb.param_utilities !== false ? 'checked' : ''}>`;
+            html += `<span id="utilities_label">🏠 ЖКХ (${periodForDisplay} мес × 11,500 ₽ = ${utilitiesTotal.toLocaleString('ru-RU')} ₽)</span>`;
+            html += `</label>`;
+
+            html += `<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; background: rgba(245,158,11,0.15); border-radius: 6px; border: 1px solid rgba(245,158,11,0.3); transition: all 0.2s;" onmouseover="this.style.background='rgba(245,158,11,0.25)'" onmouseout="this.style.background='rgba(245,158,11,0.15)'">`;
+            html += `<input type="checkbox" id="param_serbsky" style="width: 18px; height: 18px; cursor: pointer;" ${cb.param_serbsky !== false ? 'checked' : ''}>`;
+            html += `<span>🏥 Освидетельствование Сербского (27,000 ₽)</span>`;
+            html += `</label>`;
+
+            html += `<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; background: rgba(245,158,11,0.15); border-radius: 6px; border: 1px solid rgba(245,158,11,0.3); transition: all 0.2s;" onmouseover="this.style.background='rgba(245,158,11,0.25)'" onmouseout="this.style.background='rgba(245,158,11,0.15)'">`;
+            html += `<input type="checkbox" id="param_tax" style="width: 18px; height: 18px; cursor: pointer;" ${cb.param_tax !== false ? 'checked' : ''}>`;
+            html += `<span>💰 Налог 6% (от продажи)</span>`;
+            html += `</label>`;
+
+            // Срок проекта (редактируемый, всегда жёлтый)
+            const savedPeriod = window.projectPeriodMonths || 3;
+            html += `<label style="display: flex; align-items: center; gap: 8px; padding: 10px; ${yellowStyle} border-radius: 6px; transition: all 0.2s;" onmouseover="${yellowHoverIn}" onmouseout="${yellowHoverOut}">`;
+            html += `<span>📅 Срок проекта</span>`;
+            html += `<input type="number" id="project_period_input" value="${savedPeriod}" min="1" max="24" step="1" style="width: 60px; padding: 4px 8px; margin-left: auto; border-radius: 4px; border: 1px solid rgba(245,158,11,0.5); background: rgba(0,0,0,0.3); color: white; font-size: 14px; text-align: center;" onclick="event.stopPropagation()" onchange="window.projectPeriodMonths = parseInt(this.value) || 3; updateProjectPeriodDisplay();">`;
+            html += `<span style="font-size: 13px; color: #fcd34d;">мес</span>`;
+            html += `</label>`;
+
             html += '</div>';
             html += '<div style="margin-top: 12px; font-size: 12px; opacity: 0.7; text-align: center;">💡 Отметьте нужные расходы и нажмите "🔄 Пересчитать"</div>';
             html += '</div>';
-            
+
+
             // Breakdown of costs
             if (estimate.investment_breakdown) {
                 html += '<div style="margin-top: 20px; padding: 15px; background: rgba(0, 0, 0, 0.2); border-radius: 8px;">';
@@ -3046,22 +2980,33 @@
 
             // Детали ипотеки (для bank_flip)
             if (projectType === 'bank_flip' && mortgageAmount > 0) {
+                const cbrKeyRate = estimate.cbr_key_rate || 16;
+                const bankRateYearly = estimate.bank_rate_yearly || 21.5;
+                const bankRateMonthly = estimate.bank_rate_monthly || 1.79;
+
                 html += '<div style="margin-top: 20px; padding: 15px; background: rgba(234, 179, 8, 0.1); border-radius: 8px; border: 1px solid rgba(234, 179, 8, 0.3);">';
                 html += '<div style="font-weight: 600; margin-bottom: 12px; color: #eab308;">🏦 Параметры ипотеки:</div>';
                 html += '<div style="display: grid; gap: 8px;">';
 
+                // Ставка ЦБ
+                html += `<div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(139, 92, 246, 0.2); border-radius: 4px;">`;
+                html += `<span>💰 Ставка финансирования</span>`;
+                html += `<span style="font-weight: 600; color: #8b5cf6;">${bankRateYearly.toFixed(1)}% годовых (ЦБ ${cbrKeyRate}% + 5.5%)</span>`;
+                html += `</div>`;
+
                 html += `<div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(0, 0, 0, 0.2); border-radius: 4px;">`;
-                html += `<span>Сумма кредита (80% от цены)</span>`;
+                html += `<span>Сумма кредита (100% от цены)</span>`;
                 html += `<span style="font-weight: 600;">${Math.round(mortgageAmount).toLocaleString('ru-RU')} ₽</span>`;
                 html += `</div>`;
 
                 html += `<div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(0, 0, 0, 0.2); border-radius: 4px;">`;
-                html += `<span>Ежемесячный платеж (2%)</span>`;
+                html += `<span>Ежемесячный платеж (${bankRateMonthly.toFixed(1)}%/мес)</span>`;
                 html += `<span style="font-weight: 600;">${Math.round(mortgageMonthly).toLocaleString('ru-RU')} ₽</span>`;
                 html += `</div>`;
 
+                const prepayPeriod = window.projectPeriodMonths || 3;
                 html += `<div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(59, 130, 246, 0.2); border-radius: 4px;">`;
-                html += `<span>💰 Партнер платит вперед (3 мес %)</span>`;
+                html += `<span>💰 Партнер платит вперед (${prepayPeriod} мес %)</span>`;
                 html += `<span style="font-weight: 600; color: #3b82f6;">${Math.round(mortgagePrepay).toLocaleString('ru-RU')} ₽</span>`;
                 html += `</div>`;
 
@@ -3073,10 +3018,22 @@
                     html += `</div>`;
                 }
 
-                if (renovationProfit > 0) {
+                const renovationIncomeDisplay = estimate.renovation_income || 0;
+                const renovationPeriod = window.projectPeriodMonths || 3;
+                if (renovationIncomeDisplay > 0) {
                     html += `<div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(139, 92, 246, 0.2); border-radius: 4px;">`;
-                    html += `<span>💵 Наш доход на ремонт (4%/мес)</span>`;
-                    html += `<span style="font-weight: 600; color: #8b5cf6;">${Math.round(renovationProfit).toLocaleString('ru-RU')} ₽</span>`;
+                    html += `<span>💵 Наш доход на ремонт (4%/мес × ${renovationPeriod} мес)</span>`;
+                    html += `<span style="font-weight: 600; color: #8b5cf6;">${Math.round(renovationIncomeDisplay).toLocaleString('ru-RU')} ₽</span>`;
+                    html += `</div>`;
+                }
+
+                // Гарантированный минимум
+                const minGuaranteed = estimate.min_guaranteed || 0;
+                const minGuaranteedSource = estimate.min_guaranteed_source || '';
+                if (minGuaranteed > 0) {
+                    html += `<div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(245, 158, 11, 0.2); border-radius: 4px; margin-top: 8px;">`;
+                    html += `<span>⚡ Гарант. минимум (${minGuaranteedSource})</span>`;
+                    html += `<span style="font-weight: 600; color: #f59e0b;">${Math.round(minGuaranteed).toLocaleString('ru-RU')} ₽</span>`;
                     html += `</div>`;
                 }
 
@@ -3085,24 +3042,152 @@
 
             // Детали ремонта (для флипов)
             if (isFlip && renovationCost > 0) {
+                const renovationRate = parseInt(document.getElementById('renovation_rate')?.value) || 60000;
+                const areaTotal = estimate.area_total || 0;
+                const renovationIncome = estimate.renovation_income || 0;
+                const roiRenovation = renovationCost > 0 ? ((renovationProfit / renovationCost) * 100).toFixed(0) : 0;
+
                 html += '<div style="margin-top: 20px; padding: 15px; background: rgba(245, 158, 11, 0.1); border-radius: 8px; border: 1px solid rgba(245, 158, 11, 0.3);">';
-                html += '<div style="font-weight: 600; margin-bottom: 12px; color: #f59e0b;">🔨 Параметры ремонта:</div>';
+                html += '<div style="font-weight: 600; margin-bottom: 12px; color: #f59e0b;">🔨 ПАРАМЕТРЫ РЕМОНТА:</div>';
                 html += '<div style="display: grid; gap: 8px;">';
 
                 html += `<div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(0, 0, 0, 0.2); border-radius: 4px;">`;
-                html += `<span>Стоимость ремонта (50,000 ₽/м²)</span>`;
+                html += `<span>📐 Площадь</span>`;
+                html += `<span style="font-weight: 600;">${areaTotal.toFixed(1)} м²</span>`;
+                html += `</div>`;
+
+                html += `<div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(0, 0, 0, 0.2); border-radius: 4px;">`;
+                html += `<span>💰 Ставка</span>`;
+                html += `<span style="font-weight: 600;">${renovationRate.toLocaleString('ru-RU')} ₽/м²</span>`;
+                html += `</div>`;
+
+                html += `<div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(0, 0, 0, 0.2); border-radius: 4px;">`;
+                html += `<span>🔧 Стоимость ремонта</span>`;
                 html += `<span style="font-weight: 600;">${Math.round(renovationCost).toLocaleString('ru-RU')} ₽</span>`;
                 html += `</div>`;
 
+                html += `<div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(0, 0, 0, 0.2); border-radius: 4px;">`;
+                html += `<span>📊 Коэффициент прибавки</span>`;
+                html += `<span style="font-weight: 600;">×1.6</span>`;
+                html += `</div>`;
+
                 html += `<div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(34, 197, 94, 0.2); border-radius: 4px;">`;
-                html += `<span>✨ Прибавка к цене (×1.5)</span>`;
+                html += `<span>✨ Прибавка к цене</span>`;
                 html += `<span style="font-weight: 600; color: #22c55e;">+${Math.round(renovationBonus).toLocaleString('ru-RU')} ₽</span>`;
                 html += `</div>`;
 
-                if (renovationProfit > 0 && projectType === 'partner_flip') {
-                    html += `<div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(139, 92, 246, 0.2); border-radius: 4px;">`;
-                    html += `<span>💵 Доход на ремонт (4%/мес)</span>`;
-                    html += `<span style="font-weight: 600; color: #8b5cf6;">${Math.round(renovationProfit).toLocaleString('ru-RU')} ₽</span>`;
+                html += `<div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(34, 197, 94, 0.15); border-radius: 4px;">`;
+                html += `<span>📈 Профит от ремонта (прибавка - затраты)</span>`;
+                html += `<span style="font-weight: 600; color: #22c55e;">${Math.round(renovationProfit).toLocaleString('ru-RU')} ₽</span>`;
+                html += `</div>`;
+
+                html += `<div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(34, 197, 94, 0.1); border-radius: 4px;">`;
+                html += `<span>📊 ROI ремонта</span>`;
+                html += `<span style="font-weight: 600; color: #22c55e;">+${roiRenovation}%</span>`;
+                html += `</div>`;
+
+                if (renovationIncome > 0) {
+                    const renoPeriod = window.projectPeriodMonths || 3;
+                    html += `<div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(139, 92, 246, 0.2); border-radius: 4px; margin-top: 8px;">`;
+                    html += `<span>💵 Доход на ремонт (4%/мес × ${renoPeriod} мес)</span>`;
+                    html += `<span style="font-weight: 600; color: #8b5cf6;">${Math.round(renovationIncome).toLocaleString('ru-RU')} ₽</span>`;
+                    html += `</div>`;
+                }
+
+                // Доход на инвестиции (для partner_flip)
+                const investmentIncome = estimate.investment_income || 0;
+                if (investmentIncome > 0) {
+                    html += `<div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(34, 197, 94, 0.2); border-radius: 4px; margin-top: 8px;">`;
+                    html += `<span>💰 Доход на инвестиции (цена × 4%/мес × ${projectMonths} мес)</span>`;
+                    html += `<span style="font-weight: 600; color: #22c55e;">${Math.round(investmentIncome).toLocaleString('ru-RU')} ₽</span>`;
+                    html += `</div>`;
+                }
+
+                html += '</div></div>';
+            }
+
+            // Детализация расчёта 50/50 для партнёрских проектов
+            if (projectType === 'partner' || projectType === 'partner_flip' || projectType === 'bank_flip') {
+                const purchasePrice = estimate.interest_price || 0;
+                const salePrice = estimate.expected_sale_price || estimate.displayed_sale_price || 0;
+                // Суммируем все расходы из breakdown (кроме доходных статей)
+                const breakdown = estimate.cost_breakdown || estimate.investment_breakdown || {};
+                let totalCosts = 0;
+                for (const [key, value] of Object.entries(breakdown)) {
+                    if (value > 0 && !key.includes('Доход')) {
+                        totalCosts += value;
+                    }
+                }
+                const totalProfit = estimate.expected_profit || 0;
+                const ourProfit = estimate.our_profit || 0;
+                const partnerProfit = estimate.partner_profit || 0;
+                const renovationIncome = estimate.renovation_income || 0;
+                const minGuaranteed = estimate.min_guaranteed || 0;
+
+                html += '<div style="margin-top: 20px; padding: 15px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.3);">';
+                html += '<div style="font-weight: 600; margin-bottom: 12px; color: #60a5fa;">📊 ДЕТАЛИЗАЦИЯ ПРОЕКТА 50/50:</div>';
+                html += '<div style="display: grid; gap: 8px; font-size: 13px;">';
+
+                // ДОХОДЫ
+                html += '<div style="font-weight: 600; color: #4ade80; margin-top: 4px;">ДОХОДЫ:</div>';
+                html += `<div style="display: flex; justify-content: space-between; padding: 6px 8px; background: rgba(0,0,0,0.2); border-radius: 4px;">`;
+                html += `<span>💰 Цена продажи (после торга -7%)</span>`;
+                html += `<span style="font-weight: 600; color: #4ade80;">${(salePrice / 1000000).toFixed(2)} млн ₽</span>`;
+                html += `</div>`;
+
+                // РАСХОДЫ
+                html += '<div style="font-weight: 600; color: #f87171; margin-top: 8px;">РАСХОДЫ:</div>';
+                html += `<div style="display: flex; justify-content: space-between; padding: 6px 8px; background: rgba(0,0,0,0.2); border-radius: 4px;">`;
+                html += `<span>🏠 Цена покупки</span>`;
+                html += `<span style="font-weight: 600;">${(purchasePrice / 1000000).toFixed(2)} млн ₽</span>`;
+                html += `</div>`;
+
+                // Детали расходов (breakdown уже определён выше)
+                for (const [key, value] of Object.entries(breakdown)) {
+                    if (value > 0 && !key.includes('Доход на ремонт')) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 8px; opacity: 0.8;">`;
+                        html += `<span style="padding-left: 16px;">• ${key}</span>`;
+                        html += `<span>${Math.round(value).toLocaleString('ru-RU')} ₽</span>`;
+                        html += `</div>`;
+                    }
+                }
+
+                html += `<div style="display: flex; justify-content: space-between; padding: 6px 8px; background: rgba(239, 68, 68, 0.2); border-radius: 4px; margin-top: 4px;">`;
+                html += `<span style="font-weight: 600;">ИТОГО расходов</span>`;
+                html += `<span style="font-weight: 600; color: #f87171;">${(totalCosts / 1000000).toFixed(2)} млн ₽</span>`;
+                html += `</div>`;
+
+                // ПРИБЫЛЬ
+                html += '<div style="font-weight: 600; color: #a78bfa; margin-top: 8px;">РАСПРЕДЕЛЕНИЕ ПРИБЫЛИ:</div>';
+                html += `<div style="display: flex; justify-content: space-between; padding: 6px 8px; background: rgba(0,0,0,0.2); border-radius: 4px;">`;
+                html += `<span>📈 Общий профит проекта</span>`;
+                html += `<span style="font-weight: 600;">${Math.round(totalProfit).toLocaleString('ru-RU')} ₽</span>`;
+                html += `</div>`;
+
+                if (renovationIncome > 0) {
+                    html += `<div style="display: flex; justify-content: space-between; padding: 4px 8px; opacity: 0.8;">`;
+                    html += `<span style="padding-left: 16px;">• Доход на ремонт (нам)</span>`;
+                    html += `<span>${Math.round(renovationIncome).toLocaleString('ru-RU')} ₽</span>`;
+                    html += `</div>`;
+                    html += `<div style="display: flex; justify-content: space-between; padding: 4px 8px; opacity: 0.8;">`;
+                    html += `<span style="padding-left: 16px;">• Делимая часть 50/50</span>`;
+                    html += `<span>${Math.round(totalProfit - renovationIncome).toLocaleString('ru-RU')} ₽</span>`;
+                    html += `</div>`;
+                }
+
+                html += `<div style="display: flex; justify-content: space-between; padding: 6px 8px; background: rgba(34, 197, 94, 0.2); border-radius: 4px;">`;
+                html += `<span>✅ НАША доля</span>`;
+                html += `<span style="font-weight: 600; color: #22c55e;">${Math.round(ourProfit).toLocaleString('ru-RU')} ₽</span>`;
+                html += `</div>`;
+
+                html += `<div style="display: flex; justify-content: space-between; padding: 6px 8px; background: rgba(59, 130, 246, 0.2); border-radius: 4px;">`;
+                html += `<span>👤 Доля партнёра</span>`;
+                html += `<span style="font-weight: 600; color: #3b82f6;">${Math.round(partnerProfit).toLocaleString('ru-RU')} ₽</span>`;
+                html += `</div>`;
+
+                if (minGuaranteed > 0 && ourProfit <= minGuaranteed * 1.1) {
+                    html += `<div style="margin-top: 8px; padding: 8px; background: rgba(245, 158, 11, 0.15); border-radius: 4px; font-size: 12px; color: #fbbf24;">`;
+                    html += `⚠️ Применён гарантированный минимум: ${Math.round(minGuaranteed).toLocaleString('ru-RU')} ₽`;
                     html += `</div>`;
                 }
 
@@ -3124,35 +3209,42 @@
             html += `<div style="font-weight: 600; margin-bottom: 8px; color: #3b82f6;">💡 ${projectTypeName}: как рассчитывается?</div>`;
             html += '<div style="font-size: 13px; line-height: 1.6; opacity: 0.9;">';
 
+            // Динамический срок проекта из поля ввода
+            const helpPeriod = window.projectPeriodMonths || 3;
+            const helpRenoRate = 4 * helpPeriod;  // 4%/мес × кол-во месяцев
+
             if (projectType === 'own') {
                 html += '<strong>Собственный проект</strong> — 100% прибыли наша.<br><br>';
                 html += '• Торг с продавцом: 7%<br>';
                 html += '• Целевая доходность: 4%/мес<br>';
                 html += '• Налог: 6% от прибыли<br>';
-                html += '• Срок проекта: 3 месяца<br><br>';
-                html += '<strong>Цена интереса</strong> — максимальная цена покупки для 12% прибыли за 3 мес.';
+                html += `• Срок проекта: ${helpPeriod} мес<br><br>`;
+                html += `<strong>Цена интереса</strong> — максимальная цена покупки для ${helpRenoRate}% прибыли за ${helpPeriod} мес.`;
             } else if (projectType === 'partner') {
                 html += '<strong>Партнерский 50/50</strong> — прибыль делится пополам.<br><br>';
                 html += '• Наша доля: 50% от прибыли<br>';
                 html += '• Минимум: 4%/мес от вложений ИЛИ 1 млн ₽<br>';
                 html += '• Налог: 6% от общей прибыли<br>';
-                html += '• Срок проекта: 3 месяца<br><br>';
+                html += `• Срок проекта: ${helpPeriod} мес<br><br>`;
                 html += '<strong>Цена интереса</strong> — максимальная цена при которой наша доля ≥ 4%/мес.';
             } else if (projectType === 'partner_flip') {
                 html += '<strong>Партнерский Флип</strong> — 50/50 + ремонт.<br><br>';
                 html += '• Прибыль от покупки: 50/50<br>';
-                html += '• На ремонт ТАКЖЕ начисляется 4%/мес<br>';
+                html += `• Доход на ремонт: 4%/мес × ${helpPeriod} мес = ${helpRenoRate}% (идёт нам)<br>`;
                 html += '• Цена продажи: +1.6× от стоимости ремонта<br>';
-                html += '• Срок проекта: 6 месяцев<br><br>';
+                html += '• Гарант. минимум: max(2% от вложений, 1 млн ₽)<br>';
+                html += `• Срок проекта: ${helpPeriod} мес<br><br>`;
                 html += '<strong>Цена интереса</strong> — с учетом доходности и на покупку, и на ремонт.';
             } else if (projectType === 'bank_flip') {
                 html += '<strong>Банковский Флип</strong> — ипотека + партнер.<br><br>';
                 html += '• Ипотека: 80% от цены, 2%/мес<br>';
-                html += '• Партнер платит: 3 мес % вперед + 0.75% за выдачу<br>';
-                html += '• Прибыль 50/50, но минимум 1 млн нам<br>';
-                html += '• На ремонт: 4%/мес отдельно (нам)<br>';
-                html += '• Срок проекта: 6 месяцев<br><br>';
-                html += '<strong>Цена интереса</strong> — с учетом ипотеки и минималки 1 млн.';
+                html += `• Партнер платит: ${helpPeriod} мес % вперед + 0.75% за выдачу<br>`;
+                html += '• Прибыль 50/50<br>';
+                html += `• Доход на ремонт: 4%/мес × ${helpPeriod} мес = ${helpRenoRate}% (идёт нам)<br>`;
+                html += '• Цена продажи: +1.6× от стоимости ремонта<br>';
+                html += '• Гарант. минимум: max(2% от вложений, 1 млн ₽)<br>';
+                html += `• Срок проекта: ${helpPeriod} мес<br><br>`;
+                html += '<strong>Цена интереса</strong> — с учетом ипотеки и гарантированного минимума.';
             }
 
             html += '</div></div>';
@@ -3310,7 +3402,7 @@
         }
 
         // ========== PRICE SOURCE SELECTOR ==========
-        window.currentPriceSource = 'cian'; // default
+        window.currentPriceSource = 'combined'; // default: комбинированная цена
 
         function updatePriceSource(source) {
             if (!window.lastEstimate) return;
@@ -3402,9 +3494,9 @@
                 window.lastEstimate.discount_percent = parseFloat(discountPercent);
                 window.lastEstimate.discount_amount = discountAmount;
 
-                // Trigger full recalculation with API to get proper interest price, profit, etc.
-                // This updates discount and profit with real values based on project type and expenses
-                recalculateInterestPrice();
+                // Обновляем отображение скорректированной цены и пересчитываем
+                // applyPriceAdjustment() сама вызывает recalculateInterestPrice() в конце
+                applyPriceAdjustment();
             }
         }
 
@@ -3419,6 +3511,8 @@
             const renovationEnabled = document.getElementById('param_renovation')?.checked || false;
             const isFlip = projectType === 'partner_flip' || projectType === 'bank_flip';
 
+            const renovationRate = parseInt(document.getElementById('renovation_rate')?.value) || 60000;
+
             const params = {
                 // Тип проекта
                 project_type: projectType,
@@ -3429,13 +3523,18 @@
                 include_agency: document.getElementById('param_agency')?.checked || false,
                 // Дополнительные расходы - ремонт по чекбоксу для ВСЕХ типов проектов
                 include_renovation: renovationEnabled,
+                renovation_per_sqm: renovationRate,  // Редактируемая ставка ремонта
                 include_foreman: document.getElementById('param_foreman')?.checked || false,
                 include_eviction: evictionEnabled,
                 include_registrators_transfer: document.getElementById('param_registrators_transfer')?.checked || false,
                 include_registrators_mortgage: document.getElementById('param_registrators_mortgage')?.checked || false,
                 include_contur_registration: document.getElementById('param_contur')?.checked || false,
-                // При выселении: 12 месяцев, 4% в месяц = 48% за проект
-                project_period_months: evictionEnabled ? 12 : (isFlip ? 6 : 3),
+                // Обязательные расходы (ЖКХ, Сербского)
+                include_utilities: document.getElementById('param_utilities')?.checked || false,
+                include_serbsky: document.getElementById('param_serbsky')?.checked || false,
+                // При выселении: 12 месяцев, иначе 3 месяца для всех типов
+                // Срок проекта: при выселении 12 мес, иначе из поля ввода (по умолчанию 3)
+                project_period_months: evictionEnabled ? 12 : (parseInt(document.getElementById('project_period_input')?.value) || window.projectPeriodMonths || 3),
                 target_profit_rate: evictionEnabled ? 0.48 : 0.12
             };
             
@@ -3518,6 +3617,11 @@
                     window.lastEstimate.renovation_cost = result.renovation_cost;
                     window.lastEstimate.renovation_bonus = result.renovation_bonus;
                     window.lastEstimate.renovation_profit = result.renovation_profit;
+                    window.lastEstimate.renovation_income = result.renovation_income;
+
+                    // Гарантированный минимум
+                    window.lastEstimate.min_guaranteed = result.min_guaranteed;
+                    window.lastEstimate.min_guaranteed_source = result.min_guaranteed_source;
 
                     // Ипотека (для bank_flip)
                     window.lastEstimate.mortgage_amount = result.mortgage_amount;
@@ -3534,9 +3638,14 @@
                     const priceElem = document.getElementById('price');
                     if (priceElem) {
                         const priceMillions = (salePrice / 1000000).toFixed(2);
-                        // Показываем что цена с ремонтом
-                        const renovationNote = renovationEnabled ? ' (с ремонтом)' : '';
-                        priceElem.innerHTML = `${priceMillions} млн ₽<br><span style="font-size: 14px; opacity: 0.7; font-weight: normal;">${Math.round(salePrice).toLocaleString('ru-RU')} ₽${renovationNote}</span>`;
+                        // Показываем разбивку: база + бонус от ремонта
+                        if (renovationEnabled && result.renovation_bonus) {
+                            const baseMln = (adjustedSalePrice / 1000000).toFixed(2);
+                            const bonusMln = (result.renovation_bonus / 1000000).toFixed(2);
+                            priceElem.innerHTML = `${priceMillions} млн ₽<br><span style="font-size: 12px; opacity: 0.7; font-weight: normal;">База: ${baseMln} + Ремонт: +${bonusMln}</span>`;
+                        } else {
+                            priceElem.innerHTML = `${priceMillions} млн ₽<br><span style="font-size: 14px; opacity: 0.7; font-weight: normal;">${Math.round(salePrice).toLocaleString('ru-RU')} ₽</span>`;
+                        }
                     }
 
                     // Обновляем цену за м²
@@ -3824,7 +3933,7 @@
                                         ${v.area_total} м² | ${v.rooms || '?'}к | ${v.floor || '?'}/${v.total_floors || '?'} эт.
                                     </div>
                                 </div>
-                                <button onclick="revaluateFromHistory('${address.replace(/'/g, "\\'")}', ${v.area_total}, ${v.rooms || 'null'}, ${v.floor || 'null'}, ${v.total_floors || 'null'}, ${v.lat || 'null'}, ${v.lon || 'null'}); event.stopPropagation();"
+                                <button onclick="revaluateFromHistory('${address.replace(/'/g, "\\'")}', ${v.area_total}, ${v.rooms || 'null'}, ${v.floor || 'null'}, ${v.total_floors || 'null'}, ${v.lat || 'null'}, ${v.lon || 'null'}, '${v.building_type || ''}'); event.stopPropagation();"
                                     style="padding: 6px 12px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; white-space: nowrap;">
                                     🔄 Переоценить
                                 </button>
@@ -3840,45 +3949,42 @@
             }
         }
 
-        function revaluateFromHistory(address, area, rooms, floor, totalFloors, lat, lon) {
-            // 1. Переключить на вкладку "Оценка"
-            const tabs = document.querySelectorAll('.tab-btn');
-            const contents = document.querySelectorAll('.tab-content');
-            tabs.forEach(t => t.classList.remove('active'));
-            contents.forEach(c => c.classList.remove('active'));
-            tabs[0].classList.add('active');
-            document.getElementById('tab-valuation').classList.add('active');
+        function revaluateFromHistory(address, area, rooms, floor, totalFloors, lat, lon, buildingType, buildingYear) {
+            // 1. Переключить на вкладку "Умный ввод"
+            switchTab('smart');
+            switchInputMode('text');
 
-            // 2. Заполнить форму параметрами
-            const addressInput = document.getElementById('addressInput');
-            if (addressInput) addressInput.value = address;
+            // 2. Сформировать текст с параметрами
+            let text = '';
+            if (address) text += `Адрес: ${address}\n`;
+            if (area) text += `Площадь: ${area} м²\n`;
+            if (rooms) text += `Комнаты: ${rooms}\n`;
+            if (floor && totalFloors) text += `Этаж: ${floor}/${totalFloors}\n`;
+            else if (floor) text += `Этаж: ${floor}\n`;
+            if (buildingType) {
+                const typeNames = {panel: 'панель', brick: 'кирпич', monolithic: 'монолит', block: 'блок', wood: 'дерево'};
+                text += `Тип дома: ${typeNames[buildingType] || buildingType}\n`;
+            }
+            if (buildingYear) text += `Год постройки: ${buildingYear}\n`;
 
-            const areaInput = document.getElementById('area_total') || document.querySelector('input[name="area_total"]');
-            if (areaInput && area) areaInput.value = area;
+            // 3. Заполнить текстовое поле
+            const textarea = document.querySelector('#smartForm textarea[name="smartText"]');
+            if (textarea) textarea.value = text.trim();
 
-            const roomsInput = document.getElementById('rooms') || document.querySelector('select[name="rooms"]');
-            if (roomsInput && rooms) roomsInput.value = rooms;
-
-            const floorInput = document.getElementById('floor') || document.querySelector('input[name="floor"]');
-            if (floorInput && floor) floorInput.value = floor;
-
-            const totalFloorsInput = document.getElementById('total_floors') || document.querySelector('input[name="total_floors"]');
-            if (totalFloorsInput && totalFloors) totalFloorsInput.value = totalFloors;
-
-            // Сохранить координаты если есть
+            // 4. Сохранить координаты если есть
             if (lat && lon) {
                 window.currentLat = lat;
                 window.currentLon = lon;
             }
 
-            // 3. Прокрутить к форме
-            const form = document.querySelector('.search-section') || document.getElementById('tab-valuation');
-            if (form) {
-                form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // 5. Прокрутить к форме
+            const tabContent = document.getElementById('tab-smart');
+            if (tabContent) {
+                tabContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
 
-            // 4. Показать уведомление
-            showNotification('Данные загружены. Нажмите "Оценить" для переоценки.', 'info');
+            // 6. Показать уведомление
+            showNotification('Данные загружены в "Умный ввод". Нажмите "Оценить" для переоценки.', 'info');
         }
 
         async function showValuationDetails(valuationId) {
@@ -4041,6 +4147,7 @@
                                 '<span style="background: #ef4444; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px;">🔴 Снят с публикации</span>'
                             }
                             ${l.url ? `<a href="${l.url}" target="_blank" style="background: #3b82f6; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; text-decoration: none;">Открыть на ЦИАН ↗</a>` : ''}
+                            ${l.listing_id ? `<a href="https://realestate.ourdocs.org/listing/${l.listing_id}" target="_blank" style="background: #22c55e; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; text-decoration: none;">Наша БД ↗</a>` : ''}
                         </div>
 
                         <div style="margin-bottom: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 8px;">

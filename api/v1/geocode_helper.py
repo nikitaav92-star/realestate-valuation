@@ -367,6 +367,50 @@ def get_building_info_from_dadata(address: str) -> Optional[dict]:
         return None
 
 
+def normalize_address_dadata(address: str) -> Optional[str]:
+    """
+    Normalize address using DaData Suggestions API.
+
+    Returns the normalized/formatted address string, or None if not found.
+    This is used for deduplication and consistent address storage.
+    """
+    if not DADATA_API_KEY or not address:
+        return None
+
+    try:
+        url = "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address"
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Token {DADATA_API_KEY}"
+        }
+
+        response = requests.post(
+            url,
+            headers=headers,
+            json={"query": address, "count": 1},
+            timeout=5
+        )
+
+        if response.status_code != 200:
+            print(f"DaData normalize error: {response.status_code}")
+            return None
+
+        data = response.json()
+        suggestions = data.get('suggestions', [])
+        if not suggestions:
+            return None
+
+        # Return the normalized address value
+        normalized = suggestions[0].get('value')
+        if normalized:
+            print(f"📍 DaData normalized: '{address[:50]}...' -> '{normalized[:50]}...'")
+        return normalized
+
+    except Exception as e:
+        print(f"DaData normalize error: {e}")
+        return None
+
+
 def geocode_address(address: str) -> Optional[dict]:
     """
     Geocode address using DaData Suggestions API (free tier: 10000/month).

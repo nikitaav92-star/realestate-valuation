@@ -903,6 +903,7 @@ def parse_listing_detail(
         result = {
             "address_full": None,
             "description": None,
+            "description_hash": None,  # MD5 hash for duplicate detection
             "published_at": None,
             "building_type": None,
             "property_type": None,
@@ -1681,7 +1682,11 @@ def parse_listing_detail(
                 LOGGER.warning(f"⚠️  No description found for {listing_url}")
             else:
                 LOGGER.info(f"✅ Description extracted: {len(result['description'])} chars")
-                    
+                # Calculate description hash for duplicate detection
+                import hashlib
+                normalized_desc = ' '.join(result["description"].lower().split())
+                result["description_hash"] = hashlib.md5(normalized_desc.encode()).hexdigest()
+
         except Exception as e:
             LOGGER.warning(f"Failed to extract description: {e}")
 

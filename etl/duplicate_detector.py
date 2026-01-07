@@ -63,35 +63,49 @@ class DuplicateDetector:
         return unique_duplicates
 
     def _find_exact_match(self, listing: Dict) -> List[Dict]:
-        """Точное совпадение по адресу + площадь + комнаты."""
+        """Точное совпадение по адресу + площадь + комнаты или description_hash + адрес."""
         with self.conn.cursor() as cur:
+            # First try description_hash match with same address
+            description_hash = listing.get('description_hash')
+            listing_id = listing.get('id', 0)
+
             cur.execute("""
-                SELECT id, cian_id, address, area_total, rooms, price,
-                       first_seen_at, published_at
+                SELECT id, address, area_total, rooms, initial_price,
+                       first_seen, published_at
                 FROM listings
-                WHERE address = %(address)s
-                  AND area_total = %(area_total)s
-                  AND rooms = %(rooms)s
-                  AND cian_id != %(cian_id)s
-                ORDER BY first_seen_at ASC
+                WHERE is_active = TRUE
+                  AND id != %(listing_id)s
+                  AND (
+                    -- Exact match: same address + area + rooms
+                    (address = %(address)s
+                     AND area_total = %(area_total)s
+                     AND rooms = %(rooms)s)
+                    OR
+                    -- Hash match: same description + similar address
+                    (description_hash = %(description_hash)s
+                     AND description_hash IS NOT NULL
+                     AND (address = %(address)s OR fias_address = %(fias_address)s))
+                  )
+                ORDER BY first_seen ASC
             """, {
-                'address': listing.get('address'),
+                'address': listing.get('address') or listing.get('address_full'),
+                'fias_address': listing.get('fias_address'),
                 'area_total': listing.get('area_total'),
                 'rooms': listing.get('rooms'),
-                'cian_id': listing.get('cian_id', 0),
+                'listing_id': listing_id,
+                'description_hash': description_hash,
             })
 
             results = []
             for row in cur.fetchall():
                 results.append({
                     'id': row[0],
-                    'cian_id': row[1],
-                    'address': row[2],
-                    'area_total': row[3],
-                    'rooms': row[4],
-                    'price': row[5],
-                    'first_seen_at': row[6],
-                    'published_at': row[7],
+                    'address': row[1],
+                    'area_total': float(row[2]) if row[2] else 0.0,
+                    'rooms': row[3],
+                    'price': row[4],
+                    'first_seen_at': row[5],
+                    'published_at': row[6],
                     'similarity_score': 1.0,
                     'match_reason': 'exact_match',
                 })
@@ -103,41 +117,46 @@ class DuplicateDetector:
         if not area:
             return []
 
+        # Ensure area is float for calculations
+        area = float(area) if area else 0.0
+
+        listing_id = listing.get('id', 0)
         with self.conn.cursor() as cur:
             cur.execute("""
-                SELECT id, cian_id, address, area_total, rooms, price,
-                       first_seen_at, published_at
+                SELECT id, address, area_total, rooms, initial_price,
+                       first_seen, published_at
                 FROM listings
-                WHERE address = %(address)s
+                WHERE is_active = TRUE
+                  AND address = %(address)s
                   AND area_total BETWEEN %(area_min)s AND %(area_max)s
                   AND area_total != %(area_exact)s
                   AND rooms = %(rooms)s
-                  AND cian_id != %(cian_id)s
-                ORDER BY first_seen_at ASC
+                  AND id != %(listing_id)s
+                ORDER BY first_seen ASC
             """, {
-                'address': listing.get('address'),
+                'address': listing.get('address') or listing.get('address_full'),
                 'area_min': area - 2,
                 'area_max': area + 2,
                 'area_exact': area,
                 'rooms': listing.get('rooms'),
-                'cian_id': listing.get('cian_id', 0),
+                'listing_id': listing_id,
             })
 
             results = []
             for row in cur.fetchall():
                 # Рассчитать схожесть по площади
-                area_diff = abs(row[3] - area) if row[3] else 2
+                row_area = float(row[2]) if row[2] else 0.0
+                area_diff = abs(row_area - area)
                 similarity = 1.0 - (area_diff / 10.0)  # ±2м² = 0.8 similarity
 
                 results.append({
                     'id': row[0],
-                    'cian_id': row[1],
-                    'address': row[2],
-                    'area_total': row[3],
-                    'rooms': row[4],
-                    'price': row[5],
-                    'first_seen_at': row[6],
-                    'published_at': row[7],
+                    'address': row[1],
+                    'area_total': row_area,
+                    'rooms': row[3],
+                    'price': row[4],
+                    'first_seen_at': row[5],
+                    'published_at': row[6],
                     'similarity_score': similarity,
                     'match_reason': 'similar_area',
                 })
@@ -158,10 +177,18 @@ class DuplicateDetector:
             return None
 
         # Найти самое старое объявление (оригинал)
-        oldest = min(duplicates, key=lambda x: x['first_seen_at'] or x['published_at'])
+        def get_date(x):
+            d = x.get('first_seen_at') or x.get('published_at')
+            from datetime import datetime
+            # Handle timezone-aware datetimes
+            if d and hasattr(d, 'replace'):
+                return d.replace(tzinfo=None) if d.tzinfo else d
+            return d or datetime.max
 
-        listing_date = listing.get('first_seen_at') or listing.get('published_at')
-        oldest_date = oldest['first_seen_at'] or oldest['published_at']
+        oldest = min(duplicates, key=get_date)
+
+        listing_date = listing.get('first_seen') or listing.get('first_seen_at') or listing.get('published_at')
+        oldest_date = oldest.get('first_seen_at') or oldest.get('published_at')
 
         # Если текущее объявление новее - это перепост
         if listing_date and oldest_date and listing_date > oldest_date:

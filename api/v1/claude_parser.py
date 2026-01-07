@@ -290,6 +290,133 @@ def parse_cian_url(url: str) -> ParsedPropertyData:
     )
 
 
+def parse_avito_url(url: str) -> ParsedPropertyData:
+    """
+    Parse property data from Avito listing URL.
+
+    Avito URLs: https://www.avito.ru/moskva/kvartiry/TITLE_ID
+    """
+    import requests
+
+    # Extract listing ID from URL (handle query params like ?utm_campaign=...)
+    match = re.search(r'_(\d+)(?:[?#]|$)', url)
+    if not match:
+        return ParsedPropertyData(
+            source_type="avito_url",
+            confidence=0,
+            parse_notes="Invalid Avito URL format. Expected: avito.ru/.../_ID"
+        )
+
+    listing_id = match.group(1)
+
+    # Try to fetch page and parse with Claude
+    try:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+        }
+        response = requests.get(url, headers=headers, timeout=10)
+
+        if response.status_code == 200:
+            # Extract text content (remove HTML tags for simpler parsing)
+            from html import unescape
+            text = re.sub(r'<script[^>]*>.*?</script>', '', response.text, flags=re.DOTALL)
+            text = re.sub(r'<style[^>]*>.*?</style>', '', text, flags=re.DOTALL)
+            text = re.sub(r'<[^>]+>', ' ', text)
+            text = unescape(text)
+            text = re.sub(r'\s+', ' ', text)
+
+            # Parse with Claude if available
+            if ANTHROPIC_AVAILABLE and ANTHROPIC_API_KEY:
+                result = parse_text(text[:5000])  # Limit text length
+                result.source_type = "avito_url"
+                result.parse_notes = f"Parsed from Avito listing {listing_id}"
+                return result
+            else:
+                # Fallback to regex
+                result = _fallback_parse_text(text[:5000])
+                result.source_type = "avito_url"
+                return result
+        else:
+            return ParsedPropertyData(
+                source_type="avito_url",
+                confidence=10,
+                parse_notes=f"Could not fetch Avito page (status {response.status_code}). Try using screenshot instead."
+            )
+
+    except Exception as e:
+        return ParsedPropertyData(
+            source_type="avito_url",
+            confidence=10,
+            parse_notes=f"Error fetching Avito: {str(e)}. Try using screenshot instead."
+        )
+
+
+def parse_yandex_realty_url(url: str) -> ParsedPropertyData:
+    """
+    Parse property data from Yandex.Realty listing URL.
+
+    Yandex URLs:
+    - https://realty.yandex.ru/offer/ID/
+    - https://realty.ya.ru/offer/ID/
+    """
+    import requests
+
+    # Extract listing ID from URL
+    match = re.search(r'/offer/(\d+)', url)
+    if not match:
+        return ParsedPropertyData(
+            source_type="yandex_url",
+            confidence=0,
+            parse_notes="Invalid Yandex Realty URL format. Expected: realty.yandex.ru/offer/ID"
+        )
+
+    listing_id = match.group(1)
+
+    # Try to fetch page and parse with Claude
+    try:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+        }
+        response = requests.get(url, headers=headers, timeout=10, allow_redirects=True)
+
+        if response.status_code == 200:
+            # Extract text content
+            from html import unescape
+            text = re.sub(r'<script[^>]*>.*?</script>', '', response.text, flags=re.DOTALL)
+            text = re.sub(r'<style[^>]*>.*?</style>', '', text, flags=re.DOTALL)
+            text = re.sub(r'<[^>]+>', ' ', text)
+            text = unescape(text)
+            text = re.sub(r'\s+', ' ', text)
+
+            # Parse with Claude if available
+            if ANTHROPIC_AVAILABLE and ANTHROPIC_API_KEY:
+                result = parse_text(text[:5000])
+                result.source_type = "yandex_url"
+                result.parse_notes = f"Parsed from Yandex Realty listing {listing_id}"
+                return result
+            else:
+                result = _fallback_parse_text(text[:5000])
+                result.source_type = "yandex_url"
+                return result
+        else:
+            return ParsedPropertyData(
+                source_type="yandex_url",
+                confidence=10,
+                parse_notes=f"Could not fetch Yandex page (status {response.status_code}). Try using screenshot instead."
+            )
+
+    except Exception as e:
+        return ParsedPropertyData(
+            source_type="yandex_url",
+            confidence=10,
+            parse_notes=f"Error fetching Yandex: {str(e)}. Try using screenshot instead."
+        )
+
+
 def _fallback_parse_text(text: str) -> ParsedPropertyData:
     """
     Fallback regex-based parser when Claude is not available.
